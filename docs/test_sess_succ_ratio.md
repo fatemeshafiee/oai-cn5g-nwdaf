@@ -4,7 +4,7 @@
 
 Run the following `curl` command to test PDU session success ratio.
 
-A sample of **expected output** can be found [here](https://gitlab.eurecom.fr/nwdaf/nwdaf-fed/-/blob/develop/examples/nbi_output_sess_succ_ratio.json).
+A sample of **expected output** can be found [here](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/master/examples/nbi_output_sess_succ_ratio.json).
 
 ```bash
 curl -i -X 'GET' \

@@ -10,12 +10,12 @@ An implementation of the 3GPP specifications for the NWDAF.
 NWDAF is an implementation of the 3GPP specifications for the NWDAF.
 It contains:
 
-- NWDAF Analytics Info Service API ([**NBI Analytics**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-nbi-analytics))
-- NWDAF Events Subscription Service API ([**NBI Events**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-nbi-events))
-- NWDAF ML Model Provision Service API ([**NBI Ml**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-nbi-ml))
-- NWDAF Engine ([**Engine**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-engine))
-- NWDAF Engine ADS ([**Engine ADS**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-engine-ads))
-- NWDAF Southbound Interface ([**SBI**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-sbi))
+- NWDAF Analytics Info Service API [**NBI Analytics**]
+- NWDAF Events Subscription Service API [**NBI Events**]
+- NWDAF ML Model Provision Service API [**NBI Ml**]
+- NWDAF Engine [**Engine**]
+- NWDAF Engine ADS [**Engine ADS**]
+- NWDAF Southbound Interface [**SBI**]
 
 This repository is a **Federation of the NWDAF repositories**.
 
@@ -27,7 +27,7 @@ To clone `oai-nwdaf`, run theses commands:
 
 ```bash
 # clone repo
-git clone https://gitlab.eurecom.fr/mekrache/oai-nwdaf.git
+git clone https://gitlab.eurecom.fr/development/oai-nwdaf.git
 # Make sure you are in the oai-nwdaf repository folder.
 cd oai-nwdaf
 ```
@@ -226,10 +226,10 @@ For more information, here are the 3GPP specification yaml files:
 
 Below are scenarios to test the implemented features via the `curl` command:
 
-- [Event_id = NETWORK_PERFORMANCE, NwPerType = NUM_OF_UE.](https://gitlab.eurecom.fr/mekrache/oai-nwdaf/-/blob/main/docs/test_num_of_ue.md)
-- [Event_id = NETWORK_PERFORMANCE, NwPerType = SESS_SUCC_RATIO.](https://gitlab.eurecom.fr/mekrache/oai-nwdaf/-/blob/main/docs/test_sess_succ_ratio.md)
-- [Event_id = UE_COMMUNICATION.](https://gitlab.eurecom.fr/mekrache/oai-nwdaf/-/blob/main/docs/test_ue_comms.md)
-- [Event_id = UE_MOBILITY.](https://gitlab.eurecom.fr/mekrache/oai-nwdaf/-/blob/main/docs/test_ue_mob.md)
+- [Event_id = NETWORK_PERFORMANCE, NwPerType = NUM_OF_UE.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_num_of_ue.md)
+- [Event_id = NETWORK_PERFORMANCE, NwPerType = SESS_SUCC_RATIO.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_sess_succ_ratio.md)
+- [Event_id = UE_COMMUNICATION.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_ue_comms.md)
+- [Event_id = UE_MOBILITY.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_ue_mob.md)
 
 You can also run the `oai-nwdaf-client` in order to test the Analytics Info Api by following the steps below:
 
@@ -303,7 +303,7 @@ To look up what's in amf collection, run:
 db.amf.find()
 ```
 
-A typical of *amf collection* entry would be [this](https://gitlab.eurecom.fr/mekrache/oai-nwdaf/-/blob/main/examples/mongo_amf_entry_sample.json).
+A typical of *amf collection* entry would be [this](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/examples/mongo_amf_entry_sample.json).
 
 To look up what's in smf collection, run:
 
@@ -311,7 +311,7 @@ To look up what's in smf collection, run:
 db.smf.find()
 ```
 
-A typical of *smf collection* entry would be [this](https://gitlab.eurecom.fr/mekrache/oai-nwdaf/-/blob/main/examples/mongo_smf_entry_sample.json).
+A typical of *smf collection* entry would be [this](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/examples/mongo_smf_entry_sample.json).
 
 
 ## 5. Stopping NWDAF deployment

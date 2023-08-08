@@ -13,7 +13,7 @@ import (
 	"log"
 	"net/http"
 
-	nbi_ml "gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-nbi-ml/pkg/nbiml"
+	nbi_ml "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-nbi-ml/pkg/nbiml"
 )
 
 func main() {

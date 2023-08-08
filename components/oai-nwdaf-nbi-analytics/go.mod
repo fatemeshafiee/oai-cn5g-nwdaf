@@ -1,4 +1,4 @@
-module gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-nbi-analytics
+module gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-nbi-analytics
 
 go 1.20
 

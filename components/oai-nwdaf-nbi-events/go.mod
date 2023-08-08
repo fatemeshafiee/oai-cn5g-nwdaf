@@ -1,4 +1,4 @@
-module gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-nbi-events
+module gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-nbi-events
 
 go 1.20
 

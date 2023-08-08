@@ -14,7 +14,7 @@ import (
 	"net/http"
 
 	"github.com/joho/godotenv"
-	"gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-nbi-analytics/pkg/analytics"
+	"gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-nbi-analytics/pkg/analytics"
 )
 
 func main() {

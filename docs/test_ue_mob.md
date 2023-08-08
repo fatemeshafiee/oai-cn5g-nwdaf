@@ -4,7 +4,7 @@
 
 Run the following `curl` commands to test UE mobility information.
 
-A sample of **expected output** can be found [here](https://gitlab.eurecom.fr/nwdaf/nwdaf-fed/-/blob/develop/examples/nbi_output_uemob.json).
+A sample of **expected output** can be found [here](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/master/examples/nbi_output_uemob.json).
 
 ```bash
 # get the latest location of user with imsi: imsi-208990100001120

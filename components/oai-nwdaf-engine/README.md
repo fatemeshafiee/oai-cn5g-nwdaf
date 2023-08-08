@@ -10,12 +10,12 @@ An implementation of the 3GPP specifications for the NWDAF.
 NWDAF is an implementation of the 3GPP specifications for the NWDAF.
 It contains:
 
-- NWDAF Analytics Info Service API ([**NBI Analytics**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-nbi-analytics))
-- NWDAF Events Subscription Service API ([**NBI Events**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-nbi-events))
-- NWDAF ML Model Provision Service API ([**NBI Ml**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-nbi-ml))
-- NWDAF Engine ([**Engine**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-engine))
-- NWDAF Engine ADS ([**Engine ADS**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-engine-ads))
-- NWDAF Southbound Interface ([**SBI**](https://gitlab.eurecom.fr/oai-nwdaf/oai-nwdaf-sbi))
+- NWDAF Analytics Info Service API [**NBI Analytics**]
+- NWDAF Events Subscription Service API [**NBI Events**]
+- NWDAF ML Model Provision Service API [**NBI Ml**]
+- NWDAF Engine [**Engine**]
+- NWDAF Engine ADS [**Engine ADS**]
+- NWDAF Southbound Interface [**SBI**]
 
 Each has its own repository: this repository (`Engine`) is meant for NWDAF Engine.
 

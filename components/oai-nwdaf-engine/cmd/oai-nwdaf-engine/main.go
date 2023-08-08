@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-engine/pkg/engine"
+	"gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-engine/pkg/engine"
 )
 
 // ------------------------------------------------------------------------------

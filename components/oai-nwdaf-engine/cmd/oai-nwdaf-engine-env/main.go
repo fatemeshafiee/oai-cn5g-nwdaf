@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	"gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-engine/pkg/engine"
+	"gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-engine/pkg/engine"
 )
 
 // ------------------------------------------------------------------------------

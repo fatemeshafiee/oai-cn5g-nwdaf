@@ -35,7 +35,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 
-	smf_client "gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-sbi/pkg/smfclient"
+	smf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/pkg/smfclient"
 )
 
 //------------------------------------------------------------------------------

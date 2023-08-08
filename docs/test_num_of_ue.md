@@ -33,7 +33,7 @@ Run the following `curl` commands to test number of UEs attached.
 
 Network area information may be present or not; it allows filtering.
 
-A sample of **expected output** can be found [here](https://gitlab.eurecom.fr/nwdaf/nwdaf-fed/-/blob/develop/examples/nbi_output_num_of_ue.json).
+A sample of **expected output** can be found [here](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/master/examples/nbi_output_num_of_ue.json).
 
 ```bash
 # network area (mcc=505, mnc=01, tac=1) present, start in august, end in October 30

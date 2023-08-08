@@ -14,7 +14,7 @@ import (
 	"net/http"
 
 	"github.com/joho/godotenv"
-	"gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-nbi-events/pkg/events"
+	"gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-nbi-events/pkg/events"
 )
 
 func main() {

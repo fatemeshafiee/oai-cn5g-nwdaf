@@ -5,7 +5,7 @@
 
 Run the following `curl` commands to test `Traffic Characterization` (downlink/upling volume and variance) of UE COMMUNICATION.
 
-A sample of **expected output** can be found [here](https://gitlab.eurecom.fr/nwdaf/nwdaf-fed/-/blob/develop/examples/nbi_output_uecomms.json).
+A sample of **expected output** can be found [here](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/master/examples/nbi_output_uecomms.json).
 
 ```bash
 curl -i -X 'GET' \

@@ -13,7 +13,7 @@ import (
 	"log"
 	"net/http"
 
-	"gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-nbi-events/pkg/events"
+	"gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-nbi-events/pkg/events"
 )
 
 func main() {

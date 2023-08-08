@@ -28,9 +28,9 @@ import (
 	"net/http"
 	"os"
 
-	amf_client "gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-sbi/pkg/amfclient"
-	sbi "gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-sbi/pkg/sbi"
-	smf_client "gitlab.eurecom.fr/mekrache/oai-nwdaf/components/oai-nwdaf-sbi/pkg/smfclient"
+	amf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/pkg/amfclient"
+	sbi "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/pkg/sbi"
+	smf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/pkg/smfclient"
 )
 
 // ------------------------------------------------------------------------------
