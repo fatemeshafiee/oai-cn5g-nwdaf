@@ -1,0 +1,81 @@
+{'_id': '208950000000031', 'lastmodified': 1681732202, 'ueipchlist': [
+        {'adipv4addr': '12.1.1.2', 'pduseid': 1, 'timestamp': 1681732103
+        }
+    ], 'dddslist': [
+        {'dddstatus': {'dldatadeliverystatusanyof': 'TRANSMITTED'
+            }, 'pduseid': 0, 'timestamp': 1681732103
+        }
+    ], 'pdusesestlist': [
+        {'adipv4addr': '12.1.1.2', 'dnn': 'default', 'pduseid': 1, 'pdusesstype': {'pdusessiontypeanyof': 'IPV4'
+            }, 'snssai': {'sst': 222, 'sd': '123'
+            }, 'timestamp': 1681732103
+        }
+    ], 'qosmonlist': [
+        {'customized_data': {'usagereport': {'duration': 5, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Time Threshold', 'urseqn': 0, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732107
+        },
+        {'customized_data': {'usagereport': {'duration': 5, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 1, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732112
+        },
+        {'customized_data': {'usagereport': {'duration': 10, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 2, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732122
+        },
+        {'customized_data': {'usagereport': {'duration': 10, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 3, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732132
+        },
+        {'customized_data': {'usagereport': {'duration': 10, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 4, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732142
+        },
+        {'customized_data': {'usagereport': {'duration': 10, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 5, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732152
+        },
+        {'customized_data': {'usagereport': {'duration': 10, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 6, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732162
+        },
+        {'customized_data': {'usagereport': {'duration': 10, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 7, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732172
+        },
+        {'customized_data': {'usagereport': {'duration': 10, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 8, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732182
+        },
+        {'customized_data': {'usagereport': {'duration': 10, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 9, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732192
+        },
+        {'customized_data': {'usagereport': {'duration': 10, 'nop': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }, 'seid': 1, 'trigger': 'Periodic Reporting', 'urseqn': 10, 'volume': {'downlink': 0, 'total': 0, 'uplink': 0
+                    }
+                }, 'event': '', 'timestamp': ''
+            }, 'pduseid': 0, 'timestamp': 1681732202
+        }
+    ]
+}

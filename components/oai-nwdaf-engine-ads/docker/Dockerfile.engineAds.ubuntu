@@ -1,0 +1,15 @@
+FROM python:3.6.9-slim AS oai-nwdaf-engine-ads
+
+WORKDIR /app
+
+RUN apt-get update && apt-cache search net-tools &&  apt-get install --yes net-tools 
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8080/tcp
+
+CMD [ "python3", "run.py" ]

@@ -1,0 +1,31 @@
+_format_version: '1.1'
+_transform: true
+
+services:
+- name: oai-nwdaf-nbi-analytics
+  url: http://192.168.74.151:8080/nnwdaf-analyticsinfo/v1/analytics
+  routes:
+    - name: oai-nwdaf-nbi-analytics-route
+      hosts: 
+      - nwdaf.cnx.eurecom.fr
+      paths: 
+      - /nnwdaf-analyticsinfo/v1/analytics
+
+
+- name: oai-nwdaf-nbi-events
+  url: http://192.168.74.152:8080/nnwdaf-eventssubscription/v1
+  routes:
+    - name: oai-nwdaf-nbi-events-route
+      hosts:
+      - nwdaf.cnx.eurecom.fr
+      paths:
+      - /nnwdaf-eventssubscription/v1
+
+- name: oai-nwdaf-nbi-ml
+  url: http://192.168.74.153:8080/nnwdaf-mlmodelprovision/v1
+  routes:
+    - name: oai-nwdaf-nbi-ml-route
+      hosts:
+      - nwdaf.cnx.eurecom.fr
+      paths:
+      - /nnwdaf-mlmodelprovision/v1

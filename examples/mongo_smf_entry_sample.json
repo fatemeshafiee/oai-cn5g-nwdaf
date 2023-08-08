@@ -1,0 +1,61 @@
+{
+    "_id": "505010000000010",
+    "lastmodified": NumberLong(1663877240),
+    "ueipchlist": [
+        {
+            "adipv4addr": "12.2.1.2",
+            "pduseid": 1,
+            "timestamp": NumberLong(1663877235)
+        }
+    ],
+    "dddslist": [
+        {
+            "dddstatus": {
+                "dldatadeliverystatusanyof": "TRANSMITTED"
+            },
+            "pduseid": 0,
+            "timestamp": NumberLong(1663877235)
+        }
+    ],
+    "pdusesestlist": [
+        {
+            "adipv4addr": "12.2.1.2",
+            "dnn": "oai.ipv4",
+            "pduseid": 1,
+            "pdusesstype": {
+                "pdusessiontypeanyof": "IPV4"
+            },
+            "snssai": {
+                "sst": 0,
+                "sd": "0"
+            },
+            "timestamp": NumberLong(1663877235)
+        }
+    ],
+    "qosmonlist": [
+        {
+            "customized_data": {
+                "usagereport": {
+                    "duration": 5,
+                    "nop": {
+                        "downlink": NumberLong(0),
+                        "total": NumberLong(0),
+                        "uplink": NumberLong(0)
+                    },
+                    "seid": 1,
+                    "trigger": "Time Threshold",
+                    "urseqn": 0,
+                    "volume": {
+                        "downlink": NumberLong(0),
+                        "total": NumberLong(0),
+                        "uplink": NumberLong(0)
+                    }
+                },
+                "event": "",
+                "timestamp": ""
+            },
+            "pduseid": 0,
+            "timestamp": NumberLong(1663877240)
+        }
+    ]
+}
