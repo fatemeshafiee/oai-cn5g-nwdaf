@@ -214,64 +214,35 @@ In addition to these features, we have also implemented an ML-based feature excl
 - Event: ABNORMAL_BEHAVIOUR
   - Exception ID: UNEXPECTED_LARGE_RATE_FLOW
 
-
-For more information, here are the 3GPP specification yaml files:
-
-- Analytics Info ([editor](https://forge.3gpp.org/swagger/editor-versions/v3.18.0/?url=https://forge.3gpp.org/rep/all/5G_APIs/raw/REL-17/TS29520_Nnwdaf_AnalyticsInfo.yaml))([UI](https://forge.3gpp.org/swagger/ui/?url=https://forge.3gpp.org/rep/all/5G_APIs/raw/REL-17/TS29520_Nnwdaf_AnalyticsInfo.yaml))
-- Events Subscription ([editor](https://forge.3gpp.org/swagger/editor-versions/v3.18.0/?url=https://forge.3gpp.org/rep/all/5G_APIs/raw/REL-17/TS29520_Nnwdaf_EventsSubscription.yaml))([UI](https://forge.3gpp.org/swagger/ui/?url=https://forge.3gpp.org/rep/all/5G_APIs/raw/REL-17/TS29520_Nnwdaf_EventsSubscription.yaml))
-
-
-
 #### 4.2.1 Test Analytics Info API
 
-Below are scenarios to test the implemented features via the `curl` command:
+You can also run the `cli` in order to test the Analytics Info Api by following the steps below:
+
+```bash
+# make sure you get out of oai-nwdaf/cli repository
+cd cli
+
+# run the cli using json files in examples/analytics folder.
+python3 cli.py analytics examples/analytics/<json_file_name>
+```
+
+You can also generate `curl` command using:
 
 - [Event_id = NETWORK_PERFORMANCE, NwPerType = NUM_OF_UE.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_num_of_ue.md)
 - [Event_id = NETWORK_PERFORMANCE, NwPerType = SESS_SUCC_RATIO.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_sess_succ_ratio.md)
 - [Event_id = UE_COMMUNICATION.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_ue_comms.md)
 - [Event_id = UE_MOBILITY.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_ue_mob.md)
 
-You can also run the `oai-nwdaf-client` in order to test the Analytics Info Api by following the steps below:
-
-```bash
-# make sure you get out of oai-nwdaf project repository
-cd ..
-
-# clone repo
-git clone https://gitlab.eurecom.fr/mekrache/oai-nwdaf-client.git
-
-# make sure you are in the oai-nwdaf-client project repository
-cd oai-nwdaf-client
-
-# make sure you are in analytics folder
-cd analytics
-
-# run the server using json files in examples folder.
-python3 run.py examples/<json_file_name>
-```
-
 #### 4.2.2 Test Event Subscription API
 
-You can run the `oai-nwdaf-client` in order to test the Events Subscription API by following the steps below:
+You can run the `cli` in order to test the Events Subscription API by following the steps below:
 
 ```bash
-# make sure you are in the oai-nwdaf-client project repository
-cd ..
+# make sure you get out of oai-nwdaf/cli repository
+cd cli
 
-# make sure you are in events folder
-cd events
-
-# run the server using json files in examples folder.
-python3 run.py examples/<json_file_name>
-```
-
-If you want to use the go version, run these commands: 
-```bash
-# make sure you are in events folder
-cd events_go
-
-# run the server using json files in examples folder.
-go run main.go examples/<json_file_name>
+# run the cli using json files in examples/analytics folder.
+python3 cli.py subscribe examples/eevents/<json_file_name>
 ```
 
 #### 4.2.3 3GPP APIs
