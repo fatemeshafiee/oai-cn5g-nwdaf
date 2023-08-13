@@ -102,7 +102,7 @@ Mongo-DB is used as the database in the NWDAF project.
 ```bash
 docker pull mongo 
 ```
-Kong is an open source API gateway and platform that acts as middleware between compute clients and the our API servers (oai-nwdaf-nbi-analytics, oai-nwdaf-nbi-events, oai-nwdaf-nbi-ml).
+Kong is an open source API gateway and platform that acts as middleware between NWDAF clients and our API servers (oai-nwdaf-nbi-analytics, oai-nwdaf-nbi-events, oai-nwdaf-nbi-ml).
 
 ```bash
 docker pull kong
@@ -201,7 +201,7 @@ docker-compose -f docker-compose/docker-compose-gnbsim-vpp.yaml up -d --force-re
 
 ### 4.2. Testing NWDAF features
 
-So far, we have implemented the following features for both the Events Subscription API and the Analytics Info API:
+We have implemented the following features for both the Events Subscription API and the Analytics Info API:
 
 - Event: NETWORK_PERFORMANCE
    - Type: Number of connected users (NwPerType: NUM_OF_UE)
@@ -216,7 +216,7 @@ In addition to these features, we have also implemented an ML-based feature excl
 
 #### 4.2.1 Test Analytics Info API
 
-You can also run the `cli` in order to test the Analytics Info Api by following the steps below:
+You can run the `cli` in order to test the Analytics Info Api by following the steps below:
 
 ```bash
 # make sure you get out of oai-nwdaf/cli repository
@@ -226,7 +226,7 @@ cd cli
 python3 cli.py analytics examples/analytics/<json_file_name>
 ```
 
-You can also generate `curl` command using:
+You can also generate `curl` commands using:
 
 - [Event_id = NETWORK_PERFORMANCE, NwPerType = NUM_OF_UE.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_num_of_ue.md)
 - [Event_id = NETWORK_PERFORMANCE, NwPerType = SESS_SUCC_RATIO.](https://gitlab.eurecom.fr/development/oai-nwdaf/-/blob/main/docs/test_sess_succ_ratio.md)
@@ -241,8 +241,8 @@ You can run the `cli` in order to test the Events Subscription API by following 
 # make sure you get out of oai-nwdaf/cli repository
 cd cli
 
-# run the cli using json files in examples/analytics folder.
-python3 cli.py subscribe examples/eevents/<json_file_name>
+# run the cli using json files in examples/subscriptions folder.
+python3 cli.py subscribe examples/subscriptions/<json_file_name>
 ```
 
 #### 4.2.3 3GPP APIs
