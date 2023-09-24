@@ -132,7 +132,7 @@ sudo iptables -P FORWARD ACCEPT
 
 ## 3. NWDAF deployment
 
-![](./docs/images/nwdaf-deployment.jpg)
+![](./docs/images/nwdaf_deployment.jpg)
 
 ### 3.1. Starting 5G CN
 
