@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-nwdaf-database
+  namespace: oai-5g-core
+  labels:
+    app: oai-nwdaf-database
+spec:
+  selector:
+    matchLabels:
+      app: oai-nwdaf-database
+  template:
+    metadata:
+      labels:
+        app: oai-nwdaf-database
+    spec:
+      containers:
+        - name: oai-nwdaf-database
+          image: mongo:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 27017
+          env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oai-nwdaf-database
+  namespace: oai-5g-core
+  labels:
+    app: oai-nwdaf-database
+spec:
+  type: ClusterIP
+  selector:
+    app: oai-nwdaf-database
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017

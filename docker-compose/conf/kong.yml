@@ -7,7 +7,7 @@ services:
   routes:
     - name: oai-nwdaf-nbi-analytics-route
       hosts: 
-      - nwdaf.cnx.eurecom.fr
+      - oai-nwdaf-nbi-gateway
       paths: 
       - /nnwdaf-analyticsinfo/v1/analytics
 
@@ -17,7 +17,7 @@ services:
   routes:
     - name: oai-nwdaf-nbi-events-route
       hosts:
-      - nwdaf.cnx.eurecom.fr
+      - oai-nwdaf-nbi-gateway
       paths:
       - /nnwdaf-eventssubscription/v1
 
@@ -26,6 +26,6 @@ services:
   routes:
     - name: oai-nwdaf-nbi-ml-route
       hosts:
-      - nwdaf.cnx.eurecom.fr
+      - oai-nwdaf-nbi-gateway
       paths:
       - /nnwdaf-mlmodelprovision/v1

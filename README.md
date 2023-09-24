@@ -127,7 +127,7 @@ sudo iptables -P FORWARD ACCEPT
 2. Add to `/etc/hosts` file the following:
 
 ```bash
-127.1.0.1       nwdaf.cnx.eurecom.fr
+127.1.0.1       oai-nwdaf-nbi-gateway
 ```
 
 ## 3. NWDAF deployment
@@ -254,13 +254,13 @@ For more information about 3GPP APIs, you can access specifications via these li
 - Data Management ([editor](https://forge.3gpp.org/swagger/editor-versions/v3.18.0/?url=https://forge.3gpp.org/rep/all/5G_APIs/raw/REL-17/TS29520_Nnwdaf_DataManagement.yaml))([UI](https://forge.3gpp.org/swagger/ui/?url=https://forge.3gpp.org/rep/all/5G_APIs/raw/REL-17/TS29520_Nnwdaf_DataManagement.yaml))
 - MLModel Provision ([editor](https://forge.3gpp.org/swagger/editor-versions/v3.18.0/?url=https://forge.3gpp.org/rep/all/5G_APIs/raw/REL-17/TS29520_Nnwdaf_MLModelProvision.yaml))([UI](https://forge.3gpp.org/swagger/ui/?url=https://forge.3gpp.org/rep/all/5G_APIs/raw/REL-17/TS29520_Nnwdaf_MLModelProvision.yaml))
 
-### 4.3. Inspecting Mongo DB
+### 4.3. Inspecting oai-nwdaf-database
 
-To see the data stored in `mongo`, run in terminal (while container running)
+To see the data stored in `oai-nwdaf-database`, run in terminal (while container running)
 
 ```bash
 # open mongo console in the container
-docker exec -it mongo mongosh
+docker exec -it oai-nwdaf-database mongosh
 ```
 
 ```bash

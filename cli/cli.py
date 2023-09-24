@@ -23,7 +23,7 @@ def analytics(
     tgt_ue = json.dumps(data['tgt-ue'])
 
     # Construct the URL
-    base_url = 'http://nwdaf.cnx.eurecom.fr/nnwdaf-analyticsinfo/v1/analytics'
+    base_url = 'http://oai-nwdaf-nbi-gateway/nnwdaf-analyticsinfo/v1/analytics'
     params = {
         'event-id': event_id,
         'ana-req': ana_req,
@@ -46,7 +46,7 @@ def subscribe(
     subscription_file: str = typer.Argument(..., help="JSON subscription file name"),
 ):
     # Define the URL to send the subscription request to
-    subscription_url = 'http://nwdaf.cnx.eurecom.fr/nnwdaf-eventssubscription/v1/subscriptions'
+    subscription_url = 'http://oai-nwdaf-nbi-gateway/nnwdaf-eventssubscription/v1/subscriptions'
 
     # Load subscription data from the JSON file
     with open(subscription_file) as f:

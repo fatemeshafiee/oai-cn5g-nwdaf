@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-nwdaf-engine-ads
+  namespace: oai-5g-core
+  labels:
+    app: oai-nwdaf-engine-ads
+spec:
+  selector:
+    matchLabels:
+      app: oai-nwdaf-engine-ads
+  template:
+    metadata:
+      labels:
+        app: oai-nwdaf-engine-ads
+    spec:
+      containers:
+        - name: oai-nwdaf-engine-ads
+          image: production.imagehub/oai-nwdaf-engine-ads:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE
+              value: /abnormal_behaviour/unexpected_large_rate_flow
+            - name: MONGODB_COLLECTION_NAME_AMF
+              value: amf
+            - name: MONGODB_COLLECTION_NAME_SMF
+              value: smf
+            - name: MONGODB_DATABASE_NAME
+              value: testing
+            - name: MONGODB_URI
+              value: mongodb://oai-nwdaf-database:27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oai-nwdaf-engine-ads
+  namespace: oai-5g-core
+  labels:
+    app: oai-nwdaf-engine-ads
+spec:
+  type: ClusterIP
+  selector:
+    app: oai-nwdaf-engine-ads
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
