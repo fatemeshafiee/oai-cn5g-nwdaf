@@ -316,3 +316,9 @@ cd docker-compose
 # Stop CN
 python3 ./core-network.py --type stop-basic-vpp --scenario 1
 ```
+
+
+# 6. Support/further resources
+
+- [Original OAI-NWDAF paper IEEE GLOBECOM 2023](https://www.eurecom.fr/publication/7410/download/comsys-publi-7410.pdf)
+- [Demo](https://lnkd.in/e-b2jaHk)

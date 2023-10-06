@@ -28,7 +28,7 @@ To run the server, follow these steps:
 $ cd oai-nwdaf-engine
 
 # run the server
-$ go run cmd/oai-nwdaf-engine-env/main.go
+$ go run cmd/oai-nwdaf-engine/main.go
 ```
 
 To run the server in a docker container, build the docker image as follows:

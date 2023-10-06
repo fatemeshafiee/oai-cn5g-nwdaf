@@ -71,15 +71,6 @@ func (c *NWDAFEventsSubscriptionsCollectionApiController) CreateNWDAFEventsSubsc
 		return
 	}
 
-	// Event is the only required field, however, this assert verifies other fields
-	// I comment to avoid panic nil pointer
-	/*
-		if err := AssertNnwdafEventsSubscriptionRequired(nnwdafEventsSubscriptionParam); err != nil {
-			c.errorHandler(w, r, err, nil)
-			return
-		}
-	*/
-
 	result, err := c.service.CreateNWDAFEventsSubscription(r.Context(), nnwdafEventsSubscriptionParam, urlPath)
 	// If an error occurred, encode the error with the status code
 	if err != nil {

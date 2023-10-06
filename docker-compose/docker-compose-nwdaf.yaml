@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-#-----------------------------------------------NBI-----------------------------------------------
+# ------------------------ NBI ------------------------
     oai-nwdaf-nbi-gateway:
         container_name: oai-nwdaf-nbi-gateway
         image: kong:latest
@@ -80,7 +80,7 @@ services:
             nwdaf_net:
                 ipv4_address: 192.168.74.153
 
-#-----------------------------------------------ENGINES-----------------------------------------------
+# ------------------------ ENGINES ------------------------
     oai-nwdaf-engine:
         container_name: oai-nwdaf-engine
         image: oai-nwdaf-engine:latest
@@ -93,6 +93,7 @@ services:
             - ENGINE_SESS_SUCC_RATIO_ROUTE=/network_performance/sess_succ_ratio
             - ENGINE_UE_COMMUNICATION_ROUTE=/ue_communication
             - ENGINE_UE_MOBILITY_ROUTE=/ue_mobility
+            - SERVER_ADDR=0.0.0.0:8080
         ports:
             - "6063:8080"
         depends_on:
@@ -115,6 +116,7 @@ services:
             - MONGODB_COLLECTION_NAME_AMF=amf
             - MONGODB_COLLECTION_NAME_SMF=smf
             - ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
+            - SERVER_PORT=8080
         depends_on:
             - oai-nwdaf-database
         healthcheck:
@@ -127,7 +129,7 @@ services:
                 ipv4_address: 192.168.74.157
 
 
-#-----------------------------------------------MONGO DB-----------------------------------------------
+# ------------------------ DATABASE ------------------------
     oai-nwdaf-database:
         container_name: oai-nwdaf-database
         image: mongo:latest
@@ -149,7 +151,7 @@ services:
         restart: always
 
 
-#-----------------------------------------------SBI-----------------------------------------------
+# ------------------------ SBI ------------------------
     oai-nwdaf-sbi:
         container_name: oai-nwdaf-sbi
         image: oai-nwdaf-sbi:latest
@@ -186,6 +188,7 @@ services:
             nwdaf_net:
                 ipv4_address: 192.168.74.158
 
+# ------------------------ NETWORKS ------------------------
 networks:
     public_net:
         external:

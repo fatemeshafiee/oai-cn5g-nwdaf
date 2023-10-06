@@ -19,46 +19,23 @@
  *      contact@openairinterface.org
  */
 
-package main
+/*
+This file contains server routes.
+*/
+package engine
 
 import (
-	"log"
 	"net/http"
-	"time"
-
-	"github.com/joho/godotenv"
-	"github.com/kelseyhightower/envconfig"
-	"gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-engine/internal/engine"
 )
 
-type MainConfig struct {
-	Server struct {
-		Addr string `envconfig:"SERVER_ADDR"`
-	}
-}
-
 // ------------------------------------------------------------------------------
-func main() {
-	// load the environment variables from the file .env
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	var config MainConfig
-	err = envconfig.Process("", &config)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	// Initialize internal package
-	engine.InitConfig()
-	// create a new router
-	router := engine.NewRouter()
-	server := &http.Server{
-		Addr:         config.Server.Addr,
-		Handler:      router,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-	}
-	log.Printf("Server listening at %s", config.Server.Addr)
-	log.Fatal(server.ListenAndServe())
+// NewRouter - create router for HTTP server.
+func NewRouter() http.Handler {
+	mux := http.NewServeMux()
+	// register routes
+	mux.HandleFunc(config.Routes.NumOfUe, nwPerfNumOfUe)
+	mux.HandleFunc(config.Routes.SessSuccRatio, nwPerfNumOfPdu)
+	mux.HandleFunc(config.Routes.UeComm, ueComm)
+	mux.HandleFunc(config.Routes.UeMob, ueMob)
+	return mux
 }

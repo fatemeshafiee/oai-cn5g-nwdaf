@@ -19,12 +19,30 @@
 # *      contact@openairinterface.org
 # */
 
-from flask import Flask
-from src.config import SERVER_PORT
-from src.routes import api
+import pandas as pd
+from src.config import *
 
-app = Flask(__name__)
-app.register_blueprint(api, url_prefix='/')
+def add_time_columns(df, timestamp_col):
+    df['timestamp'] = pd.to_datetime(df[timestamp_col], unit='s')
+    df['year'] = df['timestamp'].dt.year
+    df['month'] = df['timestamp'].dt.month
+    df['day'] = df['timestamp'].dt.day
+    df['hour'] = df['timestamp'].dt.hour
+    df['minute'] = df['timestamp'].dt.minute
+    return df
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', threaded=True, port=SERVER_PORT,debug=True)
+def create_dataframe():
+    data = []
+    for doc in smf_collection.find():
+        for qosmon in doc['qosmonlist']:
+            data.append({
+                "timestamp": qosmon['timestamp'],
+                "pduseid": qosmon['pduseid'],
+                "value_ul": qosmon['customized_data']['usagereport']['volume']['uplink'] ,
+                "value_dl": qosmon['customized_data']['usagereport']['volume']['downlink'],
+                "value_total": qosmon['customized_data']['usagereport']['volume']['total']
+            })
+    # Create a pandas dataframe
+    df = pd.DataFrame(data)
+    df = add_time_columns(df, 'timestamp')
+    return df

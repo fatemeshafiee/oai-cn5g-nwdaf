@@ -18,13 +18,3 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-from flask import Flask
-from src.config import SERVER_PORT
-from src.routes import api
-
-app = Flask(__name__)
-app.register_blueprint(api, url_prefix='/')
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', threaded=True, port=SERVER_PORT,debug=True)

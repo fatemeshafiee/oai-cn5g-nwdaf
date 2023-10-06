@@ -28,15 +28,15 @@ To run the server, follow these steps:
 $ cd oai-nwdaf-engine-ads
 
 # create and activate a python virtual environment
-$ python3 -m venv env
+$ python3.6 -m venv env 
 $ source env/bin/activate
 
 # Upgrade pip and install requirements
-$ python3 -m pip install --upgrade pip
+$ python -m pip install --upgrade pip
 $ pip install -r requirements.txt
 
 # run the server
-$ python3 run-local.py
+$ python run.py
 ```
 
 To run the server in a docker container, build the docker image as follows:
