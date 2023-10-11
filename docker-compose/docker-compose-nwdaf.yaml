@@ -26,7 +26,6 @@
 # */
 
 version: "3.8"
-
 services:
 # ------------------------ NBI ------------------------
     oai-nwdaf-nbi-gateway:
@@ -157,7 +156,6 @@ services:
             nwdaf_net:
                 ipv4_address: 192.168.74.157
 
-
 # ------------------------ DATABASE ------------------------
     oai-nwdaf-database:
         container_name: oai-nwdaf-database
@@ -178,7 +176,6 @@ services:
             nwdaf_net:
                 ipv4_address: 192.168.74.156
         restart: always
-
 
 # ------------------------ SBI ------------------------
     oai-nwdaf-sbi:
@@ -223,7 +220,6 @@ networks:
     public_net:
         external:
             name: demo-oai-public-net
-
     nwdaf_net:
         driver: bridge
         name: oai-nwdaf-net

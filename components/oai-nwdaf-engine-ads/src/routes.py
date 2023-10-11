@@ -28,13 +28,15 @@ from flask import Blueprint, jsonify
 from src.config import *
 from src.functions import *
 import numpy as np
+import logging
 
 api = Blueprint('api', __name__)  
+logging.basicConfig(level=logging.INFO)
 
 @api.route('/abnormal_behaviour/unexpected_large_rate_flow', methods=['GET'])
 def handle_unexpected_large_rate_flow_request():
     df = create_dataframe()
-    print(df[['timestamp', 'value_total']])
+    logging.info(df[['timestamp', 'value_total']])
     # Get the usefull rows of the DataFrame.
     df_seq = df[['hour', 'value_ul']].tail(seq_dim)
     seq = ulrf_scaler.transform(df_seq)
@@ -44,8 +46,7 @@ def handle_unexpected_large_rate_flow_request():
     mae = np.mean(np.abs(predict_seq[:,:,1:] - seq[:,:,1:]), axis=1)
     distance = np.abs(mae - distance_threshold)
     anomaly_prob = np.minimum(distance / max_distance_threshold, 1)
-    print("\nunexpected_large_rate_flow probability is: "+str(anomaly_prob[0][0]))
-    # Convert probability to percentage
+    logging.info("unexpected_large_rate_flow probability is: %s", anomaly_prob[0][0])
     ratio = int(anomaly_prob * 100)
     response_data = {'ratio': ratio}
     # send anomaly probability to client.
