@@ -18,3 +18,8 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
+
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Description: Init file.
+# */

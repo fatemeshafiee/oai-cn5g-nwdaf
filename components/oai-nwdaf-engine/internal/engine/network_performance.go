@@ -20,8 +20,11 @@
  */
 
 /*
-This file contains fuctions related to Network Performance event ID.
-*/
+ * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Arina Prostakova    <prostako@eurecom.fr>
+ * Description: This file contains functions related to Network Performance event ID.
+ */
+
 package engine
 
 import (

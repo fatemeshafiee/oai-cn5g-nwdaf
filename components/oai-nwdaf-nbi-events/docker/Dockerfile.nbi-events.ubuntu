@@ -1,31 +1,50 @@
+#/*
+# * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# * contributor license agreements.  See the NOTICE file distributed with
+# * this work for additional information regarding copyright ownership.
+# * The OpenAirInterface Software Alliance licenses this file to You under
+# * the OAI Public License, Version 1.1  (the "License"); you may not use this
+# * file except in compliance with the License. You may obtain a copy of the
+# * License at
+# *
+# *      http://www.openairinterface.org/?page_id=698
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+# *-------------------------------------------------------------------------------
+# * For more information about the OpenAirInterface (OAI) Software Alliance:
+# *      contact@openairinterface.org
+# */
+
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Author: Arina Prostakova    <prostako@eurecom.fr>
+# * Description: Docker file of the oai-nwdaf-nbi-events.
+# */
+
 ARG BUILD_IMAGE=golang:1.19-alpine
 ARG TARGET_IMAGE=ubuntu:focal
 
 #---------------------------------------------------------------------
 # BUILDER IMAGE
 #---------------------------------------------------------------------
-
 FROM $BUILD_IMAGE AS oai-nwdaf-nbi-events-build
-
 WORKDIR /oai/nwdaf/nbi-events
-
 ENV CGO_ENABLED=0
-
 COPY go.* ./
 RUN go mod download
-
 COPY . ./
 RUN go build -o bin/oai-nwdaf-nbi-events cmd/oai-nwdaf-nbi-events/main.go
 
 #---------------------------------------------------------------------
 # TARGET IMAGE
 #---------------------------------------------------------------------
-
 FROM $TARGET_IMAGE AS oai-nwdaf-nbi-events
-
 RUN apt-get update && apt-cache search net-tools &&  apt-get install --yes net-tools 
-
 COPY --from=oai-nwdaf-nbi-events-build /oai/nwdaf/nbi-events/bin/oai-nwdaf-nbi-events ./
-
+COPY .env ./
 EXPOSE 8080/tcp
 ENTRYPOINT ["./oai-nwdaf-nbi-events"]

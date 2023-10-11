@@ -19,13 +19,18 @@
 # *      contact@openairinterface.org
 # */
 
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Description: oai-nwdaf-engine-ads configuration parameters.
+# */
+
 import os
 from pymongo import MongoClient
 import pickle
 from tensorflow import keras
 
 # Env Variables
-SERVER_PORT = os.environ.get('SERVER_PORT','8888')
+SERVER_PORT = os.environ.get('SERVER_PORT','8989')
 MONGODB_URI = os.environ.get('MONGODB_URI','mongodb://localhost:27017')
 NWDAF_DATABASE_NAME = os.environ.get('MONGODB_DATABASE_NAME', 'testing')
 MONGODB_COLLECTION_NAME_AMF = os.environ.get('MONGODB_COLLECTION_NAME_AMF', 'amf')

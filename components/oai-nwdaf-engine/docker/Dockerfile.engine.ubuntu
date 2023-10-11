@@ -19,6 +19,12 @@
 # *      contact@openairinterface.org
 # */
 
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Author: Arina Prostakova    <prostako@eurecom.fr>
+# * Description: Docker file of the oai-nwdaf-engine.
+# */
+
 ARG BUILD_IMAGE=golang:1.19-alpine
 ARG TARGET_IMAGE=ubuntu:focal
 

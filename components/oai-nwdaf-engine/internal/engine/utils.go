@@ -20,8 +20,11 @@
  */
 
 /*
-This file contains utils fuctions.
-*/
+ * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Arina Prostakova    <prostako@eurecom.fr>
+ * Description: This file contains utils functions.
+ */
+
 package engine
 
 import (
@@ -55,7 +58,7 @@ func InitConfig() {
 }
 
 // ------------------------------------------------------------------------------
-// getAnaReqValues - Get Anal-request start-ts and ent-ts values
+// getAnaReqValues - Get Analytics-request start-ts and ent-ts values
 func getExtraReportReq(engineReqData EngineReqData) (int64, int64) {
 	startTs, endTs := int64(0), int64(0)
 	if !engineReqData.StartTs.IsZero() {

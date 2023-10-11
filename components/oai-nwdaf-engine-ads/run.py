@@ -19,6 +19,11 @@
 # *      contact@openairinterface.org
 # */
 
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Description: This is the main file of oai-nwdaf-engine-ads.
+# */
+
 from flask import Flask
 from src.config import SERVER_PORT
 from src.routes import api

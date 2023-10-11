@@ -20,8 +20,11 @@
  */
 
 /*
-This file contains fuctions related to UE communication event ID.
-*/
+ * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Arina Prostakova    <prostako@eurecom.fr>
+ * Description: This file contains functions related to UE communication event ID.
+ */
+
 package engine
 
 import (
@@ -64,8 +67,6 @@ func ueComm(w http.ResponseWriter, r *http.Request) {
 		}
 		commDur := int32(0)
 		ulVolSlice, dlVolSlice := make([]int64, 0), make([]int64, 0)
-		ulVol, ulVolVariance := int64(0), float32(0)
-		dlVol, dlVolVariance := int64(0), float32(0)
 		startTs, endTs := getExtraReportReq(engineReqData)
 		timeStamp := calculateTimeStamp(startTs, endTs)
 		for cursor.Next(context.Background()) {
@@ -97,11 +98,8 @@ func ueComm(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
-		// check if no data was matched
-		if len(ulVolSlice) != 0 {
-			ulVol, ulVolVariance = calculateSumAndVariance(ulVolSlice)
-			dlVol, dlVolVariance = calculateSumAndVariance(dlVolSlice)
-		}
+		ulVol, ulVolVariance := calculateSumAndVariance(ulVolSlice)
+		dlVol, dlVolVariance := calculateSumAndVariance(dlVolSlice)
 		ueCommResp := UeCommResp{
 			CommDur:       commDur,
 			Ts:            engineReqData.StartTs,
@@ -132,17 +130,18 @@ func GetFilterUeComm(engineReqData EngineReqData) bson.D {
 	timeStampCondition := getTimeStampCondition(startTs, endTs)
 	return bson.D{{"qosmonlist",
 		bson.M{"$elemMatch": bson.M{
-			// "dnn":       kvEvFilters["dnn"], // if no filter, matching only empty list (BAD)
-			// "snssai":    kvEvFilters["snssai"], // if no filter, matching only empty list (BAD)
 			"timestamp": timeStampCondition,
 		}},
 	}}
-
 }
 
 // -----------------------------------------------------------------------------
 // calculateSumAndVariance - Calculates sum and variance
 func calculateSumAndVariance(volSlice []int64) (int64, float32) {
+
+	if len(volSlice) == 0 {
+		return int64(0), float32(0)
+	}
 	volSum := int64(0)
 	volVariance := float64(0)
 	for _, vol := range volSlice {

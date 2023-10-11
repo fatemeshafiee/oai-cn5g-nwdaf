@@ -19,6 +19,11 @@
 # *      contact@openairinterface.org
 # */
 
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Description: This file contains oai-nwdaf-engine-ads server routes.
+# */
+
 from flask import Blueprint, jsonify
 from src.config import *
 from src.functions import *

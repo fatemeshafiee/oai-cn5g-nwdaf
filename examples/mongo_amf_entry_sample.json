@@ -1,220 +1,220 @@
 {
-    "_id": "imsi-505010000000010",
-    "lastmodified": NumberLong(1663877709),
-    "locationlist": [
-        {
-            "userlocation": {
-                "eutralocation": null,
-                "nrlocation": {
-                    "tai": {
-                        "plmnid": {
-                            "mcc": "505",
-                            "mnc": "01"
-                        },
-                        "tac": "1",
-                        "nid": null
-                    },
-                    "ncgi": {
-                        "plmnid": {
-                            "mcc": "",
-                            "mnc": ""
-                        },
-                        "nrcellid": "",
-                        "nid": null
-                    },
-                    "ignorencgi": null,
-                    "ageoflocationinformation": null,
-                    "uelocationtimestamp": null,
-                    "geographicalinformation": null,
-                    "geodeticinformation": null,
-                    "globalgnbid": {
-                        "interface": {
-                            "gNbId": {
-                                "bitLength": 32,
-                                "gNBValue": "57344"
-                            },
-                            "plmnId": {
-                                "mnc": "01",
-                                "mcc": "505"
-                            }
-                        }
-                    }
-                },
-                "n3galocation": null,
-                "utralocation": null,
-                "geralocation": null
+  "_id": "imsi-505010000000010",
+  "lastmodified": NumberLong(1663877709),
+  "locationlist": [
+    {
+      "userlocation": {
+        "eutralocation": null,
+        "nrlocation": {
+          "tai": {
+            "plmnid": {
+              "mcc": "505",
+              "mnc": "01"
             },
-            "timestamp": NumberLong(1663877235)
-        },
-        {
-            "userlocation": {
-                "eutralocation": null,
-                "nrlocation": {
-                    "tai": {
-                        "plmnid": {
-                            "mcc": "505",
-                            "mnc": "01"
-                        },
-                        "tac": "1",
-                        "nid": null
-                    },
-                    "ncgi": {
-                        "plmnid": {
-                            "mcc": "",
-                            "mnc": ""
-                        },
-                        "nrcellid": "",
-                        "nid": null
-                    },
-                    "ignorencgi": null,
-                    "ageoflocationinformation": null,
-                    "uelocationtimestamp": null,
-                    "geographicalinformation": null,
-                    "geodeticinformation": null,
-                    "globalgnbid": {
-                        "interface": {
-                            "gNbId": {
-                                "bitLength": 32,
-                                "gNBValue": "57344"
-                            },
-                            "plmnId": {
-                                "mcc": "505",
-                                "mnc": "01"
-                            }
-                        }
-                    }
-                },
-                "n3galocation": null,
-                "utralocation": null,
-                "geralocation": null
+            "tac": "1",
+            "nid": null
+          },
+          "ncgi": {
+            "plmnid": {
+              "mcc": "",
+              "mnc": ""
             },
-            "timestamp": NumberLong(1663877687)
+            "nrcellid": "",
+            "nid": null
+          },
+          "ignorencgi": null,
+          "ageoflocationinformation": null,
+          "uelocationtimestamp": null,
+          "geographicalinformation": null,
+          "geodeticinformation": null,
+          "globalgnbid": {
+            "interface": {
+              "gNbId": {
+                "bitLength": 32,
+                "gNBValue": "57344"
+              },
+              "plmnId": {
+                "mnc": "01",
+                "mcc": "505"
+              }
+            }
+          }
         },
-        {
-            "userlocation": {
-                "eutralocation": null,
-                "nrlocation": {
-                    "tai": {
-                        "plmnid": {
-                            "mcc": "505",
-                            "mnc": "01"
-                        },
-                        "tac": "1",
-                        "nid": null
-                    },
-                    "ncgi": {
-                        "plmnid": {
-                            "mcc": "",
-                            "mnc": ""
-                        },
-                        "nrcellid": "",
-                        "nid": null
-                    },
-                    "ignorencgi": null,
-                    "ageoflocationinformation": null,
-                    "uelocationtimestamp": null,
-                    "geographicalinformation": null,
-                    "geodeticinformation": null,
-                    "globalgnbid": {
-                        "interface": {
-                            "gNbId": {
-                                "bitLength": 32,
-                                "gNBValue": "57344"
-                            },
-                            "plmnId": {
-                                "mcc": "505",
-                                "mnc": "01"
-                            }
-                        }
-                    }
-                },
-                "n3galocation": null,
-                "utralocation": null,
-                "geralocation": null
+        "n3galocation": null,
+        "utralocation": null,
+        "geralocation": null
+      },
+      "timestamp": NumberLong(1663877235)
+    },
+    {
+      "userlocation": {
+        "eutralocation": null,
+        "nrlocation": {
+          "tai": {
+            "plmnid": {
+              "mcc": "505",
+              "mnc": "01"
             },
-            "timestamp": NumberLong(1663877705)
-        }
-    ],
-    "rminfolist": [
-        {
-            "rminfo": {
-                "rmstate": {
-                    "rmstateanyof": "REGISTERED"
-                },
-                "accesstype": "3GPP_ACCESS"
+            "tac": "1",
+            "nid": null
+          },
+          "ncgi": {
+            "plmnid": {
+              "mcc": "",
+              "mnc": ""
             },
-            "timestamp": NumberLong(1663877235)
+            "nrcellid": "",
+            "nid": null
+          },
+          "ignorencgi": null,
+          "ageoflocationinformation": null,
+          "uelocationtimestamp": null,
+          "geographicalinformation": null,
+          "geodeticinformation": null,
+          "globalgnbid": {
+            "interface": {
+              "gNbId": {
+                "bitLength": 32,
+                "gNBValue": "57344"
+              },
+              "plmnId": {
+                "mcc": "505",
+                "mnc": "01"
+              }
+            }
+          }
         },
-        {
-            "rminfo": {
-                "rmstate": {
-                    "rmstateanyof": "DEREGISTERED"
-                },
-                "accesstype": "3GPP_ACCESS"
+        "n3galocation": null,
+        "utralocation": null,
+        "geralocation": null
+      },
+      "timestamp": NumberLong(1663877687)
+    },
+    {
+      "userlocation": {
+        "eutralocation": null,
+        "nrlocation": {
+          "tai": {
+            "plmnid": {
+              "mcc": "505",
+              "mnc": "01"
             },
-            "timestamp": NumberLong(1663877243)
-        },
-        {
-            "rminfo": {
-                "rmstate": {
-                    "rmstateanyof": "REGISTERED"
-                },
-                "accesstype": "3GPP_ACCESS"
+            "tac": "1",
+            "nid": null
+          },
+          "ncgi": {
+            "plmnid": {
+              "mcc": "",
+              "mnc": ""
             },
-            "timestamp": NumberLong(1663877687)
+            "nrcellid": "",
+            "nid": null
+          },
+          "ignorencgi": null,
+          "ageoflocationinformation": null,
+          "uelocationtimestamp": null,
+          "geographicalinformation": null,
+          "geodeticinformation": null,
+          "globalgnbid": {
+            "interface": {
+              "gNbId": {
+                "bitLength": 32,
+                "gNBValue": "57344"
+              },
+              "plmnId": {
+                "mcc": "505",
+                "mnc": "01"
+              }
+            }
+          }
         },
-        {
-            "rminfo": {
-                "rmstate": {
-                    "rmstateanyof": "DEREGISTERED"
-                },
-                "accesstype": "3GPP_ACCESS"
-            },
-            "timestamp": NumberLong(1663877699)
+        "n3galocation": null,
+        "utralocation": null,
+        "geralocation": null
+      },
+      "timestamp": NumberLong(1663877705)
+    }
+  ],
+  "rminfolist": [
+    {
+      "rminfo": {
+        "rmstate": {
+          "rmstateanyof": "REGISTERED"
         },
-        {
-            "rminfo": {
-                "rmstate": {
-                    "rmstateanyof": "REGISTERED"
-                },
-                "accesstype": "3GPP_ACCESS"
-            },
-            "timestamp": NumberLong(1663877705)
+        "accesstype": "3GPP_ACCESS"
+      },
+      "timestamp": NumberLong(1663877235)
+    },
+    {
+      "rminfo": {
+        "rmstate": {
+          "rmstateanyof": "DEREGISTERED"
         },
-        {
-            "rminfo": {
-                "rmstate": {
-                    "rmstateanyof": "DEREGISTERED"
-                },
-                "accesstype": "3GPP_ACCESS"
-            },
-            "timestamp": NumberLong(1663877709)
-        }
-    ],
-    "lossofconnectreasonlist": [
-        {
-            "lossofconnectreason": "DEREGISTERED",
-            "timestamp": NumberLong(1663877243)
+        "accesstype": "3GPP_ACCESS"
+      },
+      "timestamp": NumberLong(1663877243)
+    },
+    {
+      "rminfo": {
+        "rmstate": {
+          "rmstateanyof": "REGISTERED"
         },
-        {
-            "lossofconnectreason": "PURGED",
-            "timestamp": NumberLong(1663877243)
+        "accesstype": "3GPP_ACCESS"
+      },
+      "timestamp": NumberLong(1663877687)
+    },
+    {
+      "rminfo": {
+        "rmstate": {
+          "rmstateanyof": "DEREGISTERED"
         },
-        {
-            "lossofconnectreason": "DEREGISTERED",
-            "timestamp": NumberLong(1663877699)
+        "accesstype": "3GPP_ACCESS"
+      },
+      "timestamp": NumberLong(1663877699)
+    },
+    {
+      "rminfo": {
+        "rmstate": {
+          "rmstateanyof": "REGISTERED"
         },
-        {
-            "lossofconnectreason": "PURGED",
-            "timestamp": NumberLong(1663877699)
+        "accesstype": "3GPP_ACCESS"
+      },
+      "timestamp": NumberLong(1663877705)
+    },
+    {
+      "rminfo": {
+        "rmstate": {
+          "rmstateanyof": "DEREGISTERED"
         },
-        {
-            "lossofconnectreason": "DEREGISTERED",
-            "timestamp": NumberLong(1663877709)
-        },
-        {
-            "lossofconnectreason": "PURGED",
-            "timestamp": NumberLong(1663877709)
-        }
-    ]
+        "accesstype": "3GPP_ACCESS"
+      },
+      "timestamp": NumberLong(1663877709)
+    }
+  ],
+  "lossofconnectreasonlist": [
+    {
+      "lossofconnectreason": "DEREGISTERED",
+      "timestamp": NumberLong(1663877243)
+    },
+    {
+      "lossofconnectreason": "PURGED",
+      "timestamp": NumberLong(1663877243)
+    },
+    {
+      "lossofconnectreason": "DEREGISTERED",
+      "timestamp": NumberLong(1663877699)
+    },
+    {
+      "lossofconnectreason": "PURGED",
+      "timestamp": NumberLong(1663877699)
+    },
+    {
+      "lossofconnectreason": "DEREGISTERED",
+      "timestamp": NumberLong(1663877709)
+    },
+    {
+      "lossofconnectreason": "PURGED",
+      "timestamp": NumberLong(1663877709)
+    }
+  ]
 }

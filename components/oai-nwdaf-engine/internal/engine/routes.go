@@ -20,8 +20,11 @@
  */
 
 /*
-This file contains server routes.
-*/
+ * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Arina Prostakova    <prostako@eurecom.fr>
+ * Description: This file contains server routes.
+ */
+
 package engine
 
 import (

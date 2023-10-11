@@ -19,6 +19,12 @@
  *      contact@openairinterface.org
  */
 
+/*
+ * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Arina Prostakova    <prostako@eurecom.fr>
+ * Description: This is main file of the oai-nwdaf-engine HTTP server.
+ */
+
 package main
 
 import (
@@ -51,7 +57,7 @@ func main() {
 	}
 	// Initialize internal package
 	engine.InitConfig()
-	// create a new router
+	// Create router
 	router := engine.NewRouter()
 	server := &http.Server{
 		Addr:         config.Server.Addr,

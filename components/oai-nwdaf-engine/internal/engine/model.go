@@ -20,8 +20,11 @@
  */
 
 /*
-This file contains data structures and global variables
-*/
+ * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Arina Prostakova    <prostako@eurecom.fr>
+ * Description: This file contains data structures and global variables.
+ */
+
 package engine
 
 import (

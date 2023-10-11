@@ -19,112 +19,58 @@
  *      contact@openairinterface.org
  */
 
+/*
+ * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Arina Prostakova    <prostako@eurecom.fr>
+ * Description: This is main file of the oai-nwdaf-sbi HTTP server.
+ */
+
 package main
 
 import (
-	"context"
-	"fmt"
 	"log"
 	"net/http"
-	"os"
+	"time"
 
-	amf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/pkg/amfclient"
-	sbi "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/pkg/sbi"
-	smf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/pkg/smfclient"
+	"github.com/joho/godotenv"
+	"github.com/kelseyhightower/envconfig"
+	sbi "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/internal/sbi"
 )
+
+type MainConfig struct {
+	Server struct {
+		Addr string `envconfig:"SERVER_ADDR"`
+	}
+}
 
 // ------------------------------------------------------------------------------
 func main() {
-	log.Printf("Server started")
-
-	// Event notification URI amf
-	amfEventNotifyUri := os.Getenv("EVENT_NOTIFY_URI") + os.Getenv("AMF_API_ROUTE")
-
-	// amfNotifyCorrelationId
-	amfNotifyCorrelationId := os.Getenv("AMF_NOTIFY_CORRELATION_ID")
-
-	// amfNfId
-	amfNfId := os.Getenv("AMF_NOTIFICATION_ID")
-
-	// Event notification URI smf
-	smfEventNotifyUri := os.Getenv("EVENT_NOTIFY_URI") + os.Getenv("SMF_API_ROUTE")
-
-	// smfNfId
-	smfNfId := os.Getenv("SMF_NOTIFICATION_ID")
-
-	// Subscribe to all event notifications from AMF
-	amfEventSubscription(amfEventNotifyUri, amfNotifyCorrelationId, amfNfId)
-	// Subscribe to all event notifications from SMF
-	smfEventSubscription(smfEventNotifyUri, smfNfId)
-
+	// load the environment variables from the file .env
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	var config MainConfig
+	err = envconfig.Process("", &config)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	// Initialize internal package
+	sbi.InitConfig()
 	// Router for AMF notifications
 	ApiAmfService := sbi.NewApiAmfService()
 	ApiAmfController := sbi.NewApiAmfController(ApiAmfService)
-
 	// Router for SMF notifications
 	ApiSmfService := sbi.NewApiSmfService()
 	ApiSmfController := sbi.NewApiSmfController(ApiSmfService)
-
+	// Router
 	router := sbi.NewRouter(ApiAmfController, ApiSmfController)
-
-	log.Fatal(http.ListenAndServe(":8080", router))
-}
-
-// ------------------------------------------------------------------------------
-func amfEventSubscription(amfEventNotifyUri string, amfNotifyCorrelationId string, amfNfId string) {
-
-	// Store all AMF event types
-	var amfEvents []amf_client.AmfEvent
-	for _, amfEventTypeAnyOf := range amf_client.AllowedAmfEventTypeAnyOfEnumValues {
-		amfEvents = append(amfEvents, *amf_client.NewAmfEvent(amfEventTypeAnyOf))
+	server := &http.Server{
+		Addr:         config.Server.Addr,
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
 	}
-
-	// Subscribe to all AMF event types
-	amfCreateEventSubscription := *amf_client.NewAmfCreateEventSubscription(
-		*amf_client.NewAmfEventSubscription(
-			amfEvents,
-			amfEventNotifyUri,
-			amfNotifyCorrelationId,
-			amfNfId)) // AmfCreateEventSubscription |
-
-	configuration := amf_client.NewConfiguration()
-	amfApiClient := amf_client.NewAPIClient(configuration)
-	resp, r, err := amfApiClient.SubscriptionsCollectionCollectionApi.CreateSubscription(
-		context.Background()).AmfCreateEventSubscription(amfCreateEventSubscription).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `SubscriptionsCollectionCollectionApi.CreateSubscription``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `CreateSubscription`: AmfCreatedEventSubscription
-	fmt.Fprintf(os.Stdout, "Response from `SubscriptionsCollectionCollectionApi.CreateSubscription`: %v\n", resp)
-}
-
-// ------------------------------------------------------------------------------
-func smfEventSubscription(smfEventNotifyUri string, smfNfId string) {
-
-	// Store all SMF event types
-	var smfEventSubs []smf_client.EventSubscription
-	// for _, smfEventAnyOf := range smf_client.AllowedSmfEventAnyOfEnumValues {
-	// 	smfEventSubs = append(smfEventSubs, *smf_client.NewEventSubscription(smfEventAnyOf))
-	// }
-	smfEventSubs = append(smfEventSubs, *smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_PDU_SES_EST))
-	smfEventSubs = append(smfEventSubs, *smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_UE_IP_CH))
-	smfEventSubs = append(smfEventSubs, *smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_PLMN_CH))
-	smfEventSubs = append(smfEventSubs, *smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_DDDS))
-	smfEventSubs = append(smfEventSubs, *smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_PDU_SES_REL))
-	smfEventSubs = append(smfEventSubs, *smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_QOS_MON))
-
-	// Subscribe to all SMF event types
-	nsmfEventExposure := *smf_client.NewNsmfEventExposure(smfNfId, smfEventNotifyUri, smfEventSubs) // NsmfEventExposure |
-
-	configuration := smf_client.NewConfiguration()
-	smfApiClient := smf_client.NewAPIClient(configuration)
-	resp, r, err := smfApiClient.SubscriptionsCollectionApi.CreateIndividualSubcription(
-		context.Background()).NsmfEventExposure(nsmfEventExposure).Execute()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `SubscriptionsCollectionApi.CreateIndividualSubcription``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-	}
-	// response from `CreateIndividualSubcription`: NsmfEventExposure
-	fmt.Fprintf(os.Stdout, "Response from `SubscriptionsCollectionApi.CreateIndividualSubcription`: %v\n", resp)
+	log.Printf("Server listening at %s", config.Server.Addr)
+	log.Fatal(server.ListenAndServe())
 }

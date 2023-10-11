@@ -19,7 +19,6 @@ It contains:
 
 Each has its own repository: this repository (`Engine ADS`) is meant for NWDAF Anomaly Detection Engine.
 
-
 ## Running the server
 To run the server, follow these steps:
 
