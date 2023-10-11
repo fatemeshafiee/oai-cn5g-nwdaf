@@ -97,6 +97,8 @@ services:
     oai-nwdaf-nbi-ml:
         container_name: oai-nwdaf-nbi-ml
         image: oai-nwdaf-nbi-ml:latest
+        environment:
+            - SERVER_ADDR=0.0.0.0:8080
         ports: 
             - "6061:8080"
         healthcheck:

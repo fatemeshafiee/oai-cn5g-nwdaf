@@ -222,8 +222,16 @@ You can run the `cli` in order to test the Analytics Info Api by following the s
 # make sure you get out of oai-nwdaf/cli repository
 cd cli
 
+# create and activate a python virtual environment
+python3 -m venv env
+source env/bin/activate
+
+# Upgrade pip and install requirements
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+
 # run the cli using json files in examples/analytics folder.
-python3 cli.py analytics examples/analytics/<json_file_name>
+python cli.py analytics examples/analytics/<json_file_name>
 ```
 
 You can also generate `curl` commands using:
@@ -241,8 +249,11 @@ You can run the `cli` in order to test the Events Subscription API by following 
 # make sure you get out of oai-nwdaf/cli repository
 cd cli
 
+# activate the python virtual environment
+source env/bin/activate
+
 # run the cli using json files in examples/subscriptions folder.
-python3 cli.py subscribe examples/subscriptions/<json_file_name>
+python cli.py subscribe examples/subscriptions/<json_file_name>
 ```
 
 #### 4.2.3 3GPP APIs
