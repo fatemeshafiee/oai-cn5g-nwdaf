@@ -21,6 +21,7 @@
 
 /*
  * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Karim Boutiba 	   <boutiba@eurecom.fr>
  * Author: Arina Prostakova    <prostako@eurecom.fr>
  * Description: This is main file of the oai-nwdaf-nbi-ml HTTP server.
  */
@@ -44,7 +45,6 @@ type MainConfig struct {
 }
 
 func main() {
-
 	// load the environment variables from the file .env
 	err := godotenv.Load()
 	if err != nil {

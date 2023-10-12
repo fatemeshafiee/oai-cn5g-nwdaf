@@ -50,7 +50,6 @@ services:
             nwdaf_net:
                 ipv4_address: 192.168.74.150
         restart: always
-
     oai-nwdaf-nbi-analytics:
         container_name: oai-nwdaf-nbi-analytics
         image: oai-nwdaf-nbi-analytics:latest
@@ -71,7 +70,6 @@ services:
         networks:
             nwdaf_net:
                 ipv4_address: 192.168.74.151
-
     oai-nwdaf-nbi-events:
         container_name: oai-nwdaf-nbi-events
         image: oai-nwdaf-nbi-events:latest
@@ -94,7 +92,6 @@ services:
         networks:
             nwdaf_net:
                 ipv4_address: 192.168.74.152
-
     oai-nwdaf-nbi-ml:
         container_name: oai-nwdaf-nbi-ml
         image: oai-nwdaf-nbi-ml:latest
@@ -110,7 +107,6 @@ services:
         networks:
             nwdaf_net:
                 ipv4_address: 192.168.74.153
-
 # ------------------------ ENGINES ------------------------
     oai-nwdaf-engine:
         container_name: oai-nwdaf-engine
@@ -137,7 +133,6 @@ services:
         networks:
             nwdaf_net:
                 ipv4_address: 192.168.74.155
-
     oai-nwdaf-engine-ads:
         container_name: oai-nwdaf-engine-ads
         image: oai-nwdaf-engine-ads:latest
@@ -158,7 +153,6 @@ services:
         networks:
             nwdaf_net:
                 ipv4_address: 192.168.74.157
-
 # ------------------------ DATABASE ------------------------
     oai-nwdaf-database:
         container_name: oai-nwdaf-database
@@ -179,7 +173,6 @@ services:
             nwdaf_net:
                 ipv4_address: 192.168.74.156
         restart: always
-
 # ------------------------ SBI ------------------------
     oai-nwdaf-sbi:
         container_name: oai-nwdaf-sbi
@@ -217,7 +210,6 @@ services:
                 ipv4_address: 192.168.70.158
             nwdaf_net:
                 ipv4_address: 192.168.74.158
-
 # ------------------------ NETWORKS ------------------------
 networks:
     public_net:

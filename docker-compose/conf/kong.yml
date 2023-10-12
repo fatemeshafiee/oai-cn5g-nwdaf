@@ -28,7 +28,6 @@
 
 _format_version: '1.1'
 _transform: true
-
 services:
 - name: oai-nwdaf-nbi-analytics
   url: http://192.168.74.151:8080/nnwdaf-analyticsinfo/v1/analytics
@@ -38,8 +37,6 @@ services:
       - oai-nwdaf-nbi-gateway
       paths: 
       - /nnwdaf-analyticsinfo/v1/analytics
-
-
 - name: oai-nwdaf-nbi-events
   url: http://192.168.74.152:8080/nnwdaf-eventssubscription/v1
   routes:
@@ -48,7 +45,6 @@ services:
       - oai-nwdaf-nbi-gateway
       paths:
       - /nnwdaf-eventssubscription/v1
-
 - name: oai-nwdaf-nbi-ml
   url: http://192.168.74.153:8080/nnwdaf-mlmodelprovision/v1
   routes:

@@ -61,6 +61,8 @@ spec:
               value: http://oai-nwdaf-engine:8080
             - name: ENGINE_ADS_URI
               value: http://oai-nwdaf-engine-ads:8080
+            - name: SERVER_ADDR
+              value: 0.0.0.0:8080 
 ---
 apiVersion: v1
 kind: Service

@@ -81,6 +81,8 @@ spec:
               value: string
             - name: SMF_SUBSCR_ROUTE
               value: /nsmf_event-exposure/v1
+            - name: SERVER_ADDR
+              value: 0.0.0.0:8080 
 ---
 apiVersion: v1
 kind: Service
