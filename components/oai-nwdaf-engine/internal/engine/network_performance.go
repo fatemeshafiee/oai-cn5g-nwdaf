@@ -21,6 +21,7 @@
 
 /*
  * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Karim Boutiba 	   <boutiba@eurecom.fr>
  * Author: Arina Prostakova    <prostako@eurecom.fr>
  * Description: This file contains functions related to Network Performance event ID.
  */
@@ -46,12 +47,12 @@ func nwPerfNumOfUe(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Getting Number of UE Info from DB")
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			panic(err)
+			http.Error(w, "Error reading request body", http.StatusInternalServerError)
 		}
 		var engineReqData EngineReqData
 		err = json.Unmarshal(body, &engineReqData)
 		if err != nil {
-			panic(err)
+			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
 		}
 		// Create filter and calculate number of UEs
 		filter := getFilterNwPerfNumUe(engineReqData)
@@ -91,12 +92,12 @@ func nwPerfNumOfPdu(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Getting Number of Pdu Sessions from DB")
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			panic(err)
+			http.Error(w, "Error reading request body", http.StatusInternalServerError)
 		}
 		var engineReqData EngineReqData
 		err = json.Unmarshal(body, &engineReqData)
 		if err != nil {
-			panic(err)
+			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
 		}
 		// get filter to calculate number of users in given network area
 		filter := getFilterNwPerfNumPdu(engineReqData)

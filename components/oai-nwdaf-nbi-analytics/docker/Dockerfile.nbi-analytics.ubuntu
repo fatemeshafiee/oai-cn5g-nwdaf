@@ -21,6 +21,7 @@
 
 #/*
 # * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Author: Karim Boutiba 	    <boutiba@eurecom.fr>
 # * Author: Arina Prostakova    <prostako@eurecom.fr>
 # * Description: Docker file of the oai-nwdaf-nbi-analytics.
 # */

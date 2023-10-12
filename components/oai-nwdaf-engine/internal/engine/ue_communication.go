@@ -21,6 +21,7 @@
 
 /*
  * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Karim Boutiba 	   <boutiba@eurecom.fr>
  * Author: Arina Prostakova    <prostako@eurecom.fr>
  * Description: This file contains functions related to UE communication event ID.
  */
@@ -48,12 +49,12 @@ func ueComm(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Getting Ue Communication from DB")
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			panic(err)
+			http.Error(w, "Error reading request body", http.StatusInternalServerError)
 		}
 		var engineReqData EngineReqData
 		err = json.Unmarshal(body, &engineReqData)
 		if err != nil {
-			panic(err)
+			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
 		}
 		// get filter to retrieve documents according to startTs and endTs values
 		filter := GetFilterUeComm(engineReqData)

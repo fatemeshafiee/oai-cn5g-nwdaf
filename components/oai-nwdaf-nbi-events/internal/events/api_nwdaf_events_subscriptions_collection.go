@@ -21,7 +21,6 @@
 
 /*
  * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
- * Author: Arina Prostakova    <prostako@eurecom.fr>
  * Description: Routes and config of the events nbi service (create subscription).
  */
 
