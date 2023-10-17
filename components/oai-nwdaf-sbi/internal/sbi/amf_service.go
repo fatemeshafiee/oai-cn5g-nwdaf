@@ -23,7 +23,7 @@
  * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
  * Author: Karim Boutiba 	   <boutiba@eurecom.fr>
  * Author: Arina Prostakova    <prostako@eurecom.fr>
- * Description: This file contains functions to store the notifications from AMF in DB.
+ * Description: This file contains functions related amf post notifications.
  */
 
 package sbi
@@ -32,93 +32,74 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
 
+	amf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/internal/amfclient"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	amf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/internal/amfclient"
 )
 
 // ------------------------------------------------------------------------------
-// ApiAmfService is a service that implements the logic for the ApiAmfServicer
-type ApiAmfService struct {
-}
+func storeAmfNotificationOnDB(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
 
-// ------------------------------------------------------------------------------
-// ApiSbiService is a service that implements the logic for the ApiSbiServicer
-type ApiSbiService struct {
-}
-
-type rmInfo struct {
-	RmInfo    amf_client.RmInfo
-	TimeStamp int64
-}
-
-type location struct {
-	UserLocation amf_client.UserLocation
-	TimeStamp    int64
-}
-
-type lossOfConnectReason struct {
-	LossOfConnectReason amf_client.LossOfConnectivityReasonAnyOf
-	TimeStamp           int64
-}
-
-// ------------------------------------------------------------------------------
-// NewApiAmfService creates a default api service
-func NewApiAmfService() ApiAmfServicer {
-	return &ApiAmfService{}
-}
-
-// ------------------------------------------------------------------------------
-// StoreAmfNotificationOnDB - Store event notification related to AMF in the Database.
-func (s *ApiAmfService) StoreAmfNotificationOnDB(
-	ctx context.Context,
-	amfNotificationJson []byte,
-) (ImplResponse, error) {
-	// specify DB and collection names for AMF notifications
-	databaseName := config.Database.DbName
-	collectionName := config.Database.CollectionAmfName
-	amfCollection := mongoClient.Database(databaseName).Collection(collectionName)
-	opts := options.Update().SetUpsert(true)
-	var amfNotification *amf_client.AmfEventNotification
-	err := json.Unmarshal(amfNotificationJson, &amfNotification)
-	if err != nil {
-		return Response(http.StatusBadRequest, nil), err
-	}
-	reportList, ok := amfNotification.GetReportListOk()
-	if !ok {
-		return Response(http.StatusBadRequest, nil), err
-	}
-	for _, report := range reportList {
-		oid := report.GetSupi()
-		if oid == "" {
-			return Response(http.StatusBadRequest, nil),
-				errors.New("supi not found in report, cannot create object id")
-		}
-		update, err := getUpdateByReport(report)
+	case "POST":
+		log.Printf("Storing AMF notification in Database")
+		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			return Response(http.StatusBadRequest, nil), err
+			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
 		}
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		res, err := amfCollection.UpdateByID(ctx, oid, update, opts)
+		var amfNotification *amf_client.AmfEventNotification
+		err = json.Unmarshal(body, &amfNotification)
 		if err != nil {
-			return Response(http.StatusBadRequest, nil), err
+			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
+			return
 		}
-		if res.MatchedCount != 0 {
-			log.Println("matched and updated an existing notification report from Amf")
-			return Response(http.StatusOK, nil), nil
+		reportList, ok := amfNotification.GetReportListOk()
+		if !ok {
+			http.Error(w, "Error in getting ReportList from AMF notification", http.StatusBadRequest)
+			return
 		}
-		if res.UpsertedCount != 0 {
-			log.Printf("inserted a new notification report from Amf with ID %v\n",
-				res.UpsertedID)
+		databaseName := config.Database.DbName
+		collectionName := config.Database.CollectionAmfName
+		amfCollection := mongoClient.Database(databaseName).Collection(collectionName)
+		opts := options.Update().SetUpsert(true)
+		// store reports one by one
+		for _, report := range reportList {
+			oid := report.GetSupi()
+			if oid == "" {
+				http.Error(w, "supi not found in report, cannot create object id", http.StatusBadRequest)
+				return
+			}
+			update, err := getUpdateByReport(report)
+			if err != nil {
+				http.Error(w, "error in getUpdateByReport", http.StatusBadRequest)
+				return
+			}
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			res, err := amfCollection.UpdateByID(ctx, oid, update, opts)
+			if err != nil {
+				http.Error(w, "error in updating the AMF collection", http.StatusBadRequest)
+				return
+			}
+			if res.MatchedCount != 0 {
+				log.Printf("Matched and updated an existing notification report from Amf")
+			}
+			if res.UpsertedCount != 0 {
+				log.Printf("Inserted a new notification report from Amf with ID %v\n",
+					res.UpsertedID)
+			}
 		}
+		w.WriteHeader(http.StatusOK)
+
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
-	return Response(http.StatusOK, nil), nil
 }
 
 // ------------------------------------------------------------------------------

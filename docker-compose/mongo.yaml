@@ -1,0 +1,62 @@
+#/*
+# * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# * contributor license agreements.  See the NOTICE file distributed with
+# * this work for additional information regarding copyright ownership.
+# * The OpenAirInterface Software Alliance licenses this file to You under
+# * the OAI Public License, Version 1.1  (the "License"); you may not use this
+# * file except in compliance with the License. You may obtain a copy of the
+# * License at
+# *
+# *      http://www.openairinterface.org/?page_id=698
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+# *-------------------------------------------------------------------------------
+# * For more information about the OpenAirInterface (OAI) Software Alliance:
+# *      contact@openairinterface.org
+# */
+
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Author: Karim Boutiba       <boutiba@eurecom.fr>
+# * Author: Arina Prostakova    <prostako@eurecom.fr>
+# * Description: This file contains the nwdaf docker compose deployment.
+# */
+
+version: "3.8"
+services:
+# ------------------------ DATABASE ------------------------
+    oai-nwdaf-database:
+        container_name: oai-nwdaf-database
+        image: mongo:latest
+        volumes:
+            - /etc/mongod.conf:/etc/mongod.conf
+        environment:
+            - PUID=1000
+            - PGID=1000
+        ports:
+            - 27017:27017
+        healthcheck:
+            test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+            interval: 5s
+            timeout: 2s
+            retries: 15
+        networks:
+            nwdaf_net:
+                ipv4_address: 192.168.74.156
+        restart: always
+networks:
+    public_net:
+        external:
+            name: demo-oai-public-net
+    nwdaf_net:
+        driver: bridge
+        name: oai-nwdaf-net
+        ipam:
+            config:
+                - subnet: 192.168.74.0/24
+        driver_opts:
+            com.docker.network.bridge.name: "cn5g-nwdaf"

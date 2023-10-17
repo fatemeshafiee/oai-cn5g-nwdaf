@@ -21,29 +21,23 @@
 
 /*
  * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+ * Author: Karim Boutiba 	   <boutiba@eurecom.fr>
  * Author: Arina Prostakova    <prostako@eurecom.fr>
- * Description: This file contains the oai-nwdaf-sbi api types definitions.
+ * Description: This file contains server routes.
  */
 
 package sbi
 
 import (
-	"context"
 	"net/http"
 )
 
-type ApiAmfRouter interface {
-	PostAmfNotification(http.ResponseWriter, *http.Request)
-}
-
-type ApiSmfRouter interface {
-	PostSmfNotification(http.ResponseWriter, *http.Request)
-}
-
-type ApiAmfServicer interface {
-	StoreAmfNotificationOnDB(context.Context, []byte) (ImplResponse, error)
-}
-
-type ApiSmfServicer interface {
-	StoreSmfNotificationOnDB(context.Context, []byte) (ImplResponse, error)
+// ------------------------------------------------------------------------------
+// NewRouter - create router for HTTP server.
+func NewRouter() http.Handler {
+	mux := http.NewServeMux()
+	// register routes
+	mux.HandleFunc(config.Amf.ApiRoute, storeAmfNotificationOnDB)
+	mux.HandleFunc(config.Smf.ApiRoute, storeSmfNotificationOnDB)
+	return mux
 }

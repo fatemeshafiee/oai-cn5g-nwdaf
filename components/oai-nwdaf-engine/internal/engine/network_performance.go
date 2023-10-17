@@ -48,11 +48,13 @@ func nwPerfNumOfUe(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
 		}
 		var engineReqData EngineReqData
 		err = json.Unmarshal(body, &engineReqData)
 		if err != nil {
 			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
+			return
 		}
 		// Create filter and calculate number of UEs
 		filter := getFilterNwPerfNumUe(engineReqData)
@@ -61,7 +63,8 @@ func nwPerfNumOfUe(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Counting documents from mongo DB using filter ...")
 		absoluteNum, err := collection.CountDocuments(context.Background(), filter)
 		if err != nil {
-			log.Printf("Error counting documents: %s", err)
+			http.Error(w, "Error counting documents", http.StatusInternalServerError)
+			return
 		}
 		//TODO - Implement relative ratio and confidence
 		relativeRatio, confidence := int32(0), int32(0)
@@ -74,7 +77,8 @@ func nwPerfNumOfUe(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		jsonResp, err := json.Marshal(nwPerfResp)
 		if err != nil {
-			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
+			http.Error(w, "Error marshaling JSON", http.StatusInternalServerError)
+			return
 		}
 		w.Write(jsonResp)
 
@@ -93,11 +97,13 @@ func nwPerfNumOfPdu(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
 		}
 		var engineReqData EngineReqData
 		err = json.Unmarshal(body, &engineReqData)
 		if err != nil {
 			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
+			return
 		}
 		// get filter to calculate number of users in given network area
 		filter := getFilterNwPerfNumPdu(engineReqData)
@@ -106,7 +112,8 @@ func nwPerfNumOfPdu(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Counting documents from mongo DB using filter ...")
 		absoluteNum, err := collection.CountDocuments(context.Background(), filter)
 		if err != nil {
-			log.Printf("Error counting documents: %s", err)
+			http.Error(w, "Error counting documents", http.StatusInternalServerError)
+			return
 		}
 		//Implement relative ratio and confidence
 		relativeRatio, confidence := int32(0), int32(0)
@@ -119,7 +126,8 @@ func nwPerfNumOfPdu(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		jsonResp, err := json.Marshal(nwPerfResp)
 		if err != nil {
-			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
+			http.Error(w, "Error marshaling JSON", http.StatusInternalServerError)
+			return
 		}
 		w.Write(jsonResp)
 

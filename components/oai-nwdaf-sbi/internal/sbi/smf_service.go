@@ -23,7 +23,7 @@
  * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
  * Author: Karim Boutiba 	   <boutiba@eurecom.fr>
  * Author: Arina Prostakova    <prostako@eurecom.fr>
- * Description: This file contains functions to store the notifications from SMF in DB.
+ * Description: This file contains functions related smf post notifications.
  */
 
 package sbi
@@ -32,71 +32,75 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
 
+	smf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/internal/smfclient"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	smf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/internal/smfclient"
 )
 
 // ------------------------------------------------------------------------------
-// NewApiSmfService creates a default api service
-func NewApiSmfService() ApiSmfServicer {
-	return &ApiSmfService{}
-}
+func storeSmfNotificationOnDB(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
 
-// ------------------------------------------------------------------------------
-// StoreSmfNotificationOnDB - Store event notification related to SMF in the Database.
-func (s *ApiSmfService) StoreSmfNotificationOnDB(
-	ctx context.Context,
-	smfNotificationJson []byte,
-) (ImplResponse, error) {
-	// specify DB and collection names for SMF notifications
-	databaseName := config.Database.DbName
-	collectionName := config.Database.CollectionSmfName
-	smfCollection := mongoClient.Database(databaseName).Collection(collectionName)
-	opts := options.Update().SetUpsert(true)
-	var smfNotification *smf_client.NsmfEventExposureNotification
-	err := json.Unmarshal(smfNotificationJson, &smfNotification)
-	if err != nil {
-		return Response(http.StatusBadRequest, nil), err
-	}
-	// Get list of SMF event reports
-	notifList, ok := smfNotification.GetEventNotifsOk()
-	if !ok {
-		return Response(http.StatusBadRequest, nil), err
-	}
-	// store reports one by one
-	for _, notif := range notifList {
-		oid := notif.GetSupi()
-		if oid == "" {
-			return Response(http.StatusBadRequest, nil),
-				errors.New("supi not found in notification, cannot create object id")
-		}
-		update, err := getUpdateByNotif(notif)
+	case "POST":
+		log.Printf("Storing SMF notification in Database")
+		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			return Response(http.StatusBadRequest, nil), err
+			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
 		}
-		// Update/Insert the SMF notification report
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		res, err := smfCollection.UpdateByID(ctx, oid, update, opts)
+		var smfNotification *smf_client.NsmfEventExposureNotification
+		err = json.Unmarshal(body, &smfNotification)
 		if err != nil {
-			return Response(http.StatusBadRequest, nil), err
+			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
+			return
 		}
-		if res.MatchedCount != 0 {
-			log.Println("matched and updated an existing notification report from SMF")
-			return Response(http.StatusOK, nil), nil
+		notifList, ok := smfNotification.GetEventNotifsOk()
+		if !ok {
+			http.Error(w, "Error in getting EventNotifs from SMF notification", http.StatusBadRequest)
+			return
 		}
-		if res.UpsertedCount != 0 {
-			log.Printf("inserted a new notification report from SMF with ID %v\n",
-				res.UpsertedID)
+		databaseName := config.Database.DbName
+		collectionName := config.Database.CollectionSmfName
+		smfCollection := mongoClient.Database(databaseName).Collection(collectionName)
+		opts := options.Update().SetUpsert(true)
+		// store reports one by one
+		for _, notif := range notifList {
+			oid := notif.GetSupi()
+			if oid == "" {
+				http.Error(w, "supi not found in notification, cannot create object id", http.StatusBadRequest)
+				return
+			}
+			update, err := getUpdateByNotif(notif)
+			if err != nil {
+				http.Error(w, "error in getUpdateByNotif", http.StatusBadRequest)
+				return
+			}
+			// Update/Insert the SMF notification report
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			res, err := smfCollection.UpdateByID(ctx, oid, update, opts)
+			if err != nil {
+				http.Error(w, "error in updating the SMF collection", http.StatusBadRequest)
+				return
+			}
+			if res.MatchedCount != 0 {
+				log.Printf("matched and updated an existing notification report from SMF")
+			}
+			if res.UpsertedCount != 0 {
+				log.Printf("inserted a new notification report from SMF with ID %v\n",
+					res.UpsertedID)
+			}
 		}
+		w.WriteHeader(http.StatusOK)
+
+	default:
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
-	return Response(http.StatusOK, nil), nil
 }
 
 // ------------------------------------------------------------------------------
@@ -203,7 +207,7 @@ func getUpdateUE_IP_CH(notif smf_client.EventNotification) (bson.D, error) {
 // ----------------------------------------------------------------------------------------------------------------
 // getUpdatePLMN_CH - Create update bson.D in case of PLMN CH
 func getUpdatePLMN_CH(notif smf_client.EventNotification) (bson.D, error) {
-	panic("unimplemented")
+	return nil, errors.New("getUpdatePLMN_CH not implemented")
 }
 
 // ----------------------------------------------------------------------------------------------------------------
@@ -236,7 +240,7 @@ func getUpdateDDDS(notif smf_client.EventNotification) (bson.D, error) {
 // ----------------------------------------------------------------------------------------------------------------
 // getUpdatePDU_SES_REL - Create update bson.D in case of PDU SES REL
 func getUpdatePDU_SES_REL(notif smf_client.EventNotification) (bson.D, error) {
-	panic("unimplemented")
+	return nil, errors.New("getUpdatePDU_SES_REL not implemented")
 }
 
 // ----------------------------------------------------------------------------------------------------------------

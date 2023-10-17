@@ -49,11 +49,13 @@ func ueMob(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
 		}
 		var engineReqData EngineReqData
 		err = json.Unmarshal(body, &engineReqData)
 		if err != nil {
 			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
+			return
 		}
 		// Construct the filter based on SUPI and timestamp interval
 		filter := GetFilterUeMob(engineReqData)
@@ -102,7 +104,8 @@ func ueMob(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		jsonResp, err := json.Marshal(response)
 		if err != nil {
-			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
+			http.Error(w, "Error marshaling JSON", http.StatusInternalServerError)
+			return
 		}
 		w.Write(jsonResp)
 

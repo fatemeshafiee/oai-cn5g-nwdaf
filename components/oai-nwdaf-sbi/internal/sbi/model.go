@@ -29,6 +29,7 @@
 package sbi
 
 import (
+	amf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/internal/amfclient"
 	smf_client "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/internal/smfclient"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -67,12 +68,6 @@ type SbiConfig struct {
 		Uri      string `envconfig:"SERVER_ADDR"`
 	}
 }
-
-// ------------------------------------------------------------------------------
-// ApiSmfService is a service that implements the logic for the ApiSmfServicer
-type ApiSmfService struct {
-}
-
 type pduSesEst struct {
 	AdIpv4Addr  *string
 	Dnn         *string
@@ -98,4 +93,19 @@ type qosMon struct {
 	Customized_data *smf_client.CustomizedData
 	PduSeId         *int32
 	TimeStamp       int64
+}
+
+type rmInfo struct {
+	RmInfo    amf_client.RmInfo
+	TimeStamp int64
+}
+
+type location struct {
+	UserLocation amf_client.UserLocation
+	TimeStamp    int64
+}
+
+type lossOfConnectReason struct {
+	LossOfConnectReason amf_client.LossOfConnectivityReasonAnyOf
+	TimeStamp           int64
 }

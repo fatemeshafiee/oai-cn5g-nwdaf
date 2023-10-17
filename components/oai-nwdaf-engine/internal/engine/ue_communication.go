@@ -50,11 +50,13 @@ func ueComm(w http.ResponseWriter, r *http.Request) {
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, "Error reading request body", http.StatusInternalServerError)
+			return
 		}
 		var engineReqData EngineReqData
 		err = json.Unmarshal(body, &engineReqData)
 		if err != nil {
 			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
+			return
 		}
 		// get filter to retrieve documents according to startTs and endTs values
 		filter := GetFilterUeComm(engineReqData)
@@ -64,7 +66,8 @@ func ueComm(w http.ResponseWriter, r *http.Request) {
 		// Retrieve Documents from DB
 		cursor, err := collection.Find(context.Background(), filter)
 		if err != nil {
-			log.Printf("Error %s", err)
+			http.Error(w, "Error finding documents", http.StatusInternalServerError)
+			return
 		}
 		commDur := int32(0)
 		ulVolSlice, dlVolSlice := make([]int64, 0), make([]int64, 0)
@@ -74,19 +77,19 @@ func ueComm(w http.ResponseWriter, r *http.Request) {
 			var result bson.M
 			err := cursor.Decode(&result)
 			if err != nil {
-				log.Printf("Error decoding document: %s", err)
-				continue
+				http.Error(w, "Error decoding document", http.StatusInternalServerError)
+				return
 			}
 			qosMonList, ok := result["qosmonlist"].(primitive.A)
 			if !ok {
-				log.Printf("Invalid qosmonlist type in document")
-				continue
+				http.Error(w, "Invalid qosmonlist type in document", http.StatusInternalServerError)
+				return
 			}
 			for _, qosMonElem := range qosMonList {
 				qosMonMap, ok := qosMonElem.(bson.M)
 				if !ok {
-					log.Printf("Invalid qosMonElem type in document")
-					continue
+					http.Error(w, "Invalid qosMonElem type in document", http.StatusInternalServerError)
+					return
 				}
 				qosTimestamp := qosMonMap["timestamp"].(int64)
 				if matchTimeStamp(qosTimestamp, timeStamp, startTs, endTs) {
@@ -112,7 +115,8 @@ func ueComm(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		jsonResp, err := json.Marshal(ueCommResp)
 		if err != nil {
-			log.Fatalf("Error happened in JSON marshal. Err: %s", err)
+			http.Error(w, "Error marshaling JSON", http.StatusInternalServerError)
+			return
 		}
 		w.Write(jsonResp)
 

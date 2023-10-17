@@ -58,14 +58,8 @@ func main() {
 	}
 	// Initialize internal package
 	sbi.InitConfig()
-	// Router for AMF notifications
-	ApiAmfService := sbi.NewApiAmfService()
-	ApiAmfController := sbi.NewApiAmfController(ApiAmfService)
-	// Router for SMF notifications
-	ApiSmfService := sbi.NewApiSmfService()
-	ApiSmfController := sbi.NewApiSmfController(ApiSmfService)
-	// Router
-	router := sbi.NewRouter(ApiAmfController, ApiSmfController)
+	// Create router
+	router := sbi.NewRouter()
 	server := &http.Server{
 		Addr:         config.Server.Addr,
 		Handler:      router,
