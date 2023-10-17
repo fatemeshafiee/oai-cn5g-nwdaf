@@ -208,8 +208,8 @@ source env/bin/activate
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 
-# Run CLI to test Analytics Info API
-python cli.py analytics examples/analytics/<json_file_name>
+# Run the nwdaf CLI to test Analytics Info API
+python nwdaf.py analytics examples/analytics/<json_file_name>
 ```
 
 #### 4.2.2 Test Event Subscription API
@@ -217,8 +217,8 @@ python cli.py analytics examples/analytics/<json_file_name>
 Run the `CLI` to test the Events Subscription API:
 
 ```bash
-# Run CLI to test Events Subscription API
-python cli.py subscribe examples/subscriptions/<json-file-name>
+# Run the nwdaf CLI to test Events Subscription API
+python nwdaf.py subscribe examples/subscriptions/<json-file-name>
 ```
 
 #### 4.2.3 3GPP APIs
