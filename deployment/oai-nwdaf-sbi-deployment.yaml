@@ -51,6 +51,8 @@ spec:
               value: /test/amf
             - name: AMF_IP_ADDR
               value: http://oai-amf-svc
+            - name: AMF_HTTP_VERSION
+              value: 1
             - name: AMF_NOTIFICATION_FORWARD_ROUTE
               value: /sbi/notification/amf
             - name: AMF_NOTIFICATION_ID
@@ -59,20 +61,12 @@ spec:
               value: string
             - name: AMF_SUBSCR_ROUTE
               value: /namf-evts/v1
-            - name: EVENT_NOTIFY_URI
-              value: http://oai-nwdaf-sbi:8080
-            - name: MONGODB_COLLECTION_NAME_AMF
-              value: amf
-            - name: MONGODB_COLLECTION_NAME_SMF
-              value: smf
-            - name: MONGODB_DATABASE_NAME
-              value: testing
-            - name: MONGODB_URI
-              value: mongodb://oai-nwdaf-database:27017
             - name: SMF_API_ROUTE
               value: /test/smf
             - name: SMF_IP_ADDR
               value: http://oai-smf-svc
+            - name: SMF_HTTP_VERSION
+              value: 1
             - name: SMF_NOTIFICATION_FORWARD_ROUTE
               value: /sbi/notification/smf
             - name: SMF_NOTIFICATION_ID
@@ -81,6 +75,16 @@ spec:
               value: string
             - name: SMF_SUBSCR_ROUTE
               value: /nsmf_event-exposure/v1
+            - name: MONGODB_COLLECTION_NAME_AMF
+              value: amf
+            - name: MONGODB_COLLECTION_NAME_SMF
+              value: smf
+            - name: MONGODB_DATABASE_NAME
+              value: testing
+            - name: MONGODB_URI
+              value: mongodb://oai-nwdaf-database:27017
+            - name: EVENT_NOTIFY_URI
+              value: http://oai-nwdaf-sbi:8080
             - name: SERVER_ADDR
               value: 0.0.0.0:8080 
 ---
