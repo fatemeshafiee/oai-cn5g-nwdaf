@@ -16,6 +16,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"fmt"
+	"encoding/json"
 )
 
 
@@ -109,6 +111,16 @@ func (a *SubscriptionsCollectionApiService) CreateIndividualSubcriptionExecute(r
 	if err != nil {
 		return localVarReturnValue, localVarHTTPResponse, err
 	}
+
+	// Marshal the post body to a JSON string
+	postBodyBytes, err := json.Marshal(localVarPostBody)
+	if err != nil {
+		fmt.Println("Error marshaling post body:", err)
+	} else {
+		// Print the JSON string representing the request body
+		fmt.Printf("POST Request Body: %s\n", postBodyBytes)
+	}
+
 
 	if localVarHTTPResponse.StatusCode >= 300 {
 		newErr := &GenericOpenAPIError{

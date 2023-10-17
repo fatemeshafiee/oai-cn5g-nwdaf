@@ -179,12 +179,14 @@ services:
         image: oai-nwdaf-sbi:latest
         environment:
             - AMF_IP_ADDR=http://192.168.70.132
+            - AMF_HTTP_VERSION=1
             - AMF_SUBSCR_ROUTE=/namf-evts/v1
             - AMF_API_ROUTE=/test/amf
             - AMF_NOTIFY_CORRELATION_ID=string
             - AMF_NOTIFICATION_ID=1
             - AMF_NOTIFICATION_FORWARD_ROUTE=/sbi/notification/amf
             - SMF_IP_ADDR=http://192.168.70.133
+            - SMF_HTTP_VERSION=1
             - SMF_SUBSCR_ROUTE=/nsmf_event-exposure/v1
             - SMF_API_ROUTE=/test/smf
             - SMF_NOTIFY_CORRELATION_ID=string

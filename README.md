@@ -136,7 +136,7 @@ sudo iptables -P FORWARD ACCEPT
 
 ### 3.1. Starting 5G CN
 
-At the time of writing, we used OAI CN v1.5.1 release. If you require the NWDAF UE_Mobility event, please use the oai-amf:develop version instead of oai-amf:v1.5.1, which does not support location notification.
+At the time of writing, we used OAI CN v1.5.1 release. If you require the NWDAF UE_Mobility event, please use the develop branch, which does not support location notification.
 
 ```bash
 # make sure you get out of oai-nwdaf project repository
@@ -169,8 +169,12 @@ cd ../../oai-nwdaf
 ```
 
 ```bash
-# deploying NWDAF
-docker-compose -f docker-compose/docker-compose-nwdaf.yaml up -d --force-recreate
+# Deploying nwdaf if AMF/SMF HTTP version is 1
+docker-compose -f docker-compose/docker-compose-nwdaf-cn-http1.yaml up -d --force-recreate
+```
+```bash
+# Deploying nwdaf if AMF/SMF HTTP version is 2
+docker-compose -f docker-compose/docker-compose-nwdaf-cn-http2.yaml up -d --force-recreate
 ```
 
 ## 4. Testing
@@ -304,8 +308,12 @@ To stop `NWDAF`, run:
 # make sure you are in the oai-nwdaf project repository
 cd ../../oai-nwdaf
 
-# stopping NWDAF
-docker-compose -f docker-compose/docker-compose-nwdaf.yaml down
+# stopping NWDAF if AMF/SMF HTTP version is 1 
+docker-compose -f docker-compose/docker-compose-nwdaf-cn-http1.yaml down
+```
+```bash
+# stopping NWDAF if AMF/SMF HTTP version is 2 
+docker-compose -f docker-compose/docker-compose-nwdaf-cn-http2.yaml down
 ```
 
 To stop the `gnbsim-vpp` container, run:

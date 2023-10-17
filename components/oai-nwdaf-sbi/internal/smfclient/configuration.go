@@ -13,10 +13,14 @@ package smfclient
 import (
 	"context"
 	"fmt"
+	"net"
 	"net/http"
 	"strings"
 	"os"
+	"crypto/tls"
+	"golang.org/x/net/http2"
 )
+
 
 // contextKeys are used to identify the type of value in the context.
 // Since these are string, it is possible to get a short description of the
@@ -116,9 +120,24 @@ func NewConfiguration() *Configuration {
 				},
 			},
 		},
-		OperationServers: map[string]ServerConfigurations{
-		},
+		OperationServers: map[string]ServerConfigurations{},
 	}
+	// Check if AMF_HTTP_VERSION is set to "2"
+	if os.Getenv("SMF_HTTP_VERSION") == "2" {
+		// Set HTTPClient configuration for AMF HTTP version 2
+		cfg.HTTPClient = &http.Client{
+			Transport: &http2.Transport{
+				AllowHTTP: true,
+				DialTLS: func(netw, addr string, cfg *tls.Config) (net.Conn, error) {
+					return net.Dial(netw, addr)
+				},
+			},
+		}
+	} else {
+		// Set default HTTPClient configuration for other cases
+		cfg.HTTPClient = &http.Client{}
+	}
+
 	return cfg
 }
 
