@@ -30,7 +30,7 @@ By using the [OpenAPI-Spec](https://github.com/OAI/OpenAPI-Specification) from a
 You can find below the command that generated most of oai-nwdaf-engine-events service source code.
 
 ```bash
-$ docker run --rm \
+docker run --rm \
             -v $PWD:/local openapitools/openapi-generator-cli:v6.2.0 generate \
             -i /local/TS29520_Nnwdaf_EventsSubscription.yaml \
             -g go-server \
@@ -43,24 +43,24 @@ To run the server, follow these simple steps:
 
 ```bash
 # make sure you are in the oai-nwdaf-nbi-events project repository
-$ cd oai-nwdaf-nbi-events
+cd oai-nwdaf-nbi-events
 
 # run the server
-$ go run cmd/oai-nwdaf-nbi-events/main.go
+go run cmd/oai-nwdaf-nbi-events/main.go
 ```
 
 To run the server in a docker container, build the docker image as follows:
 ```bash
 # build the oai-nwdaf-nbi-events image
-$ docker build --network=host --no-cache  \
+docker build --network=host --no-cache  \
             --target oai-nwdaf-nbi-events --tag oai-nwdaf-nbi-events:latest \
             --file docker/Dockerfile.nbi-events.ubuntu .
 
 # remove dangling images
-$ docker image prune --force
+docker image prune --force
 ```
 
 Once image is built, use the command below to run the container:
 ```bash
-$ docker run --rm -it oai-nwdaf-nbi-events
+docker run --rm -it oai-nwdaf-nbi-events
 ```

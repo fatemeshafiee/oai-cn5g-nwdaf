@@ -31,7 +31,7 @@ You can find below the command that generated the amfClient and smfClient packag
 
 ```bash
 # amfClient
-$ docker run --rm \
+docker run --rm \
             -v $PWD:/local openapitools/openapi-generator-cli:v6.2.0 generate \
             -i /local/TS29518_Namf_EventExposure.yaml \
             -g go-server \
@@ -40,7 +40,7 @@ $ docker run --rm \
 
 ```bash
 # smfClient
-$ docker run --rm \
+docker run --rm \
             -v $PWD:/local openapitools/openapi-generator-cli:v6.2.0 generate \
             -i /local/TS29508_Nsmf_EventExposure.yaml \
             -g go-server \
@@ -53,24 +53,24 @@ To run the server, follow these simple steps:
 
 ```bash
 # make sure you are in the oai-nwdaf-sbi project repository
-$ cd oai-nwdaf-sbi
+cd oai-nwdaf-sbi
 
 # run the server
-$ go run cmd/oai-nwdaf-sbi/main.go
+go run cmd/oai-nwdaf-sbi/main.go
 ```
 
 To run the server in a docker container, build the docker image as follows:
 ```bash
 # build the oai-nwdaf-sbi image
-$ docker build --network=host --no-cache  \
+docker build --network=host --no-cache  \
             --target oai-nwdaf-sbi --tag oai-nwdaf-sbi:latest \
             --file docker/Dockerfile.sbi.ubuntu .
 
 # remove dangling images
-$ docker image prune --force
+docker image prune --force
 ```
 
 Once image is built, use the command below to run the container:
 ```bash
-$ docker run --rm -it oai-nwdaf-sbi
+docker run --rm -it oai-nwdaf-sbi
 ```

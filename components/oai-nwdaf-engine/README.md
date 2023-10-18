@@ -24,24 +24,24 @@ To run the server, follow these steps:
 
 ```bash
 # make sure you are in the oai-nwdaf-engine project repository
-$ cd oai-nwdaf-engine
+cd oai-nwdaf-engine
 
 # run the server
-$ go run cmd/oai-nwdaf-engine/main.go
+go run cmd/oai-nwdaf-engine/main.go
 ```
 
 To run the server in a docker container, build the docker image as follows:
 ```bash
 # build the oai-nwdaf-engine image
-$ docker build --network=host --no-cache  \
+docker build --network=host --no-cache  \
             --target oai-nwdaf-engine --tag oai-nwdaf-engine:latest \
             --file docker/Dockerfile.engine.ubuntu .
 
 # remove dangling images
-$ docker image prune --force
+docker image prune --force
 ```
 
 Once image is built, use the command below to run the container:
 ```bash
-$ docker run --rm -it oai-nwdaf-engine
+docker run --rm -it oai-nwdaf-engine
 ```

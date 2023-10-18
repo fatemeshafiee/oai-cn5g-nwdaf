@@ -30,7 +30,7 @@ By using the [OpenAPI-Spec](https://github.com/OAI/OpenAPI-Specification) from a
 You can find below the command that generated most of oai-nwdaf-nbi-analytics service source code.
 
 ```bash
-$ docker run --rm \
+docker run --rm \
             -v $PWD:/local openapitools/openapi-generator-cli:v6.2.0 generate \
             -i /local/TS29520_Nnwdaf_AnalyticsInfo.yaml \
             -g go-server \
@@ -42,24 +42,24 @@ To run the server, follow these simple steps:
 
 ```bash
 # make sure you are in the oai-nwdaf-nbi-analytics project repository
-$ cd oai-nwdaf-nbi-analytics
+cd oai-nwdaf-nbi-analytics
 
 # run the server
-$ go run cmd/oai-nwdaf-nbi-analytics/main.go
+go run cmd/oai-nwdaf-nbi-analytics/main.go
 ```
 
 To run the server in a docker container, build the docker image as follows:
 ```bash
 # build the oai-nwdaf-nbi-analytics image
-$ docker build --network=host --no-cache  \
+docker build --network=host --no-cache  \
             --target oai-nwdaf-nbi-analytics --tag oai-nwdaf-nbi-analytics:latest \
             --file docker/Dockerfile.nbi-analytics.ubuntu .
 
 # remove dangling images
-$ docker image prune --force
+docker image prune --force
 ```
 
 Once image is built, use the command below to run the container:
 ```bash
-$ docker run --rm -it oai-nwdaf-nbi-analytics
+docker run --rm -it oai-nwdaf-nbi-analytics
 ```

@@ -23,33 +23,33 @@ To run the server, follow these steps:
 
 ```bash
 # make sure you are in the oai-nwdaf-engine-ads project repository
-$ cd oai-nwdaf-engine-ads
+cd oai-nwdaf-engine-ads
 
 # create and activate a python virtual environment
-$ python3.6 -m venv env 
-$ source env/bin/activate
+python3.6 -m venv env 
+source env/bin/activate
 
 # Upgrade pip and install requirements
-$ python -m pip install --upgrade pip
-$ pip install -r requirements.txt
+python -m pip install --upgrade pip
+pip install -r requirements.txt
 
 # run the server
-$ python run.py
+python run.py
 ```
 
 To run the server in a docker container, build the docker image as follows:
 
 ```bash
 # build the oai-nwdaf-engine-ads image
-$ docker build --network=host --no-cache  \
+docker build --network=host --no-cache  \
             --target oai-nwdaf-engine-ads --tag oai-nwdaf-engine-ads:latest \
             --file docker/Dockerfile.engineAds.ubuntu .
 
 # remove dangling images
-$ docker image prune --force
+docker image prune --force
 ```
 
 Once image is built, use the command below to run the container:
 ```bash
-$ docker run --rm -it oai-nwdaf-engine-ads
+docker run --rm -it oai-nwdaf-engine-ads
 ```
