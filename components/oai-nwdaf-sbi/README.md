@@ -7,8 +7,7 @@ An implementation of the 3GPP specifications for the NWDAF.
 
 ----------------------------------------------------------
 
-NWDAF is an implementation of the 3GPP specifications for the NWDAF.
-It contains:
+NWDAF contains:
 
 - NWDAF Analytics Info Service API [**NBI Analytics**]
 - NWDAF Events Subscription Service API [**NBI Events**]

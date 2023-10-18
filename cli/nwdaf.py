@@ -44,7 +44,6 @@ def analytics(
     """
     with open(json_file) as file:
         data = json.load(file)
-
     # Extract parameters from JSON
     event_id = data['event-id']
     ana_req = json.dumps(data['ana-req'])
