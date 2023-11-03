@@ -1,0 +1,227 @@
+#/*
+# * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# * contributor license agreements.  See the NOTICE file distributed with
+# * this work for additional information regarding copyright ownership.
+# * The OpenAirInterface Software Alliance licenses this file to You under
+# * the OAI Public License, Version 1.1  (the "License"); you may not use this
+# * file except in compliance with the License. You may obtain a copy of the
+# * License at
+# *
+# *      http://www.openairinterface.org/?page_id=698
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+# *-------------------------------------------------------------------------------
+# * For more information about the OpenAirInterface (OAI) Software Alliance:
+# *      contact@openairinterface.org
+# */
+
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Author: Karim Boutiba       <boutiba@eurecom.fr>
+# * Author: Arina Prostakova    <prostako@eurecom.fr>
+# * Description: This file contains the nwdaf docker compose deployment.
+# */
+
+version: "3.8"
+services:
+# ------------------------ NBI ------------------------
+    oai-nwdaf-nbi-gateway:
+        container_name: oai-nwdaf-nbi-gateway
+        image: kong:latest
+        hostname: oai-nwdaf-nbi-gateway
+        volumes:
+            - ./conf/kong.yml:/kong/declarative/kong.yml
+        environment:
+            KONG_DATABASE: "off"
+            KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
+            KONG_PROXY_LISTEN: 0.0.0.0:8000
+            KONG_PROXY_LISTEN_SSL: 0.0.0.0:8443
+            KONG_ADMIN_LISTEN: 0.0.0.0:8001
+        ports:
+            - "8001:8001"
+            - "80:8000"
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.150
+            nwdaf_net:
+                ipv4_address: 192.168.74.150
+        restart: always
+    oai-nwdaf-nbi-analytics:
+        container_name: oai-nwdaf-nbi-analytics
+        image: oai-nwdaf-nbi-analytics:latest
+        environment:
+            - ENGINE_URI=http://192.168.74.155:8080
+            - ENGINE_NUM_OF_UE_ROUTE=/network_performance/num_of_ue
+            - ENGINE_SESS_SUCC_RATIO_ROUTE=/network_performance/sess_succ_ratio
+            - ENGINE_UE_COMMUNICATION_ROUTE=/ue_communication
+            - ENGINE_UE_MOBILITY_ROUTE=/ue_mobility
+            - SERVER_ADDR=0.0.0.0:8080
+        ports:
+            - "6059:8080"
+        healthcheck:
+            test: netstat -ltn | grep -c 8080
+            interval: 5s
+            timeout: 2s
+            retries: 15  
+        networks:
+            nwdaf_net:
+                ipv4_address: 192.168.74.151
+    oai-nwdaf-nbi-events:
+        container_name: oai-nwdaf-nbi-events
+        image: oai-nwdaf-nbi-events:latest
+        environment:
+            - ENGINE_URI=http://192.168.74.155:8080
+            - ENGINE_ADS_URI=http://192.168.74.157:8080
+            - ENGINE_NUM_OF_UE_ROUTE=/network_performance/num_of_ue
+            - ENGINE_SESS_SUCC_RATIO_ROUTE=/network_performance/sess_succ_ratio
+            - ENGINE_UE_COMMUNICATION_ROUTE=/ue_communication
+            - ENGINE_UE_MOBILITY_ROUTE=/ue_mobility
+            - ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
+            - SERVER_ADDR=0.0.0.0:8080
+        ports: 
+            - "6060:8080"
+        healthcheck:
+            test: netstat -ltn | grep -c 8080
+            interval: 5s
+            timeout: 2s
+            retries: 15
+        networks:
+            nwdaf_net:
+                ipv4_address: 192.168.74.152
+    oai-nwdaf-nbi-ml:
+        container_name: oai-nwdaf-nbi-ml
+        image: oai-nwdaf-nbi-ml:latest
+        environment:
+            - SERVER_ADDR=0.0.0.0:8080
+        ports: 
+            - "6061:8080"
+        healthcheck:
+            test: netstat -ltn | grep -c 8080
+            interval: 5s
+            timeout: 2s
+            retries: 15
+        networks:
+            nwdaf_net:
+                ipv4_address: 192.168.74.153
+# ------------------------ ENGINES ------------------------
+    oai-nwdaf-engine:
+        container_name: oai-nwdaf-engine
+        image: oai-nwdaf-engine:latest
+        environment:
+            - MONGODB_URI=mongodb://192.168.74.156:27017
+            - MONGODB_DATABASE_NAME=testing
+            - MONGODB_COLLECTION_NAME_AMF=amf
+            - MONGODB_COLLECTION_NAME_SMF=smf
+            - ENGINE_NUM_OF_UE_ROUTE=/network_performance/num_of_ue
+            - ENGINE_SESS_SUCC_RATIO_ROUTE=/network_performance/sess_succ_ratio
+            - ENGINE_UE_COMMUNICATION_ROUTE=/ue_communication
+            - ENGINE_UE_MOBILITY_ROUTE=/ue_mobility
+            - SERVER_ADDR=0.0.0.0:8080
+        ports:
+            - "6063:8080"
+        depends_on:
+            - oai-nwdaf-database
+        healthcheck:
+            test: netstat -anpe | grep '8080' | grep 'LISTEN'
+            interval: 5s
+            timeout: 2s
+            retries: 15
+        networks:
+            nwdaf_net:
+                ipv4_address: 192.168.74.155
+    oai-nwdaf-engine-ads:
+        container_name: oai-nwdaf-engine-ads
+        image: oai-nwdaf-engine-ads:latest
+        environment:
+            - MONGODB_URI=mongodb://192.168.74.156:27017
+            - MONGODB_DATABASE_NAME=testing
+            - MONGODB_COLLECTION_NAME_AMF=amf
+            - MONGODB_COLLECTION_NAME_SMF=smf
+            - ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
+            - SERVER_PORT=8080
+        depends_on:
+            - oai-nwdaf-database
+        healthcheck:
+            test: netstat -ltn | grep -c 8080
+            interval: 5s
+            timeout: 2s
+            retries: 15
+        networks:
+            nwdaf_net:
+                ipv4_address: 192.168.74.157
+# ------------------------ DATABASE ------------------------
+    oai-nwdaf-database:
+        container_name: oai-nwdaf-database
+        image: mongo:latest
+        volumes:
+            - /etc/mongod.conf:/etc/mongod.conf
+        environment:
+            - PUID=1000
+            - PGID=1000
+        ports:
+            - 27017:27017
+        healthcheck:
+            test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+            interval: 5s
+            timeout: 2s
+            retries: 15
+        networks:
+            nwdaf_net:
+                ipv4_address: 192.168.74.156
+        restart: always
+# ------------------------ SBI ------------------------
+    oai-nwdaf-sbi:
+        container_name: oai-nwdaf-sbi
+        image: oai-nwdaf-sbi:latest
+        environment:
+            - AMF_IP_ADDR=http://192.168.70.132
+            - AMF_HTTP_VERSION=1
+            - AMF_SUBSCR_ROUTE=/namf-evts/v1
+            - AMF_API_ROUTE=/test/amf
+            - AMF_NOTIFY_CORRELATION_ID=string
+            - AMF_NOTIFICATION_ID=1
+            - AMF_NOTIFICATION_FORWARD_ROUTE=/sbi/notification/amf
+            - SMF_IP_ADDR=http://192.168.70.133
+            - SMF_HTTP_VERSION=1
+            - SMF_SUBSCR_ROUTE=/nsmf_event-exposure/v1
+            - SMF_API_ROUTE=/test/smf
+            - SMF_NOTIFY_CORRELATION_ID=string
+            - SMF_NOTIFICATION_ID=2
+            - SMF_NOTIFICATION_FORWARD_ROUTE=/sbi/notification/smf
+            - MONGODB_URI=mongodb://192.168.74.156:27017
+            - MONGODB_DATABASE_NAME=testing
+            - MONGODB_COLLECTION_NAME_AMF=amf
+            - MONGODB_COLLECTION_NAME_SMF=smf
+            - EVENT_NOTIFY_URI=http://192.168.70.158:8080
+            - SERVER_ADDR=0.0.0.0:8080
+        ports:
+            - "6062:8080"
+        depends_on:
+            - oai-nwdaf-database
+        healthcheck:
+            test: netstat -anpe | grep '8080' | grep 'LISTEN'
+            interval: 5s
+            timeout: 2s
+            retries: 15
+        networks:
+            public_net:
+                ipv4_address: 192.168.70.158
+            nwdaf_net:
+                ipv4_address: 192.168.74.158
+# ------------------------ NETWORKS ------------------------
+networks:
+    public_net:
+        external:
+            name: demo-oai-public-net
+    nwdaf_net:
+        driver: bridge
+        name: oai-nwdaf-net
+        ipam:
+            config:
+                - subnet: 192.168.74.0/24
+        driver_opts:
+            com.docker.network.bridge.name: "cn5g-nwdaf"

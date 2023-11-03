@@ -1,0 +1,9 @@
+Flask==2.0.3
+Flask-Mail==0.9.1
+requests==2.27.1
+requests-unixsocket==0.1.5
+typer==0.3.2
+typer-cli==0.0.12
+jsonschema==4.0.0
+simplejson==3.13.2
+Werkzeug==2.0.3

@@ -1,0 +1,45 @@
+{
+  "notificationURI": "http://192.168.70.1:3000/notification",
+  "eventSubscriptions": [
+    {
+      "event": "NETWORK_PERFORMANCE",
+      "extraReportReq": {
+        "startTs": "2023-03-03T16:58:51.618Z",
+        "endTs": "2025-02-27T14:10:51.618Z",
+        "anaMetaInd": {
+          "dataWindow": {
+            "startTime": "2023-02-27T14:10:51.618Z",
+            "stopTime": "2023-02-27T14:10:51.618Z"
+          }
+        }
+      },
+      "loadLevelThreshold": 0,
+      "notificationMethod": "PERIODIC",
+      "repetitionPeriod": 4,
+      "nwPerfRequs": [
+        {
+          "nwPerfType": "NUM_OF_UE"
+        },
+        {
+          "nwPerfType": "SESS_SUCC_RATIO"
+        }
+      ]
+    },
+    {
+      "event": "UE_COMMUNICATION",
+      "extraReportReq": {
+        "startTs": "2023-03-03T16:58:51.618Z",
+        "endTs": "2025-02-27T14:10:51.618Z",
+        "anaMetaInd": {
+          "dataWindow": {
+            "startTime": "2023-02-27T14:10:51.618Z",
+            "stopTime": "2023-02-27T14:10:51.618Z"
+          }
+        }
+      },
+      "loadLevelThreshold": 0,
+      "notificationMethod": "PERIODIC",
+      "repetitionPeriod": 4
+    }
+  ]
+}

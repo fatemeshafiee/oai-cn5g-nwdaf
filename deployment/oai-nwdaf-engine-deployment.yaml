@@ -1,0 +1,83 @@
+#/*
+# * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# * contributor license agreements.  See the NOTICE file distributed with
+# * this work for additional information regarding copyright ownership.
+# * The OpenAirInterface Software Alliance licenses this file to You under
+# * the OAI Public License, Version 1.1  (the "License"); you may not use this
+# * file except in compliance with the License. You may obtain a copy of the
+# * License at
+# *
+# *      http://www.openairinterface.org/?page_id=698
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+# *-------------------------------------------------------------------------------
+# * For more information about the OpenAirInterface (OAI) Software Alliance:
+# *      contact@openairinterface.org
+# */
+
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Description: This file contains k8s oai-nwdaf-engine deployment and service.
+# */
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-nwdaf-engine
+  namespace: oai-5g-core
+  labels:
+    app: oai-nwdaf-engine
+spec:
+  selector:
+    matchLabels:
+      app: oai-nwdaf-engine
+  template:
+    metadata:
+      labels:
+        app: oai-nwdaf-engine
+    spec:
+      containers:
+        - name: oai-nwdaf-engine
+          image: production.imagehub/oai-nwdaf-engine:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+          env:
+            - name: ENGINE_NUM_OF_UE_ROUTE
+              value: /network_performance/num_of_ue
+            - name: ENGINE_SESS_SUCC_RATIO_ROUTE
+              value: /network_performance/sess_succ_ratio
+            - name: ENGINE_UE_COMMUNICATION_ROUTE
+              value: /ue_communication
+            - name: ENGINE_UE_MOBILITY_ROUTE
+              value: /ue_mobility
+            - name: MONGODB_COLLECTION_NAME_AMF
+              value: amf
+            - name: MONGODB_COLLECTION_NAME_SMF
+              value: smf
+            - name: MONGODB_DATABASE_NAME
+              value: testing
+            - name: MONGODB_URI
+              value: mongodb://oai-nwdaf-database:27017
+            - name: SERVER_ADDR
+              value: 0.0.0.0:8080 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oai-nwdaf-engine
+  namespace: oai-5g-core
+  labels:
+    app: oai-nwdaf-engine
+spec:
+  type: ClusterIP
+  selector:
+    app: oai-nwdaf-engine
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

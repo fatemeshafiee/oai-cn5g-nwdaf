@@ -29,10 +29,10 @@ file at the root of this repository.
 
 # Where to start
 
-The Openair-CN-5G NWDAF code is written, executed, and tested on UBUNTU server bionic version.
+The Openair-CN-5G NWDAF code is written, executed, and tested on UBUNTU server focal version.
 Other Linux distributions support will be added later on.
 
-More details on the supported feature set is available on this [page](docs/FEATURE_SET.md).
+A detailed [tutorial](docs/TUTORIAL.md) is available.
 
 # Collaborative work
 
@@ -60,7 +60,19 @@ The OpenAirInterface CN NWDAF software is composed of the following parts:
 
 <pre>
 openair-cn5g-nwdaf
-├── ci-scripts:    Directory containing the script files for CI framework.
-└── src:           Source files of NWDAF.
-    ├── common:    Common header files
+├── ci-scripts                    : Directory containing the script files for CI framework.
+├── cli
+│   └── examples
+├── components                    : Directory containing the source code divided in micro-services
+│   ├── oai-nwdaf-engine
+│   ├── oai-nwdaf-engine-ads
+│   ├── oai-nwdaf-nbi-analytics
+│   ├── oai-nwdaf-nbi-events
+│   ├── oai-nwdaf-nbi-ml
+│   └── oai-nwdaf-sbi
+├── deployment
+├── docker-compose
+│   └── conf
+└── docs
+    └── images
 </pre>

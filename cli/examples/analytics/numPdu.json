@@ -1,0 +1,12 @@
+{
+  "event-id": "NETWORK_PERFORMANCE",
+  "ana-req": {
+    "startTs": "2022-08-01T09:15:33.018Z",
+    "endTs": "2024-10-30T09:15:33.018Z"
+  },
+  "event-filter": {
+    "nwPerfTypes": ["SESS_SUCC_RATIO"]
+  },
+  "supported-features": {},
+  "tgt-ue": {}
+}

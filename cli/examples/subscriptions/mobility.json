@@ -1,0 +1,14 @@
+{
+  "notificationURI": "http://192.168.70.1:3000/notification",
+  "eventSubscriptions": [
+    {
+      "event": "UE_MOBILITY",
+      "notificationMethod": "PERIODIC",
+      "repetitionPeriod": 3,
+
+      "tgtUe": {
+        "supis": ["imsi-208950000000031"]
+      }
+    }
+  ]
+}

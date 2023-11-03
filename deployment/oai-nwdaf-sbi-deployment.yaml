@@ -1,0 +1,105 @@
+#/*
+# * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+# * contributor license agreements.  See the NOTICE file distributed with
+# * this work for additional information regarding copyright ownership.
+# * The OpenAirInterface Software Alliance licenses this file to You under
+# * the OAI Public License, Version 1.1  (the "License"); you may not use this
+# * file except in compliance with the License. You may obtain a copy of the
+# * License at
+# *
+# *      http://www.openairinterface.org/?page_id=698
+# *
+# * Unless required by applicable law or agreed to in writing, software
+# * distributed under the License is distributed on an "AS IS" BASIS,
+# * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# * See the License for the specific language governing permissions and
+# * limitations under the License.
+# *-------------------------------------------------------------------------------
+# * For more information about the OpenAirInterface (OAI) Software Alliance:
+# *      contact@openairinterface.org
+# */
+
+#/*
+# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
+# * Description: This file contains k8s oai-nwdaf-sbi deployment and service.
+# */
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oai-nwdaf-sbi
+  namespace: oai-5g-core
+  labels:
+    app: oai-nwdaf-sbi
+spec:
+  selector:
+    matchLabels:
+      app: oai-nwdaf-sbi
+  template:
+    metadata:
+      labels:
+        app: oai-nwdaf-sbi
+    spec:
+      containers:
+        - name: oai-nwdaf-sbi
+          image: production.imagehub/oai-nwdaf-sbi:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: AMF_API_ROUTE
+              value: /test/amf
+            - name: AMF_IP_ADDR
+              value: http://oai-amf-svc
+            - name: AMF_HTTP_VERSION
+              value: 1
+            - name: AMF_NOTIFICATION_FORWARD_ROUTE
+              value: /sbi/notification/amf
+            - name: AMF_NOTIFICATION_ID
+              value: "1"
+            - name: AMF_NOTIFY_CORRELATION_ID
+              value: string
+            - name: AMF_SUBSCR_ROUTE
+              value: /namf-evts/v1
+            - name: SMF_API_ROUTE
+              value: /test/smf
+            - name: SMF_IP_ADDR
+              value: http://oai-smf-svc
+            - name: SMF_HTTP_VERSION
+              value: 1
+            - name: SMF_NOTIFICATION_FORWARD_ROUTE
+              value: /sbi/notification/smf
+            - name: SMF_NOTIFICATION_ID
+              value: "2"
+            - name: SMF_NOTIFY_CORRELATION_ID
+              value: string
+            - name: SMF_SUBSCR_ROUTE
+              value: /nsmf_event-exposure/v1
+            - name: MONGODB_COLLECTION_NAME_AMF
+              value: amf
+            - name: MONGODB_COLLECTION_NAME_SMF
+              value: smf
+            - name: MONGODB_DATABASE_NAME
+              value: testing
+            - name: MONGODB_URI
+              value: mongodb://oai-nwdaf-database:27017
+            - name: EVENT_NOTIFY_URI
+              value: http://oai-nwdaf-sbi:8080
+            - name: SERVER_ADDR
+              value: 0.0.0.0:8080 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: oai-nwdaf-sbi
+  namespace: oai-5g-core
+  labels:
+    app: oai-nwdaf-sbi
+spec:
+  type: ClusterIP
+  selector:
+    app: oai-nwdaf-sbi
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
