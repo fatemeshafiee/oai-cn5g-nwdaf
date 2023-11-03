@@ -106,6 +106,12 @@ docker pull kong
 docker image prune --force
 ```
 
+Later versions of docker are using the `BUILD_TOOLKIT`:
+
+```bash
+docker buildx prune -f
+```
+
 ## 2. Network configuration
 
 Ensure a secure and functional network setup using the following steps:
