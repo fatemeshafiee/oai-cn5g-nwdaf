@@ -146,7 +146,7 @@ pipeline {
                     sh "docker buildx build ${dockerBuildOptions} --target oai-nwdaf-${ms_names[ii]} --tag oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} --file components/oai-nwdaf-${ms_names[ii]}/docker/Dockerfile.${ms_names[ii]}.ubuntu components/oai-nwdaf-${ms_names[ii]} > archives/nwdaf-${ms_names[ii]}_docker_image_build.log 2>&1"
                   }
                   sh "docker image prune --force"
-                  sh "docker image ls | egrep --color=never 'nwdaf|REPOSITORY' >> archives/nwdaf_docker_image_build.log"
+                  sh "docker image ls | egrep --color=never 'nwdaf|REPOSITORY' > archives/nwdaf_docker_image_build.log"
                   // Pushing to local private registry for testing purpose
                   sh "docker login -u oaicicd -p oaicicd ${PrivateRegistryURL}"
                   for (ii = 0; ii < ms_names.size(); ii++) {
@@ -165,7 +165,15 @@ pipeline {
               sh "echo 'OAI-NWDAF DOCKER IMAGES BUILD: OK' >> archives/nwdaf_docker_image_build.log"
             }
             unsuccessful {
+              sh "docker image ls | egrep --color=never 'nwdaf|REPOSITORY' > archives/nwdaf_docker_image_build.log"
               sh "echo 'OAI-NWDAF DOCKER IMAGES BUILD: KO' >> archives/nwdaf_docker_image_build.log"
+              script {
+                // One of the image builds or pushes may have failed
+                // Remove any from the build server
+                for (ii = 0; ii < ms_names.size(); ii++) {
+                  sh "docker image rm oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} ${PrivateRegistryURL}/oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} || true"
+                }
+              }
             }
           }
         }
@@ -197,6 +205,41 @@ pipeline {
         sh "zip -r -qq docker_logs.zip archives"
         if (fileExists('docker_logs.zip')) {
           archiveArtifacts artifacts: 'docker_logs.zip'
+        }
+
+        // Generating the HTML report(s)
+        if ("MERGE".equals(env.gitlabActionType)) {
+          sh "./ci-scripts/generateHtmlReport.py --job-name ${JOB_NAME} --build-id ${BUILD_ID} --build-url ${BUILD_URL} --git-url ${GIT_URL} --git-src-branch ${env.gitlabSourceBranch} --git-src-commit ${env.gitlabMergeRequestLastCommit} --git-merge-request --git-dst-branch ${env.gitlabTargetBranch} --git-dst-commit ${GIT_COMMIT}"
+        } else {
+          sh "./ci-scripts/generateHtmlReport.py --job-name ${JOB_NAME} --build-id ${BUILD_ID} --build-url ${BUILD_URL} --git-url ${GIT_URL} --git-src-branch ${GIT_BRANCH} --git-src-commit ${GIT_COMMIT}"
+        }
+        listOfFiles = sh returnStdout: true, script: 'ls test_results*.html'
+        String[] htmlFiles = listOfFiles.split("\\n")
+        for (htmlFile in htmlFiles) {
+          if ("MERGE".equals(env.gitlabActionType)) {
+            sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_LINK#${gitlabMergeRequestLink}#g' ${htmlFile}"
+            sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_TEMPLATE#${env.gitlabMergeRequestTitle}#' ${htmlFile}"
+          }
+          sh "sed -i -e 's#TEMPLATE_TIME#${JOB_TIMESTAMP}#' ${htmlFile}"
+          archiveArtifacts artifacts: htmlFile
+        }
+
+        // Sending email to commiter
+        if (params.sendToCommitterEmail != null) {
+          if (params.sendToCommitterEmail) {
+            emailext attachmentsPattern: '*results*.html',
+              body: '''Hi,
+
+
+Here are attached HTML report files for $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!
+
+Regards,
+OAI CI Team''',
+              replyTo: 'no-reply@openairinterface.org',
+              subject: '$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!',
+              to: gitCommittorEmailAddr
+
+          }
         }
       }
     }

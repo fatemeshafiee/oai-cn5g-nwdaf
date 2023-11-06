@@ -1,2 +1,4 @@
 *.pyc
 cli/env
+archives
+*.html
