@@ -1,0 +1,215 @@
+#!/bin/groovy
+/*
+ * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The OpenAirInterface Software Alliance licenses this file to You under
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this file
+ * except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.openairinterface.org/?page_id=698
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *-------------------------------------------------------------------------------
+ * For more information about the OpenAirInterface (OAI) Software Alliance:
+ *      contact@openairinterface.org
+ */
+
+//-------------------------------------------------------------------------------
+
+// Location of the CN executor node
+// Its main purpose is the Ubuntu Build
+ubuntuNode = params.UbuntuBuildNode
+ubuntuBuildResource = params.UbuntuBuildResource
+
+// Tags/Branches to use
+def nwdaf_tag = "develop"
+def nwdaf_branch = "develop"
+
+// Merge Request Link
+gitlabMergeRequestLink = ''
+gitCommittorEmailAddr  = ''
+
+// Docker Hub account to push to
+DH_Account = "oaisoftwarealliance"
+
+// Private Local Registry URL
+PrivateRegistryURL = 'selfix.sboai.cs.eurecom.fr'
+
+// NWDAF micro-services
+ms_names = ["nbi-analytics", "nbi-events", "nbi-ml", "engine", "engine-ads", "sbi"]
+
+//-------------------------------------------------------------------------------
+// Pipeline start
+pipeline {
+  agent {
+    label ubuntuNode
+  }
+  options {
+    disableConcurrentBuilds()
+    timestamps()
+    ansiColor('xterm')
+    gitLabConnection('OAI GitLab')
+    // Minimal checks
+    gitlabBuilds(builds: [
+      "Build Micro-Services Images"
+    ])
+  }
+
+  stages {
+    stage ('Verify Parameters') {
+      steps {
+        script {
+          echo '\u2705 \u001B[32mVerify Parameters\u001B[0m'
+
+          JOB_TIMESTAMP = sh returnStdout: true, script: 'date --utc --rfc-3339=seconds | sed -e "s#+00:00##"'
+          JOB_TIMESTAMP = JOB_TIMESTAMP.trim()
+
+          if (params.DockerHubCredentials == null) {
+            echo '\u26D4 \u001B[31mNo Credentials to push to DockerHub!\u001B[0m'
+            error "Stopping pipeline!"
+          }
+        }
+      }
+    }
+    stage ('Prepare Source Code') {
+      steps {
+        script {
+          if ("MERGE".equals(env.gitlabActionType)) {
+            gitlabMergeRequestLink = sh returnStdout: true, script: "curl --silent 'https://gitlab.eurecom.fr/api/v4/projects/oai%2Fcn5g%2Foai-cn5g-nwdaf/merge_requests/${env.gitlabMergeRequestIid}' | jq .web_url | sed 's#\"##g'"
+            gitlabMergeRequestLink = gitlabMergeRequestLink.trim()
+            gitCommittorEmailAddr  = env.gitlabUserEmail
+
+            shortenShaOne = sh returnStdout: true, script: 'git log -1 --pretty=format:"%h" --abbrev=8 ' + env.gitlabMergeRequestLastCommit
+            shortenShaOne = shortenShaOne.trim()
+            nwdaf_tag     = 'ci-tmp-pr-' + env.gitlabMergeRequestIid + '-' + shortenShaOne
+            nwdaf_branch  = env.gitlabSourceBranch
+
+            echo "========= THIS IS A MERGE REQUEST =========="
+            echo "MR ID       is ${env.gitlabMergeRequestIid}"
+            echo "MR LINK     is ${gitlabMergeRequestLink}"
+            echo "MR TITLE    is ${env.gitlabMergeRequestTitle}"
+            echo "MR Usermail is ${gitCommittorEmailAddr}"
+            echo "MR TAG      is ${nwdaf_tag}"
+          } else {
+            gitCommittorEmailAddr = sh returnStdout: true, script: 'git log -n1 --pretty=format:%ae ${GIT_COMMIT}'
+            gitCommittorEmailAddr = gitCommittorEmailAddr.trim()
+
+            shortenShaOne = sh returnStdout: true, script: 'git log -1 --pretty=format:"%h" --abbrev=8 ' + env.GIT_COMMIT
+            shortenShaOne = shortenShaOne.trim()
+            nwdaf_tag     = 'develop-' + shortenShaOne
+            nwdaf_branch  = env.GIT_COMMIT
+
+            echo "======== THIS IS A PUSH REQUEST ========"
+            echo "Git Branch      is ${GIT_BRANCH}"
+            echo "Git Commit      is ${GIT_COMMIT}"
+            echo "CI  Usermail    is ${gitCommittorEmailAddr}"
+            echo "CI develop TAG  is ${nwdaf_tag}"
+          }
+          prepareWorkspaceMergeCase()
+        }
+      }
+      post {
+        failure {
+          script {
+            def message = "OAI " + JOB_NAME + " build (" + BUILD_ID + "): Merge Conflicts -- Cannot perform CI"
+            addGitLabMRComment comment: message
+            currentBuild.result = 'FAILURE'
+          }
+        }
+      }
+    }
+    stage('Build Core Network Function') {
+      parallel {
+        stage ('Build NWDAF Micro-Services Images') {
+          steps {
+            // Now it is only locked during this build stage and not for the whole pipeline
+            lock(ubuntuBuildResource) {
+              script {
+                gitlabCommitStatus(name: "Build Micro-Services Images") {
+                  for (ii = 0; ii < ms_names.size(); ii++) {
+                    sh "docker image rm oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} || true"
+                  }
+                  sh "docker image prune --force"
+                  if ("PUSH".equals(env.gitlabActionType)) {
+                    dockerBuildOptions = '--no-cache '
+                  }
+                  if ("MERGE".equals(env.gitlabActionType)) {
+                    dockerBuildOptions = ''
+                  }
+                  for (ii = 0; ii < ms_names.size(); ii++) {
+                    sh "docker buildx build ${dockerBuildOptions} --target oai-nwdaf-${ms_names[ii]} --tag oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} --file components/oai-nwdaf-${ms_names[ii]}/docker/Dockerfile.${ms_names[ii]}.ubuntu components/oai-nwdaf-${ms_names[ii]} > archives/nwdaf-${ms_names[ii]}_docker_image_build.log 2>&1"
+                  }
+                  sh "docker image prune --force"
+                  sh "docker image ls | egrep --color=never 'nwdaf|REPOSITORY' >> archives/nwdaf_docker_image_build.log"
+                  // Pushing to local private registry for testing purpose
+                  sh "docker login -u oaicicd -p oaicicd ${PrivateRegistryURL}"
+                  for (ii = 0; ii < ms_names.size(); ii++) {
+                    sh "docker image tag oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} ${PrivateRegistryURL}/oai-nwdaf-${ms_names[ii]}:${nwdaf_tag}"
+                    sh "docker push ${PrivateRegistryURL}/oai-nwdaf-${ms_names[ii]}:${nwdaf_tag}"
+                    // Remove all images locally
+                    sh "docker rmi oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} ${PrivateRegistryURL}/oai-nwdaf-${ms_names[ii]}:${nwdaf_tag}"
+                  }
+                  sh "docker logout ${PrivateRegistryURL}"
+                }
+              }
+            }
+          }
+          post {
+            success {
+              sh "echo 'OAI-NWDAF DOCKER IMAGES BUILD: OK' >> archives/nwdaf_docker_image_build.log"
+            }
+            unsuccessful {
+              sh "echo 'OAI-NWDAF DOCKER IMAGES BUILD: KO' >> archives/nwdaf_docker_image_build.log"
+            }
+          }
+        }
+      }
+    }
+  }
+  post {
+    success {
+      script {
+        if ("MERGE".equals(env.gitlabActionType)) {
+          def message = "OAI " + JOB_NAME + " build (" + BUILD_ID + "): passed (" + BUILD_URL + ")"
+          echo "This is a MERGE event"
+          addGitLabMRComment comment: message
+        }
+      }
+    }
+    unsuccessful {
+      script {
+        if ("MERGE".equals(env.gitlabActionType)) {
+          def message = "OAI " + JOB_NAME + " build (" + BUILD_ID + "): failed (" + BUILD_URL + ")"
+          echo "This is a MERGE event"
+          addGitLabMRComment comment: message
+        }
+      }
+    }
+    cleanup {
+      script {
+        // Zipping all archived log files
+        sh "zip -r -qq docker_logs.zip archives"
+        if (fileExists('docker_logs.zip')) {
+          archiveArtifacts artifacts: 'docker_logs.zip'
+        }
+      }
+    }
+  }
+}
+
+def prepareWorkspaceMergeCase () {
+  sh "git clean -x -d -f > /dev/null 2>&1"
+  sh "git submodule foreach --recursive 'git clean -x -d -ff' > /dev/null 2>&1"
+  sh "git submodule deinit --force --all > /dev/null 2>&1"
+  if ("MERGE".equals(env.gitlabActionType)) {
+    sh "./ci-scripts/doGitLabMerge.sh --src-branch ${env.gitlabSourceBranch} --src-commit ${env.gitlabMergeRequestLastCommit} --target-branch ${env.gitlabTargetBranch} --target-commit ${GIT_COMMIT}"
+  }
+  sh "git submodule update --init --recursive"
+  sh "mkdir -p archives"
+}
