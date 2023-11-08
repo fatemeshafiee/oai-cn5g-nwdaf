@@ -41,7 +41,7 @@ ms_names = ["nbi-analytics", "nbi-events", "nbi-ml", "engine", "engine-ads", "sb
 cn_names = ["amf", "ausf", "nrf", "smf", "udm", "udr"]
 
 cn5g_deploy_file = 'docker-compose-basic-vpp-nrf.yaml'
-nwdaf_deploy_file = 'docker-compose-nwdaf-cn-http1.yaml'
+nwdaf_deploy_file = 'docker-compose-nwdaf-cn-http2.yaml'
 
 def _parse_args() -> argparse.Namespace:
     """Parse the command line args
@@ -115,10 +115,10 @@ def removePulledImages(tag):
     return 0
 
 def deployOAICN5G():
-    logging.debug('\u001B[1mDeploying the OAI CN5G v1.5.1\u001B[0m')
+    logging.debug('\u001B[1mDeploying the OAI CN5G v2.0.0\u001B[0m')
     myCmds = cls_cmd.LocalCmd()
     myCmds.run('mkdir -p tests archives')
-    myCmds.run('git clone --branch v1.5.1 https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed.git tests')
+    myCmds.run('git clone --branch develop https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed.git tests')
     myCmds.run('cd tests && git submodule update --init ci-scripts')
     ret = myCmds.run('cd tests/docker-compose && python3 ./core-network.py --type start-basic-vpp --scenario 1')
     cwd = os.getcwd()
@@ -155,12 +155,15 @@ def undeployOAICN5G(do_capture):
     myCmds.close()
     return 0
 
-def deployNWDAF(tag, do_capture):
+def deployNWDAF(tag, do_capture, pulledImages):
     logging.debug('\u001B[1mDeploying the OAI NWDAF micro-services\u001B[0m')
     time.sleep(5)
     myCmds = cls_cmd.LocalCmd()
     for service in ms_names:
-        myCmds.run(f'sed -i -e "s@oai-nwdaf-{service}:latest@{PrivateRegistryURL}/oai-nwdaf-{service}:{tag}@" docker-compose/{nwdaf_deploy_file}')
+        if pulledImages:
+            myCmds.run(f'sed -i -e "s@oai-nwdaf-{service}:latest@{PrivateRegistryURL}/oai-nwdaf-{service}:{tag}@" docker-compose/{nwdaf_deploy_file}')
+        else:
+            myCmds.run(f'sed -i -e "s@oai-nwdaf-{service}:latest@oai-nwdaf-{service}:{tag}@" docker-compose/{nwdaf_deploy_file}')
     myCmds.run(f'cp docker-compose/{nwdaf_deploy_file} archives')
     # Deploying in 2 steps, so the nwdaf network is created and we can cpature on it
     myCmds.run(f'docker-compose -f docker-compose/{nwdaf_deploy_file} up -d oai-nwdaf-nbi-gateway')
@@ -275,7 +278,7 @@ if __name__ == '__main__':
         status += deployOAICN5G()
 
     if status == 0:
-        status += deployNWDAF(args.tag, args.capture)
+        status += deployNWDAF(args.tag, args.capture, args.pull)
 
     if status == 0:
         status += testNWDAF()

@@ -27,7 +27,7 @@
 # */
 
 ARG BUILD_IMAGE=golang:1.19-alpine
-ARG TARGET_IMAGE=ubuntu:focal
+ARG TARGET_IMAGE=alpine:3.18
 
 #---------------------------------------------------------------------
 # BUILDER IMAGE
@@ -44,7 +44,7 @@ RUN go build -o bin/oai-nwdaf-nbi-events cmd/oai-nwdaf-nbi-events/main.go
 # TARGET IMAGE
 #---------------------------------------------------------------------
 FROM $TARGET_IMAGE AS oai-nwdaf-nbi-events
-RUN apt-get update && apt-cache search net-tools &&  apt-get install --yes net-tools 
+RUN apk update && apk add -U net-tools curl bash
 COPY --from=oai-nwdaf-nbi-events-build /oai/nwdaf/nbi-events/bin/oai-nwdaf-nbi-events ./
 COPY .env ./
 EXPOSE 8080/tcp
