@@ -155,12 +155,15 @@ def undeployOAICN5G(do_capture):
     myCmds.close()
     return 0
 
-def deployNWDAF(tag, do_capture):
+def deployNWDAF(tag, do_capture, pulledImages):
     logging.debug('\u001B[1mDeploying the OAI NWDAF micro-services\u001B[0m')
     time.sleep(5)
     myCmds = cls_cmd.LocalCmd()
     for service in ms_names:
-        myCmds.run(f'sed -i -e "s@oai-nwdaf-{service}:latest@{PrivateRegistryURL}/oai-nwdaf-{service}:{tag}@" docker-compose/{nwdaf_deploy_file}')
+        if pulledImages:
+            myCmds.run(f'sed -i -e "s@oai-nwdaf-{service}:latest@{PrivateRegistryURL}/oai-nwdaf-{service}:{tag}@" docker-compose/{nwdaf_deploy_file}')
+        else:
+            myCmds.run(f'sed -i -e "s@oai-nwdaf-{service}:latest@oai-nwdaf-{service}:{tag}@" docker-compose/{nwdaf_deploy_file}')
     myCmds.run(f'cp docker-compose/{nwdaf_deploy_file} archives')
     # Deploying in 2 steps, so the nwdaf network is created and we can cpature on it
     myCmds.run(f'docker-compose -f docker-compose/{nwdaf_deploy_file} up -d oai-nwdaf-nbi-gateway')
@@ -275,7 +278,7 @@ if __name__ == '__main__':
         status += deployOAICN5G()
 
     if status == 0:
-        status += deployNWDAF(args.tag, args.capture)
+        status += deployNWDAF(args.tag, args.capture, args.pull)
 
     if status == 0:
         status += testNWDAF()
