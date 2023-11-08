@@ -26,6 +26,7 @@
 // Its main purpose is the Ubuntu Build
 ubuntuNode = params.UbuntuBuildNode
 ubuntuBuildResource = params.UbuntuBuildResource
+ubuntuTestResource = params.UbuntuTestResource
 
 // Tags/Branches to use
 def nwdaf_tag = "develop"
@@ -172,6 +173,21 @@ pipeline {
                 // Remove any from the build server
                 for (ii = 0; ii < ms_names.size(); ii++) {
                   sh "docker image rm oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} ${PrivateRegistryURL}/oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} || true"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    stage('Test Core Network Function') {
+      parallel {
+        stage ('Build NWDAF Micro-Services Images') {
+          steps {
+            lock(ubuntuTestResource) {
+              script {
+                gitlabCommitStatus(name: "Test NWDAF Micro-Services") {
+                  sh "./ci-scripts/run-full-test.py --tag ${nwdaf_tag} --pull --capture"
                 }
               }
             }
