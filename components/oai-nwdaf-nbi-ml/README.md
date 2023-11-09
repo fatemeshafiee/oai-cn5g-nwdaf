@@ -16,7 +16,7 @@ NWDAF contains:
 - NWDAF Engine ADS [**Engine ADS**]
 - NWDAF Southbound Interface [**SBI**]
 
-Each has its own repository: this repository (`NBI Ml`) is meant for NWDAF Ml Model Provision Service API.
+Each has its own component: this component (`NBI Ml`) is meant for NWDAF Ml Model Provision Service API.
 
 ## Generation
 
@@ -35,32 +35,4 @@ docker run --rm \
             -i /local/TS29520_Nnwdaf_MLModelProvision.yaml \
             -g go-server \
             -o /local/outv6.2.0/go
-```
-
-
-## Running the server
-To run the server, follow these simple steps:
-
-```bash
-# make sure you are in the oai-nwdaf-nbi-ml project repository
-cd oai-nwdaf-nbi-ml
-
-# run the server
-go run cmd/oai-nwdaf-nbi-ml/main.go
-```
-
-To run the server in a docker container, build the docker image as follows:
-```bash
-# build the oai-nwdaf-ml-info image
-docker build --network=host --no-cache  \
-            --target oai-nwdaf-nbi-ml --tag oai-nwdaf-nbi-ml:latest \
-            --file docker/Dockerfile.nbi-ml.ubuntu .
-
-# remove dangling images
-docker image prune --force
-```
-
-Once image is built, use the command below to run the container:
-```bash
-docker run --rm -it oai-nwdaf-nbi-ml
 ```

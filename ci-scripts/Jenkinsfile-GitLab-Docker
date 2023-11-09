@@ -144,7 +144,7 @@ pipeline {
                     dockerBuildOptions = ''
                   }
                   for (ii = 0; ii < ms_names.size(); ii++) {
-                    sh "docker buildx build ${dockerBuildOptions} --target oai-nwdaf-${ms_names[ii]} --tag oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} --file components/oai-nwdaf-${ms_names[ii]}/docker/Dockerfile.${ms_names[ii]}.ubuntu components/oai-nwdaf-${ms_names[ii]} > archives/nwdaf-${ms_names[ii]}_docker_image_build.log 2>&1"
+                    sh "docker buildx build ${dockerBuildOptions} --target oai-nwdaf-${ms_names[ii]} --tag oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} --file components/oai-nwdaf-${ms_names[ii]}/docker/Dockerfile.${ms_names[ii]} components/oai-nwdaf-${ms_names[ii]} > archives/nwdaf-${ms_names[ii]}_docker_image_build.log 2>&1"
                   }
                   sh "docker image prune --force"
                   sh "docker image ls | egrep --color=never 'nwdaf|REPOSITORY' > archives/nwdaf_docker_image_build.log"

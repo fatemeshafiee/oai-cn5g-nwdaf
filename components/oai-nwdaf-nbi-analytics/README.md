@@ -16,7 +16,7 @@ NWDAF contains:
 - NWDAF Engine ADS [**Engine ADS**]
 - NWDAF Southbound Interface [**SBI**]
 
-Each has its own repository: this repository (`NBI Analytics`) is meant for NWDAF Analytics Info Service API.
+Each has its own component folder: this folder (`NBI Analytics`) is meant for NWDAF Analytics Info Service API.
 
 ## Generation
 
@@ -37,29 +37,3 @@ docker run --rm \
             -o /local/outv6.2.0/go
 ```
 
-## Running the server
-To run the server, follow these simple steps:
-
-```bash
-# make sure you are in the oai-nwdaf-nbi-analytics project repository
-cd oai-nwdaf-nbi-analytics
-
-# run the server
-go run cmd/oai-nwdaf-nbi-analytics/main.go
-```
-
-To run the server in a docker container, build the docker image as follows:
-```bash
-# build the oai-nwdaf-nbi-analytics image
-docker build --network=host --no-cache  \
-            --target oai-nwdaf-nbi-analytics --tag oai-nwdaf-nbi-analytics:latest \
-            --file docker/Dockerfile.nbi-analytics.ubuntu .
-
-# remove dangling images
-docker image prune --force
-```
-
-Once image is built, use the command below to run the container:
-```bash
-docker run --rm -it oai-nwdaf-nbi-analytics
-```

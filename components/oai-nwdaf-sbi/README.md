@@ -16,7 +16,7 @@ NWDAF contains:
 - NWDAF Engine ADS [**Engine ADS**]
 - NWDAF Southbound Interface [**SBI**]
 
-Each has its own repository: this repository (`SBI`) is meant for NWDAF Southbound Interface.
+Each has its own component: this component (`SBI`) is meant for NWDAF Southbound Interface.
 
 ## Generation
 
@@ -47,30 +47,3 @@ docker run --rm \
             -o /local/outv6.2.0/go
 ```
 
-## Running the server
-
-To run the server, follow these simple steps:
-
-```bash
-# make sure you are in the oai-nwdaf-sbi project repository
-cd oai-nwdaf-sbi
-
-# run the server
-go run cmd/oai-nwdaf-sbi/main.go
-```
-
-To run the server in a docker container, build the docker image as follows:
-```bash
-# build the oai-nwdaf-sbi image
-docker build --network=host --no-cache  \
-            --target oai-nwdaf-sbi --tag oai-nwdaf-sbi:latest \
-            --file docker/Dockerfile.sbi.ubuntu .
-
-# remove dangling images
-docker image prune --force
-```
-
-Once image is built, use the command below to run the container:
-```bash
-docker run --rm -it oai-nwdaf-sbi
-```

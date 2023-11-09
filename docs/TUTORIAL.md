@@ -38,12 +38,16 @@ git checkout develop
 
 Note: use `--no-cache` flag during rebuilds for optimal results.
 
+All images but `oai-nwdaf-engine-ads` have a target base with `alpine`. They can be run on any operating system.
+
+As for `oai-nwdaf-engine-ads`, it has a `python:3.6.9-slim` target base (which is `Debian:10`-based). It should be able to run on any operating system as well.
+
 ### 1.1. oai-nwdaf-nbi-analytics
 
 ```bash
 docker build --network=host --no-cache  \
             --target oai-nwdaf-nbi-analytics  --tag oai-nwdaf-nbi-analytics:latest \
-            --file components/oai-nwdaf-nbi-analytics/docker/Dockerfile.nbi-analytics.ubuntu \
+            --file components/oai-nwdaf-nbi-analytics/docker/Dockerfile.nbi-analytics \
             components/oai-nwdaf-nbi-analytics
 ```
 
@@ -52,7 +56,7 @@ docker build --network=host --no-cache  \
 ```bash
 docker build --network=host --no-cache  \
             --target oai-nwdaf-nbi-events  --tag oai-nwdaf-nbi-events:latest \
-            --file components/oai-nwdaf-nbi-events/docker/Dockerfile.nbi-events.ubuntu \
+            --file components/oai-nwdaf-nbi-events/docker/Dockerfile.nbi-events \
             components/oai-nwdaf-nbi-events
 ```
 
@@ -61,7 +65,7 @@ docker build --network=host --no-cache  \
 ```bash
 docker build --network=host --no-cache  \
             --target oai-nwdaf-nbi-ml  --tag oai-nwdaf-nbi-ml:latest \
-            --file components/oai-nwdaf-nbi-ml/docker/Dockerfile.nbi-ml.ubuntu \
+            --file components/oai-nwdaf-nbi-ml/docker/Dockerfile.nbi-ml \
             components/oai-nwdaf-nbi-ml
 ```
 
@@ -70,7 +74,7 @@ docker build --network=host --no-cache  \
 ```bash
 docker build --network=host --no-cache  \
             --target oai-nwdaf-engine  --tag oai-nwdaf-engine:latest \
-            --file components/oai-nwdaf-engine/docker/Dockerfile.engine.ubuntu \
+            --file components/oai-nwdaf-engine/docker/Dockerfile.engine \
             components/oai-nwdaf-engine
 ```
 
@@ -79,7 +83,7 @@ docker build --network=host --no-cache  \
 ```bash
 docker build --network=host --no-cache  \
             --target oai-nwdaf-engine-ads  --tag oai-nwdaf-engine-ads:latest \
-            --file components/oai-nwdaf-engine-ads/docker/Dockerfile.engine-ads.ubuntu \
+            --file components/oai-nwdaf-engine-ads/docker/Dockerfile.engine-ads \
             components/oai-nwdaf-engine-ads
 ```
 
@@ -89,7 +93,7 @@ docker build --network=host --no-cache  \
 ```bash
 docker build --network=host --no-cache  \
             --target oai-nwdaf-sbi  --tag oai-nwdaf-sbi:latest \
-            --file components/oai-nwdaf-sbi/docker/Dockerfile.sbi.ubuntu \
+            --file components/oai-nwdaf-sbi/docker/Dockerfile.sbi \
             components/oai-nwdaf-sbi
 ```
 
@@ -128,14 +132,14 @@ echo "127.1.0.1   oai-nwdaf-nbi-gateway" | sudo tee -a /etc/hosts
 
 ### 3.1. Starting 5G CN
 
-For this deployment, we utilized OAI CN v1.5.1 release. If you require the NWDAF UE_Mobility event, it's recommended to use the develop branch, which does not support location notification.
+For this deployment, we utilized OAI CN v2.0.0 release. If you require the NWDAF UE_Mobility event, it's recommended to use the `develop` branch, which does not support location notification.
 
 ```bash
 # Navigate out of the oai-nwdaf project repository
 cd ..
 
-# Clone the repository directly from the v1.5.1 release tag
-git clone --branch v1.5.1 https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed.git
+# Clone the repository directly from the v2.0.0 release tag
+git clone --branch v2.0.0 https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed.git
 ```
 
 To deploy the OAI 5G Core Network, execute the following commands:
@@ -144,7 +148,7 @@ To deploy the OAI 5G Core Network, execute the following commands:
 # Make sure you are in the oai-cn5g-fed/docker-compose project repository
 cd oai-cn5g-fed/docker-compose
 
-# You can deploy 5G CN with or without NRF (scenarios 1 and 2).
+# You can deploy 5G CN only with NRF (scenario 1) and HTTP/2.
 python3 ./core-network.py --type start-basic-vpp --scenario 1
 ```
 
@@ -160,7 +164,7 @@ cd ../../oai-nwdaf
 ```
 
 ```bash
-# Deploying NWDAF if AMF/SMF HTTP version is 1
+# Deploying NWDAF if AMF/SMF HTTP version is 1 (if you have modified the OAI CN5G from default)
 docker-compose -f docker-compose/docker-compose-nwdaf-cn-http1.yaml up -d --force-recreate
 ```
 ```bash
