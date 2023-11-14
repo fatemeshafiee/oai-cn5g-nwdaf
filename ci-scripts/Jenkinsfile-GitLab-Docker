@@ -195,6 +195,34 @@ pipeline {
         }
       }
     }
+    // We are only publishing the Ubuntu image to Docker-Hub
+    // For Post-Merge events.
+    // Temporary Images from Merge-Request Runs are kept in local private registry
+    stage ('Pushing Image to Official Registry') {
+      steps {
+        lock(ubuntuBuildResource) {
+          script {
+            // Only in case of push to target branch!
+            if ("PUSH".equals(env.gitlabActionType)) {
+              withCredentials([
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: "${params.DockerHubCredentials}", usernameVariable: 'DH_Username', passwordVariable: 'DH_Password']
+              ]) {
+                sh "echo ${DH_Password} | docker login --username ${DH_Username} --password-stdin"
+              }
+              sh "docker login -u oaicicd -p oaicicd ${PrivateRegistryURL}"
+              for (ii = 0; ii < ms_names.size(); ii++) {
+                sh "docker pull ${PrivateRegistryURL}/oai-nwdaf-${ms_names[ii]}:${nwdaf_tag}"
+                sh "docker image tag ${PrivateRegistryURL}/oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} ${DH_Account}/oai-nwdaf-${ms_names[ii]}:develop"
+                sh "docker push ${DH_Account}/oai-nwdaf-${ms_names[ii]}:develop"
+                sh "docker rmi ${PrivateRegistryURL}/oai-nwdaf-${ms_names[ii]}:${nwdaf_tag} ${DH_Account}/oai-nwdaf-${ms_names[ii]}:develop"
+              }
+              sh "docker logout ${PrivateRegistryURL}"
+              sh "docker logout"
+            }
+          }
+        }
+      }
+    }
   }
   post {
     success {
