@@ -35,7 +35,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
-	"gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-nbi-events/internal/events"
+	"gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nwdaf/components/oai-nwdaf-nbi-events/internal/events"
 )
 
 type MainConfig struct {
