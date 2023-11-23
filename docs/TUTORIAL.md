@@ -132,14 +132,14 @@ echo "127.1.0.1   oai-nwdaf-nbi-gateway" | sudo tee -a /etc/hosts
 
 ### 3.1. Starting 5G CN
 
-For this deployment, we utilized OAI CN v2.0.0 release. If you require the NWDAF UE_Mobility event, it's recommended to use the `develop` branch, which does not support location notification.
+For this deployment, we utilized OAI CN v1.5.1 release. If you require the NWDAF UE_Mobility event, it's recommended to use the `develop` branch, which does support location notifications.
 
 ```bash
 # Navigate out of the oai-nwdaf project repository
 cd ..
 
-# Clone the repository directly from the v2.0.0 release tag
-git clone --branch v2.0.0 https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed.git
+# Clone the repository directly from the v1.5.1 release tag
+git clone --branch v1.5.1 https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed.git
 ```
 
 To deploy the OAI 5G Core Network, execute the following commands:
@@ -160,7 +160,7 @@ To initiate NWDAF components, execute the following commands:
 
 ```bash
 # Navigate back to the oai-nwdaf project repository
-cd ../../oai-nwdaf
+cd ../../oai-cn5g-nwdaf
 ```
 
 ```bash
@@ -216,7 +216,7 @@ Run the `CLI` to test the Events Subscription API:
 
 ```bash
 # Navigate to cli directory
-cd cli
+cd ../oai-cn5g-nwdaf/cli
 
 # Create and activate a virtual environment
 python3 -m venv env
@@ -269,7 +269,7 @@ db.smf.find()
 To stop `NWDAF`, run:
 ```bash
 # Make sure you are in the oai-nwdaf project repository
-cd ../../oai-nwdaf
+cd ../../oai-cn5g-nwdaf
 
 # Stop NWDAF if AMF/SMF HTTP version is 1 
 docker-compose -f docker-compose/docker-compose-nwdaf-cn-http1.yaml down

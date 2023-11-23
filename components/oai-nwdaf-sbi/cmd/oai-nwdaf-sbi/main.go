@@ -35,7 +35,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
-	sbi "gitlab.eurecom.fr/development/oai-nwdaf/components/oai-nwdaf-sbi/internal/sbi"
+	sbi "gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nwdaf/components/oai-nwdaf-sbi/internal/sbi"
 )
 
 type MainConfig struct {
