@@ -132,14 +132,14 @@ echo "127.1.0.1   oai-nwdaf-nbi-gateway" | sudo tee -a /etc/hosts
 
 ### 3.1. Starting 5G CN
 
-For this deployment, we utilized OAI CN v1.5.1 release. If you require the NWDAF UE_Mobility event, it's recommended to use the `develop` branch, which does support location notifications.
+For this deployment, we utilized OAI CN v2.0.0 release. If you require the NWDAF UE_Mobility event, it's recommended to use the `develop` branch, which does support location notifications.
 
 ```bash
 # Navigate out of the oai-nwdaf project repository
 cd ..
 
-# Clone the repository directly from the v1.5.1 release tag
-git clone --branch v1.5.1 https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed.git
+# Clone the repository directly from the v2.0.0 release tag
+git clone --branch v2.0.0 https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed.git
 ```
 
 To deploy the OAI 5G Core Network, execute the following commands:
