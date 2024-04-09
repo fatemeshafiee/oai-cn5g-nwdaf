@@ -28,7 +28,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oai-nwdaf-nbi-analytics
-  namespace: oai-5g-core
+  namespace: open5gs
   labels:
     app: oai-nwdaf-nbi-analytics
 spec:
@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
         - name: oai-nwdaf-nbi-analytics
-          image: production.imagehub/oai-nwdaf-nbi-analytics:latest
+          image: fatemehshafieiardestani/oai-nwdaf-nbi-analytics:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -64,7 +64,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: oai-nwdaf-nbi-analytics
-  namespace: oai-5g-core
+  namespace: open5gs
   labels:
     app: oai-nwdaf-nbi-analytics
 spec:

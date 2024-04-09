@@ -36,6 +36,7 @@ const (
 	SMFEVENTANYOF_RED_TRANS_EXP SmfEventAnyOf = "RED_TRANS_EXP"
 	SMFEVENTANYOF_WLAN_INFO SmfEventAnyOf = "WLAN_INFO"
 	SMFEVENTANYOF_UPF_INFO SmfEventAnyOf = "UPF_INFO"
+	SMFEVENTANYOF_PACKET_MON SmfEventAnyOf = "PACKET_MON"
 )
 
 // All allowed values of SmfEventAnyOf enum
@@ -56,6 +57,8 @@ var AllowedSmfEventAnyOfEnumValues = []SmfEventAnyOf{
 	"RED_TRANS_EXP",
 	"WLAN_INFO",
 	"UPF_INFO",
+	"PACKET_MON",
+
 }
 
 func (v *SmfEventAnyOf) UnmarshalJSON(src []byte) error {

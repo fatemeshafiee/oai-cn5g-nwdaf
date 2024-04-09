@@ -127,9 +127,45 @@ func smfEventSubscription(smfEventNotifyUri string, smfNfId string) {
 	smfEventSubs = append(smfEventSubs,
 		*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_PDU_SES_REL),
 	)
+
+	//Fatemeh
+	smfEventSubs = append(smfEventSubs,
+		*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_PACKET_MON),
+	)
 	smfEventSubs = append(smfEventSubs,
 		*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_QOS_MON),
 	)
+
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_AC_TY_CH),
+	// )
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_UP_PATH_CH),
+	// )
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_RAT_TY_CH),
+	// )
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_COMM_FAIL),
+	// )
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_QFI_ALLOC),
+	// )
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_SMCC_EXP),
+	// )
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_DISPERSION),
+	// )
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_RED_TRANS_EXP),
+	// )
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_WLAN_INFO),
+	// )
+	// smfEventSubs = append(smfEventSubs,
+	// 	*smf_client.NewEventSubscription(smf_client.SMFEVENTANYOF_UPF_INFO),
+	// )
 	// Subscribe to all SMF event types
 	nsmfEventExposure := *smf_client.NewNsmfEventExposure(
 		smfNfId,

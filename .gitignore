@@ -1,3 +1,4 @@
+temp/
 *.pyc
 cli/env
 archives

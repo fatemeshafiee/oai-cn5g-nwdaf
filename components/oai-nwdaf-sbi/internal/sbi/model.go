@@ -90,9 +90,15 @@ type ddds struct {
 }
 
 type qosMon struct {
-	Customized_data *smf_client.CustomizedData
-	PduSeId         *int32
-	TimeStamp       int64
+	CustomUsageReport smf_client.CustomUsageReport
+	PduSeId           *int32
+	TimeStamp         int64
+}
+
+type packMon struct {
+	PacketInfo smf_client.FatemehPacketReport
+	PduSeId    *int32
+	TimeStamp  int64
 }
 
 type rmInfo struct {

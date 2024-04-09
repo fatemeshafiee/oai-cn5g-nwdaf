@@ -80,11 +80,13 @@ func ueComm(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "Error decoding document", http.StatusInternalServerError)
 				return
 			}
+			// FATEMEH TODO
 			qosMonList, ok := result["qosmonlist"].(primitive.A)
 			if !ok {
 				http.Error(w, "Invalid qosmonlist type in document", http.StatusInternalServerError)
 				return
 			}
+			// FATEMEH TODO
 			for _, qosMonElem := range qosMonList {
 				qosMonMap, ok := qosMonElem.(bson.M)
 				if !ok {

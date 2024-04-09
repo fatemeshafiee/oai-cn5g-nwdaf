@@ -28,7 +28,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oai-nwdaf-sbi
-  namespace: oai-5g-core
+  namespace: open5gs
   labels:
     app: oai-nwdaf-sbi
 spec:
@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
         - name: oai-nwdaf-sbi
-          image: production.imagehub/oai-nwdaf-sbi:latest
+          image: fatemehshafieiardestani/oai-nwdaf-sbi:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -50,9 +50,9 @@ spec:
             - name: AMF_API_ROUTE
               value: /test/amf
             - name: AMF_IP_ADDR
-              value: http://oai-amf-svc
+              value: http://10.109.109.234
             - name: AMF_HTTP_VERSION
-              value: 1
+              value: "2"
             - name: AMF_NOTIFICATION_FORWARD_ROUTE
               value: /sbi/notification/amf
             - name: AMF_NOTIFICATION_ID
@@ -64,9 +64,9 @@ spec:
             - name: SMF_API_ROUTE
               value: /test/smf
             - name: SMF_IP_ADDR
-              value: http://oai-smf-svc
+              value: http://10.98.35.168:80
             - name: SMF_HTTP_VERSION
-              value: 1
+              value: "1"
             - name: SMF_NOTIFICATION_FORWARD_ROUTE
               value: /sbi/notification/smf
             - name: SMF_NOTIFICATION_ID
@@ -74,7 +74,7 @@ spec:
             - name: SMF_NOTIFY_CORRELATION_ID
               value: string
             - name: SMF_SUBSCR_ROUTE
-              value: /nsmf_event-exposure/v1
+              value: /nsmf-event-exposure/v1
             - name: MONGODB_COLLECTION_NAME_AMF
               value: amf
             - name: MONGODB_COLLECTION_NAME_SMF
@@ -92,7 +92,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: oai-nwdaf-sbi
-  namespace: oai-5g-core
+  namespace: open5gs
   labels:
     app: oai-nwdaf-sbi
 spec:

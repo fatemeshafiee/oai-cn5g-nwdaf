@@ -48,14 +48,18 @@ func storeSmfNotificationOnDB(w http.ResponseWriter, r *http.Request) {
 
 	case "POST":
 		log.Printf("Storing SMF notification in Database")
+		log.Printf("this is a log after storing log FATEMEH")
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, "Error reading request body", http.StatusInternalServerError)
 			return
 		}
+		log.Println(string(body[:]))
 		var smfNotification *smf_client.NsmfEventExposureNotification
 		err = json.Unmarshal(body, &smfNotification)
 		if err != nil {
+			log.Println(err)
 			http.Error(w, "Error unmarshaling JSON", http.StatusBadRequest)
 			return
 		}
@@ -75,6 +79,17 @@ func storeSmfNotificationOnDB(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "supi not found in notification, cannot create object id", http.StatusBadRequest)
 				return
 			}
+
+			// [FATEMEH] Just Logging to Check
+			jsonBytes, err := notif.MarshalJSON()
+			if err != nil {
+				log.Printf("[FATEMEH] Got error marshal json: %s\n", err.Error())
+				http.Error(w, "error in marshal json", http.StatusBadRequest)
+				return
+			}
+			jsonString := string(jsonBytes)
+			log.Printf("[FATEMEH] found a new event: %s\n", jsonString)
+
 			update, err := getUpdateByNotif(notif)
 			if err != nil {
 				http.Error(w, "error in getUpdateByNotif", http.StatusBadRequest)
@@ -122,6 +137,9 @@ func getUpdateByNotif(notif smf_client.EventNotification) (bson.D, error) {
 		update, err = getUpdatePDU_SES_REL(notif)
 	case smf_client.SMFEVENTANYOF_QOS_MON:
 		update, err = getUpdateQOS_MON(notif)
+	case smf_client.SMFEVENTANYOF_PACKET_MON:
+		update, err = getUpdate_PACKET_MON(notif)
+
 	default:
 		log.Printf("notif event %s is not supported currently",
 			string(notif.GetEvent()))
@@ -253,9 +271,9 @@ func getUpdateQOS_MON(notif smf_client.EventNotification) (bson.D, error) {
 	timeStamp := time.Now().Unix()
 	// include "customized_data"
 	push := qosMon{
-		Customized_data: notif.CustomizedData,
-		PduSeId:         pduSeId,
-		TimeStamp:       timeStamp,
+		CustomUsageReport: notif.CustomizedData.UsageReport,
+		PduSeId:           pduSeId,
+		TimeStamp:         timeStamp,
 	}
 	update := bson.D{
 		{"$set", bson.D{
@@ -263,6 +281,31 @@ func getUpdateQOS_MON(notif smf_client.EventNotification) (bson.D, error) {
 		}},
 		{"$push", bson.M{
 			"qosmonlist": &push,
+		}},
+	}
+	return update, nil
+}
+
+// ----------------------------------------------------------------------------------------------------------------
+// getUpdatePDU_SES_REL - Create update bson.D in case of QoS MON
+func getUpdate_PACKET_MON(notif smf_client.EventNotification) (bson.D, error) {
+	pduSeId, ok := notif.GetPduSeIdOk()
+	if !ok {
+		return nil, errors.New("failed to get PduSeId")
+	}
+	timeStamp := time.Now().Unix()
+	// include "customized_data"
+	push := packMon{
+		PacketInfo: notif.CustomizedData.PacketReport,
+		PduSeId:    pduSeId,
+		TimeStamp:  timeStamp,
+	}
+	update := bson.D{
+		{"$set", bson.D{
+			{"lastmodified", timeStamp},
+		}},
+		{"$push", bson.M{
+			"packet_list": &push,
 		}},
 	}
 	return update, nil

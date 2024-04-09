@@ -91,6 +91,7 @@ type EventNotification struct {
 
 	// Added Customized Data
 	CustomizedData *CustomizedData `json:"customized_data,omitempty"`
+	//PacketReport   *FatemehPacketReport `json:"customized_data,omitempty"`
 }
 
 type Volume struct {
@@ -108,11 +109,37 @@ type CustomUsageReport struct {
 	Volume   Volume `json:"Volume,omitempty"`
 }
 
+type FatemehPacketData struct{
+	DataLength uint16 `json:"Data length,omitempty"`
+	Data string `json:"Data,omitempty"`
+}
+
+type FatemehPacketHeader struct {
+	Ipv         uint8  `json:"IP version and Header length,omitempty"`
+	Tos         uint8  `json:"TOS,omitempty"`
+	PacketLength uint16 `json:"Packet length,omitempty"`
+	FragID      uint16 `json:"Fragment ID,omitempty"`
+	Flags       uint16 `json:"Flags and Fragment offset,omitempty"`
+	Ttl         uint8  `json:"TTL,omitempty"`
+	Protocol    uint8  `json:"Protocol,omitempty"`
+	Checksum    uint16 `json:"Checksum,omitempty"`
+	Src         uint32 `json:"Source address,omitempty"`
+	Dst         uint32 `json:"Destination Address,omitempty"`
+}
+
+type FatemehPacketReport struct{
+	PacketType uint8 `json:"Packet Type,omitempty"`
+	PacketData FatemehPacketData `json:"Packet Data,omitempty"`
+	PacketHeader FatemehPacketHeader `json:"Packet Header,omitempty"`
+	SeId     int32  `json:"SEID,omitempty"`
+
+}
 type CustomizedData struct {
+	PacketReport FatemehPacketReport `json:"Packet Report,omitempty"`
 	UsageReport CustomUsageReport `json:"Usage Report,omitempty"`
 	Event       string            `json:"event,omitempty"`
 	TimeStamp   string            `json:"timeStamp,omitempty"`
-}
+ }
 
 // NewEventNotification instantiates a new EventNotification object
 // This constructor will assign default values to properties that have it defined,
@@ -1920,6 +1947,9 @@ func (o EventNotification) MarshalJSON() ([]byte, error) {
 	}
 	if o.PduSessInfos != nil {
 		toSerialize["pduSessInfos"] = o.PduSessInfos
+	}
+	if o.UpfInfo != nil {
+		toSerialize["upfInfo"] = o.UpfInfo
 	}
 	if o.UpfInfo != nil {
 		toSerialize["upfInfo"] = o.UpfInfo

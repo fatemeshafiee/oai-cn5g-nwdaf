@@ -28,7 +28,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: oai-nwdaf-nbi-events
-  namespace: oai-5g-core
+  namespace: open5gs
   labels:
     app: oai-nwdaf-nbi-events
 spec:
@@ -42,7 +42,7 @@ spec:
     spec:
       containers:
         - name: oai-nwdaf-nbi-events
-          image: production.imagehub/oai-nwdaf-nbi-events:latest
+          image: fatemehshafieiardestani/oai-nwdaf-nbi-events:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -68,7 +68,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: oai-nwdaf-nbi-events
-  namespace: oai-5g-core
+  namespace: open5gs
   labels:
     app: oai-nwdaf-nbi-events
 spec:
