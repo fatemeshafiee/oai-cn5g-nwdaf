@@ -109,6 +109,7 @@ type CustomUsageReport struct {
 	Volume   Volume `json:"Volume,omitempty"`
 }
 
+// [STEP 1]
 type FatemehPacketData struct{
 	DataLength uint16 `json:"Data length,omitempty"`
 	Data string `json:"Data,omitempty"`

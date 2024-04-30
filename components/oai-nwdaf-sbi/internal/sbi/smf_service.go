@@ -138,6 +138,7 @@ func getUpdateByNotif(notif smf_client.EventNotification) (bson.D, error) {
 	case smf_client.SMFEVENTANYOF_QOS_MON:
 		update, err = getUpdateQOS_MON(notif)
 	case smf_client.SMFEVENTANYOF_PACKET_MON:
+		// [STEP 2]
 		update, err = getUpdate_PACKET_MON(notif)
 
 	default:
@@ -288,6 +289,7 @@ func getUpdateQOS_MON(notif smf_client.EventNotification) (bson.D, error) {
 
 // ----------------------------------------------------------------------------------------------------------------
 // getUpdatePDU_SES_REL - Create update bson.D in case of QoS MON
+// [STEP 3]
 func getUpdate_PACKET_MON(notif smf_client.EventNotification) (bson.D, error) {
 	pduSeId, ok := notif.GetPduSeIdOk()
 	if !ok {
