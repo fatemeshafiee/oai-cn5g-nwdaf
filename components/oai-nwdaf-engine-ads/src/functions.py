@@ -43,9 +43,12 @@ def create_dataframe():
             data.append({
                 "timestamp": qosmon['timestamp'],
                 "pduseid": qosmon['pduseid'],
-                "value_ul": qosmon['customized_data']['usagereport']['volume']['uplink'] ,
-                "value_dl": qosmon['customized_data']['usagereport']['volume']['downlink'],
-                "value_total": qosmon['customized_data']['usagereport']['volume']['total']
+                # "value_ul": qosmon['customized_data']['usagereport']['volume']['uplink'] ,
+                # "value_dl": qosmon['customized_data']['usagereport']['volume']['downlink'],
+                # "value_total": qosmon['customized_data']['usagereport']['volume']['total']
+                "value_ul": qosmon['customusagereport']['volume']['uplink'] ,
+                "value_dl": qosmon['customusagereport']['volume']['downlink'],
+                "value_total": qosmon['customusagereport']['volume']['total']
             })
     # Create a pandas dataframe
     df = pd.DataFrame(data)

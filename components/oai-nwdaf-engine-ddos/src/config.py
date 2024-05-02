@@ -42,9 +42,10 @@ nwdaf_db = client[NWDAF_DATABASE_NAME]
 amf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_AMF]
 smf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_SMF]
 
-# Autoencoder parameters
-ulrf_model = keras.models.load_model('models/unexpected_large_rate_flow/model.h5')
-ulrf_scaler = pickle.load(open('models/unexpected_large_rate_flow/scaler.pkl', 'rb'))
+# TO Check with our own model
+
+ulrf_model = keras.models.load_model('models/ddos/brnn_model.h5')
+# TO Check with our own model
 seq_dim = 12
 num_features = 2
 distance_threshold = 0.26
