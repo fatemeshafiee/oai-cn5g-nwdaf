@@ -81,6 +81,7 @@ services:
             - ENGINE_UE_COMMUNICATION_ROUTE=/ue_communication
             - ENGINE_UE_MOBILITY_ROUTE=/ue_mobility
             - ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
+            - ENGINE_DDOS_DETECTION=/abnormal_behaviour/ddos
             - SERVER_ADDR=0.0.0.0:8080
         ports: 
             - "6060:8080"
@@ -142,6 +143,7 @@ services:
             - MONGODB_COLLECTION_NAME_AMF=amf
             - MONGODB_COLLECTION_NAME_SMF=smf
             - ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
+            - ENGINE_DDOS_DETECTION=/abnormal_behaviour/ddos
             - SERVER_PORT=8080
         depends_on:
             - oai-nwdaf-database

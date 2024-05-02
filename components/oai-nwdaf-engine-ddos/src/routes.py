@@ -33,7 +33,7 @@ import logging
 api = Blueprint('api', __name__)  
 logging.basicConfig(level=logging.INFO)
 
-@api.route('/abnormal_behaviour/unexpected_large_rate_flow', methods=['GET'])
+@api.route('/abnormal_behaviour/ddos', methods=['GET'])
 def handle_unexpected_large_rate_flow_request():
     df = create_dataframe()
     logging.info(df[['timestamp', 'value_total']])

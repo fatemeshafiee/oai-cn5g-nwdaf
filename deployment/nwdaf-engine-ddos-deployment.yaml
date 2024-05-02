@@ -1,0 +1,52 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nwdaf-engine-ddos
+  namespace: open5gs
+  labels:
+    app: nwdaf-engine-ddos
+spec:
+  selector:
+    matchLabels:
+      app: nwdaf-engine-ddos
+  template:
+    metadata:
+      labels:
+        app: nwdaf-engine-ddos
+    spec:
+      containers:
+        - name: nwdaf-engine-ddos
+          image: fatemehshafieiardestani/nwdaf-engine-ddos:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ENGINE_DDOS_DETECTION
+              value: /abnormal_behaviour/ddos
+            - name: MONGODB_COLLECTION_NAME_AMF
+              value: amf
+            - name: MONGODB_COLLECTION_NAME_SMF
+              value: smf
+            - name: MONGODB_DATABASE_NAME
+              value: testing
+            - name: MONGODB_URI
+              value: mongodb://oai-nwdaf-database:27017
+            - name: SERVER_PORT
+              value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nwdaf-engine-ddos
+  namespace: open5gs
+  labels:
+    app: nwdaf-engine-ddos
+spec:
+  type: ClusterIP
+  selector:
+    app: nwdaf-engine-ddos
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
