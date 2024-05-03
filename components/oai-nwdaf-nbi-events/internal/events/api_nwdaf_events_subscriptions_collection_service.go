@@ -86,8 +86,12 @@ type UeMobResp struct {
 
 // ------------------------------------------------------------------------------
 // Type of Ue_communication response from engine.
+// [FATEMEH] Add my own responses
 type AbnorBehavrsResp struct {
-	Ratio int32 `json:"ratio,omitempty"`
+	Ratio              int32    `json:"ratio,omitempty"`
+	Suspicious_UEs     []string `json:"Suspicious_UEs,omitempty"`
+	suspicious_pduseid []string `json:"suspicious_pduseid,omitempty"`
+	Ratio_DDoS_UE      []int32  `json:"ratio_ddos_ue,omitempty"`
 }
 
 // NewNWDAFEventsSubscriptionsCollectionApiService creates a default api service
@@ -321,6 +325,7 @@ func getAbnormalBehaviourNotifData(
 	for _, excepReq := range eventSub.ExcepRequs {
 		var AbnorBehavrsInfo AbnormalBehaviour
 		var err error
+		//[FATEMEH] ADD ROUTE TO DDOS ENGINE
 		switch excepReq.ExcepId {
 
 		case EXCEPTIONID_UNEXPECTED_LARGE_RATE_FLOW:
@@ -329,6 +334,17 @@ func getAbnormalBehaviourNotifData(
 				excepReq,
 				config.Engine.AdsUri+config.Routes.UnexpectedLargeRate,
 			)
+
+			if err != nil {
+				return AbnorBehavrsList, err
+			}
+		case EXCEPTIONID_SUSPICION_OF_DDOS_ATTACK:
+			AbnorBehavrsInfo, err = requestAbnorBehavrsEngine(
+				eventSub,
+				excepReq,
+				config.Engine.DDoSUri+config.Routes.DDoSDetection,
+			)
+
 			if err != nil {
 				return AbnorBehavrsList, err
 			}

@@ -26,6 +26,7 @@ type AbnormalBehaviour struct {
 	// Unsigned Integer, i.e. only value 0 and integers above 0 are permissible.
 	Confidence int32 `json:"confidence,omitempty"`
 
+	// FATEMEH TODO maybe add fields
 	AddtMeasInfo AdditionalMeasurement `json:"addtMeasInfo,omitempty"`
 }
 

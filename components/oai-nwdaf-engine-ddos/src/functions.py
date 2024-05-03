@@ -76,6 +76,7 @@ def pre_process(raw_data):
             processed_entry["Fwd Seg Size"] = int(entry["datalength"])
             processed_entry["Slice"] = 0
             processed_entry["timestamp"] = entry["timestamp"]
+            processed_entry["pduseid"] = entry["pduseid"]
             data.append(processed_entry)
         if int(entry["protocol"]) == 17:
             udp_header = packet_data[20:28]  # UDP header is always 8 bytes
@@ -87,10 +88,12 @@ def pre_process(raw_data):
             processed_entry["Fwd Pkt Len"] = int(entry["packetlength"])
             processed_entry["Src IP"] = entry["IPsrc"]
             processed_entry["Src Port"] = src_port
+            processed_entry["ACK Flag"] = 0
             processed_entry["Protocol"] = int(entry["protocol"])
             processed_entry["Fwd Seg Size"] = int(entry["datalength"])
             processed_entry["Slice"] = 0
             processed_entry["timestamp"] = entry["timestamp"]
+            processed_entry["pduseid"] = entry["pduseid"]
 
             data.append(processed_entry)
     return data
@@ -125,10 +128,11 @@ def create_dataframe():
     data = pre_process(raw_data)
     df = pd.DataFrame(data)
     df = add_time_columns(df, 'timestamp')
-    return df
+    result_df = create_flow(df)
+    return result_df
 
 def create_flow(df):
-    result_df = df.groupby(["Dst IP", "Dst Port", "Src IP", "Src Port", "Protocol"]).agg(
+    result_df = df.groupby(["Dst IP", "Dst Port", "Src IP", "Src Port", "Protocol", "pduseid"]).agg(
         Fwd_Pkt_Len_Std=("Fwd Pkt Len", "std"),
         ACK_Flag_Count=("ACK Flag", "sum"),
         Tot_Fwd_Pkts=("Src IP", "count"),
@@ -138,8 +142,23 @@ def create_flow(df):
 
     result_df["Slice"] = 0  # Add a placeholder 'Slice' column with a default value of 0
 
-    result_df = result_df[["Dst IP", "Dst Port", "Fwd_Pkt_Len_Std", "Src IP", "Src Port",
-                           "ACK_Flag_Count", "Protocol", "Tot_Fwd_Pkts", "Fwd_Seg_Size_Min", "Slice"]]
+    result_df = result_df[["Flow_duration","Dst IP", "Dst Port", "Fwd_Pkt_Len_Std", "Src IP", "Src Port",
+                           "ACK_Flag_Count", "Protocol", "Tot_Fwd_Pkts", "Fwd_Seg_Size_Min","Slice", "pduseid"]]
+    result_df = result_df.rename(columns={
+        "Flow_Duration": "Flow Duration",
+        "Dst IP": "Dst IP",
+        "Dst Port": "Dst Port",
+        "Fwd_Pkt_Len_Std": "Fwd Pkt Len Std",
+        "Src IP": "Src IP",
+        "Src Port": "Src Port",
+        "ACK_Flag_Count": "ACK Flag Cnt",
+        "Protocol": "Protocol",
+        "Tot_Fwd_Pkts": "Tot Fwd Pkts",
+        "Fwd_Seg_Size_Min": "Fwd Seg Size Min",
+        "Slice": "Slice",
+        "pduseid": "pduseid"
+    })
+
 
     return result_df
 

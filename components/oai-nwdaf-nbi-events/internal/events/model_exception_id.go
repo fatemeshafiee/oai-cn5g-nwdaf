@@ -14,6 +14,7 @@ package events
 type ExceptionId string
 
 // List of ExceptionIdAnyOf
+// [FATEMEH] Add DDoS here
 const (
 	EXCEPTIONID_UNEXPECTED_UE_LOCATION         ExceptionId = "UNEXPECTED_UE_LOCATION"
 	EXCEPTIONID_UNEXPECTED_LONG_LIVE_FLOW      ExceptionId = "UNEXPECTED_LONG_LIVE_FLOW"

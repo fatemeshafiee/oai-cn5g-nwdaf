@@ -44,9 +44,9 @@ smf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_SMF]
 
 # TO Check with our own model
 
-ulrf_model = keras.models.load_model('models/ddos/brnn_model.h5')
+DDoS_Detection_model = keras.models.load_model('models/ddos/brnn_model.h5')
 # TO Check with our own model
-seq_dim = 12
-num_features = 2
-distance_threshold = 0.26
-max_distance_threshold = 2
+# seq_dim = 12
+# num_features = 2
+# distance_threshold = 0.26
+# max_distance_threshold = 2

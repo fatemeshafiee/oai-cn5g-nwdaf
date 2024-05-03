@@ -34,20 +34,39 @@ api = Blueprint('api', __name__)
 logging.basicConfig(level=logging.INFO)
 
 @api.route('/abnormal_behaviour/ddos', methods=['GET'])
-def handle_unexpected_large_rate_flow_request():
+def handle_ddos_detection_request():
     df = create_dataframe()
-    logging.info(df[['timestamp', 'value_total']])
+    logging.info(df[["Dst IP", "Dst Port", "Src IP", "Src Port", "Protocol", "pduseid"]])
     # Get the usefull rows of the DataFrame.
-    df_seq = df[['hour', 'value_ul']].tail(seq_dim)
-    seq = ulrf_scaler.transform(df_seq)
-    # Add model to calculate anomaly probability for sequence.
-    seq = np.reshape(seq, (1, seq_dim, num_features))
-    predict_seq = ulrf_model.predict(seq)
-    mae = np.mean(np.abs(predict_seq[:,:,1:] - seq[:,:,1:]), axis=1)
-    distance = np.abs(mae - distance_threshold)
-    anomaly_prob = np.minimum(distance / max_distance_threshold, 1)
-    logging.info("unexpected_large_rate_flow probability is: %s", anomaly_prob[0][0])
-    ratio = int(anomaly_prob * 100)
-    response_data = {'ratio': ratio}
+    X = df.iloc[:, :-1]
+    scalar = StandardScaler(copy=True, with_mean=True, with_std=True)
+    scalar.fit(X)
+    X = scalar.transform(X)
+
+    features = len(X[0])
+    samples = X.shape[0]
+    train_len = 100 #would it make any problem? When we have less packets?
+    input_len = samples - train_len
+    I = np.zeros((samples - train_len, train_len, features))
+
+    for i in range(input_len):
+        temp = np.zeros((train_len, features))
+        for j in range(i, i + train_len - 1):
+            temp[j-i] = X[j]
+        I[i] = temp
+    predict = DDoS_Detection_model.predict(I)
+
+    predictn = predict.flatten().round()
+    predictn = predictn.tolist()
+    suspicious_Flows = df[predictn == 0]
+    suspicious_UEs = suspicious_Flows["Src IP"].tolist()
+    suspicious_pduseid = suspicious_Flows["pduseid"].tolist()
+    Ratio_DDoS_UE = predict.flatten().tolist()
+#     	Suspicious_UEs     []string `json:"Suspicious_UEs,omitempty"`
+#     	suspicious_pduseid []string `json:"suspicious_pduseid,omitempty"`
+#     	Ratio_DDoS_UE      []int32  `json:"ratio_ddos_ue,omitempty"`
+    response_data = {'Suspicious_UEs': suspicious_UEs,
+    'suspicious_pduseid':suspicious_pduseid,
+     'ratio_ddos_ue':Ratio_DDoS_UE}
     # send anomaly probability to client.
     return jsonify(response_data)
