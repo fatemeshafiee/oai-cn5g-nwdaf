@@ -29,7 +29,7 @@ from src.config import *
 from src.functions import *
 import numpy as np
 import logging
-
+from sklearn.preprocessing import StandardScaler
 api = Blueprint('api', __name__)  
 logging.basicConfig(level=logging.INFO)
 
@@ -45,6 +45,8 @@ def handle_ddos_detection_request():
 
     features = len(X[0])
     samples = X.shape[0]
+    logging.info(X.shape)
+
     train_len = 100 #would it make any problem? When we have less packets?
     input_len = samples - train_len
     I = np.zeros((samples - train_len, train_len, features))

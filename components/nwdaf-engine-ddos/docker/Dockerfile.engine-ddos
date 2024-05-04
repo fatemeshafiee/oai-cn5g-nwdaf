@@ -24,7 +24,7 @@
 # * Description: Docker file of the oai-nwdaf-engine-ads.
 # */
 
-FROM python:3.6.9-slim AS oai-nwdaf-engine-ads
+FROM python:3.6.9-slim AS nwdaf-engine-ddos
 WORKDIR /app
 RUN apt-get update && apt-cache search net-tools &&  apt-get install --yes net-tools 
 COPY requirements.txt .

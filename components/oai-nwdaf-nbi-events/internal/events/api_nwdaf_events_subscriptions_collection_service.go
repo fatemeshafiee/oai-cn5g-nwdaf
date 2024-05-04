@@ -538,23 +538,28 @@ func requestAbnorBehavrsEngine(
 	// Convert the data to a JSON byte array
 	engineReqJsonData, err := json.Marshal(engineReqData)
 	if err != nil {
+		log.Printf("Error marshaling JSON: %v", err)
 		return AbnormalBehaviour{}, err
 	}
 	// Create a POST request with the JSON data in the body
 	req, err := http.NewRequest(
 		http.MethodGet, enginePath, bytes.NewBuffer(engineReqJsonData))
 	if err != nil {
+		log.Printf("Error making http request: %v", err)
 		return AbnormalBehaviour{}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
 	// Send the request and print the response body
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		log.Printf("Error in the default client http: %v", err)
 		return AbnormalBehaviour{}, err
 	}
+	log.Printf("This is line 558")
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	var abnorBehavrsResp AbnorBehavrsResp
+	log.Println(string(body))
 	err = json.Unmarshal(body, &abnorBehavrsResp)
 	if err != nil {
 		return AbnormalBehaviour{}, err

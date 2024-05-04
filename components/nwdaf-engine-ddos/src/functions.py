@@ -23,13 +23,13 @@
 # * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
 # * Description: This file contains utils functions.
 # */
-
+import logging
 import pandas as pd
 from src.config import *
 import base64
 import ipaddress
-
-
+import struct
+from sklearn.preprocessing import StandardScaler
 
 def add_time_columns(df, timestamp_col):
     df['timestamp'] = pd.to_datetime(df[timestamp_col], unit='s')
@@ -66,14 +66,14 @@ def pre_process(raw_data):
             urg = (flags & 0x20) != 0
             ece = (flags & 0x40) != 0
             cwr = (flags & 0x80) != 0
-            processed_entry["Dst IP"] = entry["IPdst"]
-            processed_entry["Dst Port"] = dst_port
-            processed_entry["Fwd Pkt Len"] = int(entry["packetlength"])
-            processed_entry["Src IP"] = entry["IPsrc"]
-            processed_entry["Src Port"] = src_port
-            processed_entry["ACK Flag"] = int(ack)
+            processed_entry["Dst_IP"] = entry["IPdst"]
+            processed_entry["Dst_Port"] = dst_port
+            processed_entry["Fwd_Pkt_Len"] = int(entry["packetlength"])
+            processed_entry["Src_IP"] = entry["IPsrc"]
+            processed_entry["Src_Port"] = src_port
+            processed_entry["ACK_Flag"] = int(ack)
             processed_entry["Protocol"] = int(entry["protocol"])
-            processed_entry["Fwd Seg Size"] = int(entry["datalength"])
+            processed_entry["Fwd_Seg_Size"] = int(entry["datalength"])
             processed_entry["Slice"] = 0
             processed_entry["timestamp"] = entry["timestamp"]
             processed_entry["pduseid"] = entry["pduseid"]
@@ -83,14 +83,14 @@ def pre_process(raw_data):
 
             # Unpack the UDP header fields
             src_port, dst_port, length, checksum = struct.unpack("!HHHH", udp_header)
-            processed_entry["Dst IP"] = entry["IPdst"]
-            processed_entry["Dst Port"] = dst_port
-            processed_entry["Fwd Pkt Len"] = int(entry["packetlength"])
-            processed_entry["Src IP"] = entry["IPsrc"]
-            processed_entry["Src Port"] = src_port
-            processed_entry["ACK Flag"] = 0
+            processed_entry["Dst_IP"] = entry["IPdst"]
+            processed_entry["Dst_Port"] = dst_port
+            processed_entry["Fwd_Pkt_Len"] = int(entry["packetlength"])
+            processed_entry["Src_IP"] = entry["IPsrc"]
+            processed_entry["Src_Port"] = src_port
+            processed_entry["ACK_Flag"] = 0
             processed_entry["Protocol"] = int(entry["protocol"])
-            processed_entry["Fwd Seg Size"] = int(entry["datalength"])
+            processed_entry["Fwd_Seg_Size"] = int(entry["datalength"])
             processed_entry["Slice"] = 0
             processed_entry["timestamp"] = entry["timestamp"]
             processed_entry["pduseid"] = entry["pduseid"]
@@ -107,50 +107,51 @@ def create_dataframe():
             raw_data.append({
                 "timestamp": packet['timestamp'],
                 "pduseid": packet['pduseid'],
-                "datalength": packet['packetdata']['datalength'],
-                "data": packet['packetdata']['data'],
-                "pduseid": packet['pduseid'],
-                "datalength": packet['packetdata']['datalength'],
-                "data": packet['packetdata']['data'],
-                "protocol": packet['packetheader']['protocol'],
-                "IPsrc": packet['packetheader']['src'],
-                "IPdst": packet['packetheader']['dst'],
-                "checksum": packet['packetheader']['checksum'],
-                "ttl": packet['packetheader']['ttl'],
-                "flags": packet['packetheader']['flags'],
-                "fragid": packet['packetheader']['fragid'],
-                "tos": packet['packetheader']['tos'],
-                "packetlength": packet['packetheader']['packetlength'],
+                "datalength": packet['packetinfo']['packetdata']['datalength'],
+                "data": packet['packetinfo']['packetdata']['data'],
+                "datalength": packet['packetinfo']['packetdata']['datalength'],
+                "data": packet['packetinfo']['packetdata']['data'],
+                "protocol": packet['packetinfo']['packetheader']['protocol'],
+                "IPsrc": packet['packetinfo']['packetheader']['src'],
+                "IPdst": packet['packetinfo']['packetheader']['dst'],
+                "checksum": packet['packetinfo']['packetheader']['checksum'],
+                "ttl": packet['packetinfo']['packetheader']['ttl'],
+                "flags": packet['packetinfo']['packetheader']['flags'],
+                "fragid": packet['packetinfo']['packetheader']['fragid'],
+                "tos": packet['packetinfo']['packetheader']['tos'],
+                "packetlength": packet['packetinfo']['packetheader']['packetlength'],
 
             })
 
     # Create a pandas dataframe
     data = pre_process(raw_data)
     df = pd.DataFrame(data)
-    df = add_time_columns(df, 'timestamp')
+    # df = add_time_columns(df, 'timestamp')
     result_df = create_flow(df)
     return result_df
 
 def create_flow(df):
-    result_df = df.groupby(["Dst IP", "Dst Port", "Src IP", "Src Port", "Protocol", "pduseid"]).agg(
-        Fwd_Pkt_Len_Std=("Fwd Pkt Len", "std"),
-        ACK_Flag_Count=("ACK Flag", "sum"),
-        Tot_Fwd_Pkts=("Src IP", "count"),
-        Flow_duration=("Timestamp", lambda x: x.max() - x.min()),
-        Fwd_Seg_Size_Min=("Fwd Seg Size", "min")
+    logging.info("The df is ", df)
+
+    result_df = df.groupby(["Dst_IP", "Dst_Port", "Src_IP", "Src_Port", "Protocol", "pduseid"]).agg(
+        Fwd_Pkt_Len_Std=("Fwd_Pkt_Len", "std"),
+        ACK_Flag_Count=("ACK_Flag", "sum"),
+        Tot_Fwd_Pkts=("Src_IP", "count"),
+        Flow_duration=("timestamp", lambda x: x.max() - x.min()),
+        Fwd_Seg_Size_Min=("Fwd_Seg_Size", "min")
     ).reset_index()
 
     result_df["Slice"] = 0  # Add a placeholder 'Slice' column with a default value of 0
 
-    result_df = result_df[["Flow_duration","Dst IP", "Dst Port", "Fwd_Pkt_Len_Std", "Src IP", "Src Port",
+    result_df = result_df[["Flow_duration","Dst_IP", "Dst_Port", "Fwd_Pkt_Len_Std", "Src_IP", "Src_Port",
                            "ACK_Flag_Count", "Protocol", "Tot_Fwd_Pkts", "Fwd_Seg_Size_Min","Slice", "pduseid"]]
     result_df = result_df.rename(columns={
         "Flow_Duration": "Flow Duration",
-        "Dst IP": "Dst IP",
-        "Dst Port": "Dst Port",
+        "Dst_IP": "Dst IP",
+        "Dst_Port": "Dst Port",
         "Fwd_Pkt_Len_Std": "Fwd Pkt Len Std",
-        "Src IP": "Src IP",
-        "Src Port": "Src Port",
+        "Src_IP": "Src IP",
+        "Src_Port": "Src Port",
         "ACK_Flag_Count": "ACK Flag Cnt",
         "Protocol": "Protocol",
         "Tot_Fwd_Pkts": "Tot Fwd Pkts",
@@ -163,3 +164,7 @@ def create_flow(df):
     return result_df
 
 
+#[FATEMEH]: Change to get the related data from packets
+#features=[ 'Dst IP','Dst Port', 'Fwd Pkt Len Std','Src IP',
+#         'Src Port', 'ACK Flag Cnt', 'Protocol','Tot Fwd Pkts',
+#         'Fwd Seg Size Min','Slice']
