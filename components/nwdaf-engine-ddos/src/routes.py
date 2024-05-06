@@ -47,7 +47,7 @@ def handle_ddos_detection_request():
     samples = X.shape[0]
     logging.info(X.shape)
 
-    train_len = 100 #would it make any problem? When we have less packets?
+    train_len = 5 #would it make any problem? When we have less packets?
     input_len = samples - train_len
     I = np.zeros((samples - train_len, train_len, features))
 
