@@ -28,7 +28,10 @@ import os
 from pymongo import MongoClient
 import pickle
 from tensorflow import keras
-
+from tensorflow import keras
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Bidirectional
+from tensorflow.keras.regularizers import l2
 # Env Variables
 SERVER_PORT = os.environ.get('SERVER_PORT','8989')
 MONGODB_URI = os.environ.get('MONGODB_URI','mongodb://localhost:27017')
@@ -42,9 +45,19 @@ nwdaf_db = client[NWDAF_DATABASE_NAME]
 amf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_AMF]
 smf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_SMF]
 
-# TO Check with our own model
 
-DDoS_Detection_model = keras.models.load_model('models/ddos/brnn_model.keras')
+# Define your model architecture
+DDoS_Detection_model = Sequential()
+DDoS_Detection_model.add(Bidirectional(LSTM(64, activation='tanh', kernel_regularizer=l2(0.01), return_sequences=False), input_shape=(5, 11)))
+DDoS_Detection_model.add(Dense(128, activation='relu', kernel_regularizer=l2(0.01)))
+DDoS_Detection_model.add(Dense(1, activation='sigmoid', kernel_regularizer=l2(0.01)))
+
+# Load the weights from the saved model file
+DDoS_Detection_model.load_weights("brnn_model.h5")
+
+# Compile the model
+DDoS_Detection_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
 # TO Check with our own model
 # seq_dim = 12
 # num_features = 2
