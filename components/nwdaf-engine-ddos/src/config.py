@@ -44,7 +44,7 @@ smf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_SMF]
 
 # TO Check with our own model
 
-DDoS_Detection_model = keras.models.load_model('models/ddos/brnn_model.h5', compile=False)
+DDoS_Detection_model = keras.models.load_model('models/ddos/brnn_model.pb', compile=False)
 # TO Check with our own model
 # seq_dim = 12
 # num_features = 2
