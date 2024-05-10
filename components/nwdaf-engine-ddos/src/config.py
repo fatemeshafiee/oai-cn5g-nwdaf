@@ -53,7 +53,7 @@ DDoS_Detection_model.add(Dense(128, activation='relu', kernel_regularizer=l2(0.0
 DDoS_Detection_model.add(Dense(1, activation='sigmoid', kernel_regularizer=l2(0.01)))
 
 # Load the weights from the saved model file
-DDoS_Detection_model.load_weights("brnn_model.h5")
+DDoS_Detection_model.load_weights("models/ddos/brnn_model.h5")
 
 # Compile the model
 DDoS_Detection_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])

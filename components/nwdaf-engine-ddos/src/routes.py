@@ -59,16 +59,27 @@ def handle_ddos_detection_request():
     predict = DDoS_Detection_model.predict(I)
 
     predictn = predict.flatten().round()
+    df = df[train_len:len(X)]
+#     suspicious_Flows = df[predictn == 0]
     predictn = predictn.tolist()
-    suspicious_Flows = df[predictn == 0]
-    suspicious_UEs = suspicious_Flows["Src IP"].tolist()
-    suspicious_pduseid = suspicious_Flows["pduseid"].tolist()
-    Ratio_DDoS_UE = predict.flatten().tolist()
-#     	Suspicious_UEs     []string `json:"Suspicious_UEs,omitempty"`
-#     	suspicious_pduseid []string `json:"suspicious_pduseid,omitempty"`
-#     	Ratio_DDoS_UE      []int32  `json:"ratio_ddos_ue,omitempty"`
-    response_data = {'Suspicious_UEs': suspicious_UEs,
-    'suspicious_pduseid':suspicious_pduseid,
-     'ratio_ddos_ue':Ratio_DDoS_UE}
+
+
+    suspicious_ues = df["Src IP"].tolist()
+    suspicious_pdu_seid = df["pduseid"].tolist()
+    ratios = predict.flatten().tolist()
+
+    for ue_ip, pdu_seid, ratio in zip(suspicious_ues, suspicious_pdu_seid, ratios):
+        if not np.isnan(ratio) and ration > 0.5:
+            ddos_entries.append({
+                "ue_ip":ue_ip,
+                "pdu_sess_id":pdu_seid,
+                "ratio": ratio
+            })
+    
+
+    response_data = {'ddos_entries': ddos_entries}
     # send anomaly probability to client.
+    return_data = jsonify(response_data)
+    logging.info(return_data)
+
     return jsonify(response_data)

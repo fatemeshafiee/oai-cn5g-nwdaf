@@ -88,10 +88,14 @@ type UeMobResp struct {
 // Type of Ue_communication response from engine.
 // [FATEMEH] Add my own responses
 type AbnorBehavrsResp struct {
-	Ratio              int32    `json:"ratio,omitempty"`
-	Suspicious_UEs     []string `json:"Suspicious_UEs,omitempty"`
-	suspicious_pduseid []string `json:"suspicious_pduseid,omitempty"`
-	Ratio_DDoS_UE      []int32  `json:"ratio_ddos_ue,omitempty"`
+	Ratio       int32       `json:"ratio,omitempty"`
+	DDoSEntries []DDoSEntry `json:"ddos_entries,omitempty"`
+}
+
+type DDoSEntry struct {
+	UeIp      string  `json:"ue_ip,omitempty"`
+	PduSessId uint64  `json:"pdu_sess_id,omitempty"`
+	Ratio     float64 `json:"ratio,omitempty"`
 }
 
 // NewNWDAFEventsSubscriptionsCollectionApiService creates a default api service
@@ -134,6 +138,7 @@ func (s *NWDAFEventsSubscriptionsCollectionApiService) CreateNWDAFEventsSubscrip
 
 // ------------------------------------------------------------------------------
 // send only accepted events to handle subscription after feasibility check
+// [FATEMEH] this will check the event subscription every 10 seconds
 func handleSubscriptionEvent(
 	ctx context.Context,
 	eventSub EventSubscription,
