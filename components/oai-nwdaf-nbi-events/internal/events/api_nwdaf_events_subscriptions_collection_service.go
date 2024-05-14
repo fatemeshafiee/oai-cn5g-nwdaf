@@ -29,14 +29,17 @@ package events
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/net/http2"
 )
 
 /*
@@ -94,7 +97,9 @@ type AbnorBehavrsResp struct {
 
 type DDoSEntry struct {
 	UeIp      string  `json:"ue_ip,omitempty"`
-	PduSessId uint64  `json:"pdu_sess_id,omitempty"`
+	TargetIp  string  `json:"target_ip,omitempty"`
+	PduSessId uint64  `json:"pdu_sess_id"`
+	SeId      uint64  `json:"seid"`
 	Ratio     float64 `json:"ratio,omitempty"`
 }
 
@@ -371,8 +376,27 @@ func sendNotification(
 ) error {
 	log.Print("Sending notification to client")
 	jsonStr, _ := json.Marshal(eventNotif)
-	_, err := http.Post(notificationURI, "application/json", bytes.NewBuffer(jsonStr))
+	client := http.Client{
+		Transport: &http2.Transport{
+			// So http2.Transport doesn't complain the URL scheme isn't 'https'
+			AllowHTTP: true,
+			// Pretend we are dialing a TLS endpoint. (Note, we ignore the passed tls.Config)
+			DialTLSContext: func(ctx context.Context, network, addr string, cfg *tls.Config) (net.Conn, error) {
+				var d net.Dialer
+				return d.DialContext(ctx, network, addr)
+			},
+		},
+	}
+	r, err := http.NewRequest("POST", notificationURI, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		log.Print("Create req error")
+		return err
+	}
+	r.Header.Add("Content-Type", "application/json")
+	_, err = client.Do(r)
 	return err
+	// _, err := http.Post(notificationURI, "application/json", bytes.NewBuffer(jsonStr))
+	// return err
 }
 
 // ------------------------------------------------------------------------------
@@ -571,8 +595,16 @@ func requestAbnorBehavrsEngine(
 	}
 	log.Println("unexpected_large_rate_flow probability is: ",
 		float64(abnorBehavrsResp.Ratio)/float64(100))
+
+	ddEntries := make([]interface{}, 0)
+
+	for _, obj := range abnorBehavrsResp.DDoSEntries {
+		ddEntries = append(ddEntries, obj)
+	}
+
 	abnormalBehaviour := AbnormalBehaviour{
-		Ratio: abnorBehavrsResp.Ratio,
+		Ratio:       abnorBehavrsResp.Ratio,
+		DDoSEntries: ddEntries,
 	}
 	return abnormalBehaviour, nil
 }

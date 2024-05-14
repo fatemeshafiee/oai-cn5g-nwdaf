@@ -29,6 +29,9 @@ from src.config import *
 from src.functions import *
 import numpy as np
 import logging
+import ipaddress
+
+
 from sklearn.preprocessing import StandardScaler
 api = Blueprint('api', __name__)  
 logging.basicConfig(level=logging.INFO)
@@ -36,9 +39,9 @@ logging.basicConfig(level=logging.INFO)
 @api.route('/abnormal_behaviour/ddos', methods=['GET'])
 def handle_ddos_detection_request():
     df = create_dataframe()
-    logging.info(df[["Dst IP", "Dst Port", "Src IP", "Src Port", "Protocol", "pduseid"]])
+    logging.info(df[["Dst IP", "Dst Port", "Src IP", "Src Port", "Protocol", "pduseid", "seid"]])
     # Get the usefull rows of the DataFrame.
-    X = df.iloc[:, :-1]
+    X = df.iloc[:, :-2]
     scalar = StandardScaler(copy=True, with_mean=True, with_std=True)
     scalar.fit(X)
     X = scalar.transform(X)
@@ -65,15 +68,20 @@ def handle_ddos_detection_request():
 
 
     suspicious_ues = df["Src IP"].tolist()
+    targets = df["Dst IP"].tolist()
     suspicious_pdu_seid = df["pduseid"].tolist()
+    suspicious_seid = df["seid"].tolist()
     ratios = predict.flatten().tolist()
-
-    for ue_ip, pdu_seid, ratio in zip(suspicious_ues, suspicious_pdu_seid, ratios):
-        if not np.isnan(ratio) and ration > 0.5:
+    ddos_entries = []
+    for ue_ip, target, pdu_seid, seid, ratio in zip(suspicious_ues, targets, suspicious_pdu_seid, suspicious_seid, ratios):
+        if not np.isnan(ratio) and ratio > 0.5:
             ddos_entries.append({
-                "ue_ip":ue_ip,
+                "ue_ip":".".join(str(ipaddress.ip_address(ue_ip)).split(".")[::-1]),
+                "target_ip":".".join(str(ipaddress.ip_address(target)).split(".")[::-1]),
                 "pdu_sess_id":pdu_seid,
+                "seid":seid,
                 "ratio": ratio
+
             })
     
 

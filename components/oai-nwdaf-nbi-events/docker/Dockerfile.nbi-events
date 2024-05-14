@@ -26,7 +26,7 @@
 # * Description: Docker file of the oai-nwdaf-nbi-events.
 # */
 
-ARG BUILD_IMAGE=golang:1.19-alpine
+ARG BUILD_IMAGE=golang:1.20-alpine
 ARG TARGET_IMAGE=alpine:3.18
 
 #---------------------------------------------------------------------
@@ -36,6 +36,7 @@ FROM $BUILD_IMAGE AS oai-nwdaf-nbi-events-build
 WORKDIR /oai/nwdaf/nbi-events
 ENV CGO_ENABLED=0
 COPY go.* ./
+RUN apk add git
 RUN go mod download
 COPY . ./
 RUN go build -o bin/oai-nwdaf-nbi-events cmd/oai-nwdaf-nbi-events/main.go
