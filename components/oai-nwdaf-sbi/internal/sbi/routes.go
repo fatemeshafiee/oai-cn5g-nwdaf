@@ -30,7 +30,7 @@ package sbi
 
 import (
 	"net/http"
-)
+)/
 
 // ------------------------------------------------------------------------------
 // NewRouter - create router for HTTP server.

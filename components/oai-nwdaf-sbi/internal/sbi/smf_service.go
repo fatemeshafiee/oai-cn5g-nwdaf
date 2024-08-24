@@ -43,12 +43,11 @@ import (
 )
 
 // ------------------------------------------------------------------------------
-func storeSmfNotificationOnDB(w http.ResponseWriter, r *http.Request) {
+func storeSmfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 
 	case "POST":
 		log.Printf("Storing SMF notification in Database")
-		log.Printf("this is a log after storing log FATEMEH")
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			log.Println(err)
