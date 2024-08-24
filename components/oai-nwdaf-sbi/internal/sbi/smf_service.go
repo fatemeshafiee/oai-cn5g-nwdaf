@@ -71,6 +71,7 @@ func storeSmfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 		collectionName := config.Database.CollectionSmfName
 		smfCollection := mongoClient.Database(databaseName).Collection(collectionName)
 		opts := options.Update().SetUpsert(true)
+
 		// store reports one by one
 		for _, notif := range notifList {
 			oid := notif.GetSupi()
