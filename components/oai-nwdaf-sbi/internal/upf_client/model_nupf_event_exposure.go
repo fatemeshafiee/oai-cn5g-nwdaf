@@ -187,14 +187,16 @@ func NewNupfEventExposure(NfId string, EventNotifyUri string, Triger UpfEventTri
 	this.Subscription.NfId = NfId
 	this.Subscription.NotifyCorrelationId = NotifyCorrelationId
 	this.Subscription.EventReportingMode.Trigger = Triger
+	//this.Subscription.EventReportingMode.RepPeriod = 3
+
 	for i := 0; i < len(RequestedEventTypes); i++ {
-		Upfevent := UpfEvent{Type: RequestedEventTypes[i]}
+		Upfevent := UpfEvent{Type: RequestedEventTypes[i], ImmediateFlag: false}
 		this.Subscription.EventList = append(this.Subscription.EventList, Upfevent)
 	}
-
 	return &this
 }
-/ EventList
+
+// EventList
 func (u *UpfEventSubscription) GetEventList() []UpfEvent {
 	return u.EventList
 }
@@ -327,6 +329,7 @@ func (s *Snssai) GetSd() string {
 func (s *Snssai) SetSd(sd string) {
 	s.Sd = sd
 }
+
 // Type
 func (u *UpfEvent) GetType() EventType {
 	return u.Type
@@ -407,6 +410,7 @@ func (r *ReportingSuggestionInformation) GetReportingTimeInfo() int {
 func (r *ReportingSuggestionInformation) SetReportingTimeInfo(timeInfo int) {
 	r.ReportingTimeInfo = timeInfo
 }
+
 // FlowDescription
 func (f *FlowInformation) GetFlowDescription() string {
 	return f.FlowDescription
@@ -478,6 +482,7 @@ func (f *FlowInformation) GetFDir() FlowDirection {
 func (f *FlowInformation) SetFDir(fDir FlowDirection) {
 	f.FDir = fDir
 }
+
 // DestMacAddr
 func (e *EthFlowDescription) GetDestMacAddr() string {
 	return e.DestMacAddr
@@ -549,6 +554,7 @@ func (e *EthFlowDescription) GetDestMacAddrEnd() string {
 func (e *EthFlowDescription) SetDestMacAddrEnd(destMacAddrEnd string) {
 	e.DestMacAddrEnd = destMacAddrEnd
 }
+
 // Trigger
 func (e *EventReportingMode) GetTrigger() UpfEventTrigger {
 	return e.Trigger
@@ -647,6 +653,7 @@ func (e *EventReportingMode) GetTimeOfSubscription() time.Time {
 func (e *EventReportingMode) SetTimeOfSubscription(subscriptionTime time.Time) {
 	e.TimeOfSubscription = subscriptionTime
 }
+
 // SubscriptionInstructions
 func (m *MutingExcInstructions) GetSubscriptionInstructions() SubscriptionAction {
 	return m.SubscriptionInstructions

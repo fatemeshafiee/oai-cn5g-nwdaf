@@ -36,6 +36,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	amf_client "gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nwdaf/components/oai-nwdaf-sbi/internal/amfclient"
 	smf_client "gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nwdaf/components/oai-nwdaf-sbi/internal/smfclient"
+	upf_client "gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nwdaf/components/oai-nwdaf-sbi/internal/upf_client"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -67,6 +68,10 @@ func InitConfig() {
 		config.Server.NotifUri+config.Smf.ApiRoute,
 		config.Smf.NotifId,
 	)
+	upfEventEventSubscription(
+		config.Server.NotifUri+config.Upf.ApiRoute,
+		config.Upf.NotifCorrId,
+		config.Upf.NotifId)
 }
 
 // ------------------------------------------------------------------------------
@@ -90,7 +95,7 @@ func amfEventSubscription(
 		),
 	)
 	configuration := amf_client.NewConfiguration()
-	amfApiClient := amf_client.NewAPIClient(configuration)
+	amfApiClient := amf_client.NewAPIClient(configuration) // TODO: WITH CREATE SUB
 	resp, r, err := amfApiClient.SubscriptionsCollectionCollectionApi.CreateSubscription(
 		context.Background()).AmfCreateEventSubscription(amfCreateEventSubscription).Execute()
 	if err != nil {
@@ -188,4 +193,24 @@ func smfEventSubscription(smfEventNotifyUri string, smfNfId string) {
 		"Response from `SubscriptionsCollectionApi.CreateIndividualSubcription`: %v\n",
 		resp,
 	)
+}
+func upfEventEventSubscription(upfEventNotifyUri string,
+	upfNotifyCorrelationId string,
+	upfNfId string) {
+	cli := upf_client.NewClient()
+	// ????
+	req_type := []upf_client.EventType{upf_client.USER_DATA_USAGE_TRENDS}
+	subs := upf_client.NewNupfEventExposure(upfNfId, upfEventNotifyUri, upf_client.PERIODIC, upfNotifyCorrelationId, req_type)
+	res, err := cli.CreateSubscription(subs)
+	if err != nil {
+		log.Printf(
+			"Error when calling `SubscriptionsCollectionApi.CreateIndividualSubcription for upf``: %v\n",
+			err,
+		)
+		log.Printf(
+			"Response from `SubscriptionsCollectionApi.CreateIndividualSubcription`: %v\n",
+			res,
+		)
+
+	}
 }

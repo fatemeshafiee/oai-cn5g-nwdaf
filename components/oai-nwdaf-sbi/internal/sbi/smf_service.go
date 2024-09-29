@@ -43,7 +43,7 @@ import (
 )
 
 // ------------------------------------------------------------------------------
-func storeSmfotificationOnDB(w http.ResponseWriter, r *http.Request) {
+func storeSmfNotificationOnDB(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 
 	case "POST":
@@ -81,14 +81,12 @@ func storeSmfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 			}
 
 			// [FATEMEH] Just Logging to Check
-			jsonBytes, err := notif.MarshalJSON()
+			_, err := notif.MarshalJSON()
 			if err != nil {
 				log.Printf("[FATEMEH] Got error marshal json: %s\n", err.Error())
 				http.Error(w, "error in marshal json", http.StatusBadRequest)
 				return
 			}
-			jsonString := string(jsonBytes)
-			log.Printf("[FATEMEH] found a new event: %s\n", jsonString)
 
 			update, err := getUpdateByNotif(notif)
 			if err != nil {

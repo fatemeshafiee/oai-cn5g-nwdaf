@@ -75,10 +75,26 @@ spec:
               value: string
             - name: SMF_SUBSCR_ROUTE
               value: /nsmf-event-exposure/v1
+            - name: UPF_IP_ADDR
+              value: http://192.168.70.134
+            - name: UPF_SUBSCR_ROUTE
+              value: /nupf-ee/v1/ee-subscriptions
+            - name: UPF_API_ROUTE
+              value: /test/upf
+            - name: UPF_NOTIFY_CORRELATION_ID
+              value: string
+            - name: UPFF_NOTIFICATION_ID
+              value: "3"
+            - name: UPF_NOTIFICATION_FORWARD_ROUTE
+              value: /sbi/notification/upf
+            - name: UPF_PORT
+              value: 4355
             - name: MONGODB_COLLECTION_NAME_AMF
               value: amf
             - name: MONGODB_COLLECTION_NAME_SMF
               value: smf
+            - name: MONGODB_COLLECTION_NAME_UPF
+              value: upf
             - name: MONGODB_DATABASE_NAME
               value: testing
             - name: MONGODB_URI

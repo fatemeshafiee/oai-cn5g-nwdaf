@@ -1,6 +1,8 @@
 package upf_client
 
-import "time"
+import (
+	"time"
+)
 
 type ThroughputStatisticsMeasurement struct {
 	UlAverageThroughput string `json:"ulAverageThroughput"`
@@ -50,12 +52,12 @@ type VolumeMeasurement struct {
 }
 
 type UserDataUsageMeasurements struct {
-	AppID                           string                          `json:"appID"`
-	FlowInfo                        FlowInformation                 `json:"flowInfo"`
-	VolumeMeasurement               VolumeMeasurement               `json:"volumeMeasurement"`
-	ThroughputMeasurement           ThroughputMeasurement           `json:"throughputMeasurement"`
-	ApplicationRelatedInformation   ApplicationRelatedInformation   `json:"applicationRelatedInformation"`
-	ThroughputStatisticsMeasurement ThroughputStatisticsMeasurement `json:"throughputStatisticsMeasurement"`
+	AppID                           string                           `json:"appID"`
+	FlowInfo                        *FlowInformation                 `json:"flowInfo"`
+	VolumeMeasurement               *VolumeMeasurement               `json:"volumeMeasurement"`
+	ThroughputMeasurement           *ThroughputMeasurement           `json:"throughputMeasurement"`
+	ApplicationRelatedInformation   *ApplicationRelatedInformation   `json:"applicationRelatedInformation"`
+	ThroughputStatisticsMeasurement *ThroughputStatisticsMeasurement `json:"throughputStatisticsMeasurement"`
 }
 type NotificationItem struct {
 	Type                      EventType                   `json:"type"`
@@ -72,9 +74,9 @@ type NotificationItem struct {
 }
 
 type Notification struct {
-	NotificationItems []NotificationItem `json:"notificationItems"`
-	CorrelationId     string             `json:"correlationId"`
-	AchievedSampRatio int                `json:"achievedSampRatio"`
+	NotificationItems []*NotificationItem `json:"notificationItems"`
+	CorrelationId     string              `json:"correlationId"`
+	AchievedSampRatio int                 `json:"achievedSampRatio"`
 }
 
 // UlAverageThroughput
@@ -285,47 +287,47 @@ func (u *UserDataUsageMeasurements) SetAppID(appID string) {
 }
 
 // FlowInfo
-func (u *UserDataUsageMeasurements) GetFlowInfo() FlowInformation {
+func (u *UserDataUsageMeasurements) GetFlowInfo() *FlowInformation {
 	return u.FlowInfo
 }
 
-func (u *UserDataUsageMeasurements) SetFlowInfo(flowInfo FlowInformation) {
+func (u *UserDataUsageMeasurements) SetFlowInfo(flowInfo *FlowInformation) {
 	u.FlowInfo = flowInfo
 }
 
 // VolumeMeasurement
-func (u *UserDataUsageMeasurements) GetVolumeMeasurement() VolumeMeasurement {
+func (u *UserDataUsageMeasurements) GetVolumeMeasurement() *VolumeMeasurement {
 	return u.VolumeMeasurement
 }
 
-func (u *UserDataUsageMeasurements) SetVolumeMeasurement(volumeMeasurement VolumeMeasurement) {
+func (u *UserDataUsageMeasurements) SetVolumeMeasurement(volumeMeasurement *VolumeMeasurement) {
 	u.VolumeMeasurement = volumeMeasurement
 }
 
 // ThroughputMeasurement
-func (u *UserDataUsageMeasurements) GetThroughputMeasurement() ThroughputMeasurement {
+func (u *UserDataUsageMeasurements) GetThroughputMeasurement() *ThroughputMeasurement {
 	return u.ThroughputMeasurement
 }
 
-func (u *UserDataUsageMeasurements) SetThroughputMeasurement(throughputMeasurement ThroughputMeasurement) {
+func (u *UserDataUsageMeasurements) SetThroughputMeasurement(throughputMeasurement *ThroughputMeasurement) {
 	u.ThroughputMeasurement = throughputMeasurement
 }
 
 // ApplicationRelatedInformation
-func (u *UserDataUsageMeasurements) GetApplicationRelatedInformation() ApplicationRelatedInformation {
+func (u *UserDataUsageMeasurements) GetApplicationRelatedInformation() *ApplicationRelatedInformation {
 	return u.ApplicationRelatedInformation
 }
 
-func (u *UserDataUsageMeasurements) SetApplicationRelatedInformation(applicationRelatedInformation ApplicationRelatedInformation) {
+func (u *UserDataUsageMeasurements) SetApplicationRelatedInformation(applicationRelatedInformation *ApplicationRelatedInformation) {
 	u.ApplicationRelatedInformation = applicationRelatedInformation
 }
 
 // ThroughputStatisticsMeasurement
-func (u *UserDataUsageMeasurements) GetThroughputStatisticsMeasurement() ThroughputStatisticsMeasurement {
+func (u *UserDataUsageMeasurements) GetThroughputStatisticsMeasurement() *ThroughputStatisticsMeasurement {
 	return u.ThroughputStatisticsMeasurement
 }
 
-func (u *UserDataUsageMeasurements) SetThroughputStatisticsMeasurement(throughputStatisticsMeasurement ThroughputStatisticsMeasurement) {
+func (u *UserDataUsageMeasurements) SetThroughputStatisticsMeasurement(throughputStatisticsMeasurement *ThroughputStatisticsMeasurement) {
 	u.ThroughputStatisticsMeasurement = throughputStatisticsMeasurement
 }
 
@@ -429,11 +431,11 @@ func (n *NotificationItem) SetUserDataUsageMeasurements(userDataUsageMeasurement
 }
 
 // NotificationItems
-func (n *Notification) GetNotificationItems() []NotificationItem {
+func (n *Notification) GetNotificationItems() []*NotificationItem {
 	return n.NotificationItems
 }
 
-func (n *Notification) SetNotificationItems(notificationItems []NotificationItem) {
+func (n *Notification) SetNotificationItems(notificationItems []*NotificationItem) {
 	n.NotificationItems = notificationItems
 }
 
@@ -455,7 +457,7 @@ func (n *Notification) SetAchievedSampRatio(achievedSampRatio int) {
 	n.AchievedSampRatio = achievedSampRatio
 }
 
-func (n *Notification) GetEventNotifsOk() ([]NotificationItem, bool) {
+func (n *Notification) GetEventNotifsOk() ([]*NotificationItem, bool) {
 	if n == nil {
 		return nil, false
 	}
@@ -474,45 +476,44 @@ func (n *NotificationItem) GetEventNotifKey() (string, bool) {
 	return "[UPF_Notification] The UE Identifier is not set", false
 }
 
-//	func (o *EventNotification) GetAdIpv4AddrOk() (*string, bool) {
-//		if o == nil || o.AdIpv4Addr == nil {
-//			return nil, false
-//		}
-//		return o.AdIpv4Addr, true
-//	}
+//
+//func (n *NotificationItem) MarshalJSON() ([]byte, error) {
+//	return json.Marshal(n)
+//}
+
 func (u *UserDataUsageMeasurements) GetAppIdOk() (string, bool) {
-	if u == nil || u.AppID == nil {
+	if u == nil || u.AppID == "" {
 		return "", false
 	}
-	return u.AppID, True
+	return u.AppID, true
 }
 func (u *UserDataUsageMeasurements) GetFlowInfoOk() (*FlowInformation, bool) {
 	if u == nil || u.FlowInfo == nil {
 		return nil, false
 	}
-	return &(u.FlowInfo), true
+	return u.FlowInfo, true
 }
 func (u *UserDataUsageMeasurements) GetVolumeMeasurementOk() (*VolumeMeasurement, bool) {
 	if u == nil || u.VolumeMeasurement == nil {
 		return nil, false
 	}
-	return &(u.VolumeMeasurement), true
+	return u.VolumeMeasurement, true
 }
 func (u *UserDataUsageMeasurements) GetThroughputMeasurementOk() (*ThroughputMeasurement, bool) {
 	if u == nil || u.ThroughputMeasurement == nil {
 		return nil, false
 	}
-	return &(u.ThroughputMeasurement), true
+	return u.ThroughputMeasurement, true
 }
 func (u *UserDataUsageMeasurements) GetApplicationInformationk() (*ApplicationRelatedInformation, bool) {
 	if u == nil || u.ApplicationRelatedInformation == nil {
 		return nil, false
 	}
-	return &(u.ApplicationRelatedInformation), true
+	return u.ApplicationRelatedInformation, true
 }
-func (u *UserDataUsageMeasurements) GetThroughputStatisticsMeasurementk() (*ThroughputStatisticsMeasurement, bool) {
+func (u *UserDataUsageMeasurements) GetThroughputStatisticsMeasurementOk() (*ThroughputStatisticsMeasurement, bool) {
 	if u == nil || u.ThroughputStatisticsMeasurement == nil {
 		return nil, false
 	}
-	return &(u.ThroughputStatisticsMeasurement), true
+	return u.ThroughputStatisticsMeasurement, true
 }

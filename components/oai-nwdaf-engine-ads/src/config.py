@@ -35,12 +35,14 @@ MONGODB_URI = os.environ.get('MONGODB_URI','mongodb://localhost:27017')
 NWDAF_DATABASE_NAME = os.environ.get('MONGODB_DATABASE_NAME', 'testing')
 MONGODB_COLLECTION_NAME_AMF = os.environ.get('MONGODB_COLLECTION_NAME_AMF', 'amf')
 MONGODB_COLLECTION_NAME_SMF = os.environ.get('MONGODB_COLLECTION_NAME_SMF', 'smf')
+MONGODB_COLLECTION_NAME_UPF = os.environ.get('MONGODB_COLLECTION_NAME_UPF', 'upf')
 
 # Global variables
 client = MongoClient(MONGODB_URI)
 nwdaf_db = client[NWDAF_DATABASE_NAME]
 amf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_AMF]
 smf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_SMF]
+upf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_UPF]
 
 # Autoencoder parameters
 ulrf_model = keras.models.load_model('models/unexpected_large_rate_flow/model.h5')

@@ -57,6 +57,15 @@ type SbiConfig struct {
 		NotifId           string `envconfig:"SMF_NOTIFICATION_ID"`
 		NorifForwardRoute string `envconfig:"SMF_NOTIFICATION_FORWARD_ROUTE"`
 	}
+	Upf struct {
+		IpAddr            string `envconfig:"UPF_IP_ADDR"`
+		SubRoute          string `envconfig:"UPF_SUBSCR_ROUTE"`
+		ApiRoute          string `envconfig:"UPF_API_ROUTE"`
+		NotifCorrId       string `envconfig:"UPF_NOTIFY_CORRELATION_ID"`
+		NotifId           string `envconfig:"UPFF_NOTIFICATION_ID"`
+		NorifForwardRoute string `envconfig:"UPF_NOTIFICATION_FORWARD_ROUTE"`
+		//Port              string `envconfig:"UPF_PORT"`
+	}
 	Database struct {
 		Uri               string `envconfig:"MONGODB_URI"`
 		DbName            string `envconfig:"MONGODB_DATABASE_NAME"`

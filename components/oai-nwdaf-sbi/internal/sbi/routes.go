@@ -30,7 +30,7 @@ package sbi
 
 import (
 	"net/http"
-)/
+)
 
 // ------------------------------------------------------------------------------
 // NewRouter - create router for HTTP server.
@@ -39,5 +39,6 @@ func NewRouter() http.Handler {
 	// register routes
 	mux.HandleFunc(config.Amf.ApiRoute, storeAmfNotificationOnDB)
 	mux.HandleFunc(config.Smf.ApiRoute, storeSmfNotificationOnDB)
+	mux.HandleFunc(config.Upf.ApiRoute, storeUpfotificationOnDB)
 	return mux
 }

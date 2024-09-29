@@ -1,14 +1,15 @@
 package sbi
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
+	"gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nwdaf/components/oai-nwdaf-sbi/internal/upf_client"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"io/ioutil"
 	"log"
 	"net/http"
-	upf_client"github.com/fatemeshafiee/oai-cn5g-nwdaf/components/oai-nwdaf-sbi/internal/upf_client"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"time"
 )
 
 func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
@@ -21,15 +22,16 @@ func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "[UPF_Notification] Error reading request body from UPF", http.StatusInternalServerError)
 			return
 		}
-		log.Println(string(body[:])
-		var upfNotification Notification *upf_client.Notification
-		err = json.Unmarshal(body, &upfNotification)
+		log.Println(string(body[:]))
+		upfNotification := new(upf_client.Notification)
+		//upfNotification := upf_client.Notification{}
+		err = json.Unmarshal(body, upfNotification)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, "[UPF_Notification] Error unmarshaling JSON received a UPF Notification", http.StatusBadRequest)
 			return
 		}
-		notifList, ok:= upfNotification.GetEventNotifsOk()
+		notifList, ok := upfNotification.GetEventNotifsOk()
 		if !ok {
 			http.Error(w, "[UPF_Notification] Error in getting EventNotifs from UPF notification", http.StatusBadRequest)
 			return
@@ -44,49 +46,89 @@ func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, oid, http.StatusBadRequest)
 				return
 			}
-			jsonBytes, err := notif.MarshalJSON()
+			jsonBytes, err := json.Marshal(notif)
 			if err != nil {
 				http.Error(w, "[UPF_Notification] error in marshal json UPF Notification", http.StatusBadRequest)
 				return
 			}
 			jsonString := string(jsonBytes)
 			log.Printf("[UPF_Notification] found a new event: %s\n", jsonString)
-			update, err := getUpdateByNotif(notif)
 
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
 
+			//r := upfCollection.FindOne(ctx, &bson.M{"_id": oid})
+			//if r.Err() != nil {
 
+			//c, err := getUPFCreateByNotif(notif)
+			//if err != nil {
+			//	http.Error(w, "[UPF_Notification] error in getUPFCreateByNotif", http.StatusBadRequest)
+			//	return
+			//}
+			//
+			//res, err := upfCollection.InsertOne(ctx, c)
+			//if err != nil {
+			//	http.Error(w, "[UPF_Notification] error in updating the SMF collection", http.StatusBadRequest)
+			//	return
+			//}
+			//if res.MatchedCount != 0 {
+			//	log.Printf("[UPF_Notification] matched and updated an existing notification report from UPF")
+			//}
+			//if res.UpsertedCount != 0 {
+			//	log.Printf("[UPF_Notification] inserted a new notification report from UPF with ID %v\n", res.UpsertedID)
+			//}
+			//} else {
+			//
+			update, err := getUPFUpdateByNotif(notif)
+			if err != nil {
+				http.Error(w, "[UPF_Notification] error in getUpdateByNotif", http.StatusBadRequest)
+				return
+			}
+
+			res, err := upfCollection.UpdateByID(ctx, oid, update, opts)
+			if err != nil {
+				http.Error(w, "[UPF_Notification] error in updating the SMF collection", http.StatusBadRequest)
+				return
+			}
+			if res.MatchedCount != 0 {
+				log.Printf("[UPF_Notification] matched and updated an existing notification report from UPF")
+			}
+			if res.UpsertedCount != 0 {
+				log.Printf("[UPF_Notification] inserted a new notification report from UPF with ID %v\n", res.UpsertedID)
+			}
+
+			//}
 
 		}
-
-
-
+		w.WriteHeader(http.StatusOK)
 
 	default:
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		http.Error(w, "[UPF_Notification] Method not allowed", http.StatusMethodNotAllowed)
 
 	}
 
 }
-func getUpdateByNotif(notif upf_client.NotificationItem) (bson.D, error) {
-	var update bson.D
-	var err error
-	// TODO: implement other report types
-	// TODO: implement other parts of userDataUsageMeasurements, now it is just for volume measurements
-	switch notif.GetType() {
-	case upf_client.USER_DATA_USAGE_MEASURES:
-		update, err = getUpdateUE_USAGE_MEASURES(notif)
 
-	default:
-		log.Printf("notif event %s is not supported currently",
-			string(notif.GetType()))
-		return nil, errors.New("invalid notif event")
-	}
-	if err != nil {
-		return nil, err
+//
+//func getUPFCreateByNotif(notif *upf_client.NotificationItem) (bson.M, error) {
+//	timeStamp := time.Now().Unix()
+//	create := bson.M{
+//		"_id":              notif.GetEventNotifKey(),
+//		"upfeventexposure": bson.A{notif},
+//		"lastmodified":     timeStamp,
+//	}
+//	return create, nil
+//}
+
+func getUPFUpdateByNotif(notif *upf_client.NotificationItem) (bson.D, error) {
+	timeStamp := time.Now().Unix()
+	update := bson.D{
+		{"$set", bson.D{
+			{"lastmodified", timeStamp},
+		}},
+		{"$push", bson.M{
+			"upf_volume": notif,
+		}},
 	}
 	return update, nil
-}
-func getUpdateUE_USAGE_MEASURES(notif upf_client.NotificationItem) (bson.D, error) {
-
-
 }
