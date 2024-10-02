@@ -77,13 +77,14 @@ services:
             - ENGINE_URI=http://192.168.74.155:8080
             - ENGINE_ADS_URI=http://192.168.74.157:8080
             - ENGINE_DDOS_URI=http://192.168.74.159:8080
+            - ENGINE_VDDOS_URI=http://192.168.74.161:8080
             - ENGINE_NUM_OF_UE_ROUTE=/network_performance/num_of_ue
             - ENGINE_SESS_SUCC_RATIO_ROUTE=/network_performance/sess_succ_ratio
             - ENGINE_UE_COMMUNICATION_ROUTE=/ue_communication
             - ENGINE_UE_MOBILITY_ROUTE=/ue_mobility
             - ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
             - ENGINE_DDOS_DETECTION=/abnormal_behaviour/ddos
-            
+            - ENGINE_VDDOS_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
             - SERVER_ADDR=0.0.0.0:8080
         ports: 
             - "6060:8080"
@@ -176,6 +177,27 @@ services:
         networks:
             nwdaf_net:
                 ipv4_address: 192.168.74.159
+    nwdaf-engine-vddos:
+        container_name: nwdaf-engine-vddos
+        image: nwdaf-engine-vddos:latest
+        environment:
+            - MONGODB_URI=mongodb://192.168.74.156:27017
+            - MONGODB_DATABASE_NAME=testing
+            - MONGODB_COLLECTION_NAME_AMF=amf
+            - MONGODB_COLLECTION_NAME_SMF=smf
+            - MONGODB_COLLECTION_NAME_UPF=upf
+            - ENGINE_VDDOS_DETECTION=/abnormal_behaviour/vddos
+            - SERVER_PORT=8080
+        depends_on:
+            - oai-nwdaf-database
+        healthcheck:
+            test: netstat -ltn | grep -c 8080
+            interval: 5s
+            timeout: 2s
+            retries: 15
+        networks:
+            nwdaf_net:
+                ipv4_address: 192.168.74.161
 # ------------------------ DATABASE ------------------------
     oai-nwdaf-database:
         container_name: oai-nwdaf-database

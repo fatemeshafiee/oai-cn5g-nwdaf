@@ -38,17 +38,17 @@ def add_time_columns(df, timestamp_col):
 
 def create_dataframe():
     data = []
-    for doc in upf_collection.find():
-        for measurement in doc['upf_volume']:
-            volume = measurement['volumemeasurement']
+    for doc in smf_collection.find():
+        for qosmon in doc['qosmonlist']:
             data.append({
-                "timestamp": measurement['timestamp'],
+                "timestamp": qosmon['timestamp'],
+                "pduseid": qosmon['pduseid'],
                 # "value_ul": qosmon['customized_data']['usagereport']['volume']['uplink'] ,
                 # "value_dl": qosmon['customized_data']['usagereport']['volume']['downlink'],
                 # "value_total": qosmon['customized_data']['usagereport']['volume']['total']
-                "value_ul": volume['ulvolume'] ,
-                "value_dl": volume['dlvolume'],
-                "value_total": volume['totalvolume']
+                "value_ul": qosmon['customusagereport']['volume']['uplink'] ,
+                "value_dl": qosmon['customusagereport']['volume']['downlink'],
+                "value_total": qosmon['customusagereport']['volume']['total']
             })
     # Create a pandas dataframe
     df = pd.DataFrame(data)
