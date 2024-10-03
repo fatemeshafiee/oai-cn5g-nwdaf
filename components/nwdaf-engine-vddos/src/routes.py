@@ -35,20 +35,14 @@ api = Blueprint('api', __name__)
 @api.route('/abnormal_behaviour/suspicion_of_ddos_attack', methods=['GET'])
 def handle_suspicion_of_ddos_attack():
     df = create_dataframe()
-    ue_list = []
-    for index, row in df.iterrows():
-        row_dict = row.to_dict()
-        logging.info(f"the row data is: {row_dict}")
-        scaler.learn_one(row_dict)
-        scaled_data = scaler.transform_one(row_dict)
-        score = model.score_one(scaled_data)
-        is_anomaly = model.classify(score)
-        if is_anomaly:
-            ue_list.append(row_dict)
-            logging.info(row_dict)
     ddos_report = []
-    if len(ue_list) != 0:
-        for ue_info in ue_list:
+    ddos_info = {}
+    for index, row in df.iterrows():
+        y = model.predict(row[['ulVolume','dlVolume','totalVolume','ulPacket','dlPacket','totalPacket']])
+        if y == 1:
+            ddos_info.add(df[['SrcIp','DstIp','SrcPort','DstPort']][index])
+    if len(ddos_info) != 0:
+        for ue_info in ddos_info:
             ddos_report.append({
                 "ue_ip":".".join(str(ipaddress.ip_address(ue_info['SrcIp'])).split(".")[::-1]),
                 "target_ip":".".join(str(ipaddress.ip_address(ue_info['DstIp'])).split(".")[::-1]),

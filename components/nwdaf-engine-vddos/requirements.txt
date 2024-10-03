@@ -40,4 +40,5 @@ urllib3==1.26.15
 Werkzeug==2.0.3
 wrapt==1.12.1
 zipp==3.6.0
-river==0.21.2
+scikit-learn
+joblib

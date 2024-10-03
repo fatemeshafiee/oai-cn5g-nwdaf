@@ -27,11 +27,10 @@
 import os
 from pymongo import MongoClient
 import pickle
-from river import anomaly
-from river import compose
-from river import datasets
-from river import metrics
-from river import preprocessing
+import joblib
+
+
+
 
 # Env Variables
 SERVER_PORT = os.environ.get('SERVER_PORT','8989')
@@ -45,8 +44,4 @@ nwdaf_db = client[NWDAF_DATABASE_NAME]
 upf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_UPF]
 
 # Model parameters
-model = anomaly.QuantileFilter(
-    anomaly.OneClassSVM(nu=0.2),
-    q=0.995
-)
-scaler = preprocessing.StandardScaler()
+model = joblib.load('random_forest_ddos_model.pkl')
