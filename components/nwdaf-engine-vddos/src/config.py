@@ -28,6 +28,10 @@ import os
 from pymongo import MongoClient
 import pickle
 import joblib
+import pickle
+
+# Load the model from the file
+
 
 
 
@@ -42,6 +46,8 @@ MONGODB_COLLECTION_NAME_UPF = os.environ.get('MONGODB_COLLECTION_NAME_UPF', 'upf
 client = MongoClient(MONGODB_URI)
 nwdaf_db = client[NWDAF_DATABASE_NAME]
 upf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_UPF]
-
+current_time = None
 # Model parameters
-model = joblib.load('random_forest_ddos_model.pkl')
+#components/nwdaf-engine-vddos/models/random_forest_model_pickle.pkl
+with open('models/random_forest_model_pickle.pkl', 'rb') as file:
+    model = pickle.load(file)

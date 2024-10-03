@@ -28,31 +28,45 @@ from src.config import *
 from src.functions import *
 from flask import Blueprint, jsonify
 import logging
-
+from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 api = Blueprint('api', __name__)
 
 @api.route('/abnormal_behaviour/suspicion_of_ddos_attack', methods=['GET'])
 def handle_suspicion_of_ddos_attack():
+    logging.info(type(model))
     df = create_dataframe()
+    global current_time
+    if current_time != None:
+        df['timestamp'] = pd.to_datetime(df['timestamp'], format='%Y-%m-%dT%H:%M:%S.%fZ')
+        df = df[df['timestamp'] > current_time]
+        current_time = datetime.now()
+#     logging.info(f"the volume is: {df}")
     ddos_report = []
-    ddos_info = {}
+    ddos_info = set()
+
     for index, row in df.iterrows():
-        y = model.predict(row[['ulVolume','dlVolume','totalVolume','ulPacket','dlPacket','totalPacket']])
+        row_data =  row[['ActualUlVolume', 'ActualDlVolume', 'ActualTotalVolume', 'ActualUlPacket', 'ActualDlPacket', 'ActualTotalPacket']].values.reshape(1, -1)
+        y = model.predict(row_data)[0]
         if y == 1:
-            ddos_info.add(df[['SrcIp','DstIp','SrcPort','DstPort']][index])
+            ddos_info.add(tuple(row[['seID','SrcIp', 'DstIp', 'SrcPort', 'DstPort']]))
+            df_filtered = df[df['SrcIp'] != row['SrcIp']]
+            df = df_filtered
+
+
     if len(ddos_info) != 0:
         for ue_info in ddos_info:
             ddos_report.append({
-                "ue_ip":".".join(str(ipaddress.ip_address(ue_info['SrcIp'])).split(".")[::-1]),
-                "target_ip":".".join(str(ipaddress.ip_address(ue_info['DstIp'])).split(".")[::-1]),
+                "ue_ip":".".join(str(ipaddress.ip_address(ue_info[1])).split(".")),
+                "target_ip":".".join(str(ipaddress.ip_address(ue_info[2])).split(".")),
 #                 "pdu_sess_id":pdu_seid,
-                "seid":ue_info['seID'],
+                "seid":ue_info[0],
             }
             )
     response_data = {'ddos_entries': ddos_report}
     return_data = jsonify(response_data)
     logging.info(return_data)
+
 
     return jsonify(response_data)
 

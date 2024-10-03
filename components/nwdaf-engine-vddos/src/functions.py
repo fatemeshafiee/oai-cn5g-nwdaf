@@ -63,6 +63,7 @@ def create_dataframe():
 
     for doc in upf_collection.find():
         for rep_per_ue in doc['upfeventexposure']:
+            timestamp = rep_per_ue['timestamp']
             for user_usage in rep_per_ue['userdatausagemeasurements']:
                 volume = user_usage['volumemeasurement']
                 flowDescription = user_usage['flowinfo']['flowdescription']
@@ -91,7 +92,8 @@ def create_dataframe():
                     "totalVolume": totalVolume, #- lastTotalVolume,
                     "ulPacket": ulPacket, #- lastUlPacket,
                     "dlPacket": dlPacket, #- lastDlPacket,
-                    "totalPacket": totalPacket, #- lastTotalPacket
+                    "totalPacket": totalPacket,
+                     'timestamp':timestamp #- lastTotalPacket
                 })
     df = pd.DataFrame(data)
 
