@@ -37,10 +37,10 @@ api = Blueprint('api', __name__)
 def handle_suspicion_of_ddos_attack():
     logging.info(type(model))
     df = create_dataframe()
-    df.to_csv('nwdaf_collected.csv', index=False)
+#     df.to_csv('nwdaf_collected.csv', index=False)
     global current_time
     if current_time != None:
-        df['timestamp'] = pd.to_datetime(df['timestamp'], format='%Y-%m-%dT%H:%M:%S.%fZ')
+
         df = df[df['timestamp'] > current_time]
         current_time = datetime.now()
 #     logging.info(f"the volume is: {df}")
@@ -48,7 +48,7 @@ def handle_suspicion_of_ddos_attack():
     ddos_info = set()
 
     for index, row in df.iterrows():
-        row_data =  row[['ActualUlVolume', 'ActualDlVolume', 'ActualTotalVolume', 'ActualUlPacket', 'ActualDlPacket', 'ActualTotalPacket']].values.reshape(1, -1)
+        row_data =  row[['ActualUlVolume','ActualDlVolume','ActualTotalVolume','ActualUlPacket','ActualDlPacket','ActualTotalPacket','UlRate','DlRate','UlPacketRate','DlPacketRate', 'PacketRatio', 'VolumeRatio','VolumeDifference']].values.reshape(1, -1)
         y = model.predict(row_data)[0]
         if y == 1: #attack
             ddos_info.add(tuple(row[['seID','SrcIp', 'DstIp', 'SrcPort', 'DstPort']]))
