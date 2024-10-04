@@ -29,6 +29,7 @@ from src.functions import *
 from flask import Blueprint, jsonify
 import logging
 from datetime import datetime
+import pandas as pd
 logging.basicConfig(level=logging.INFO)
 api = Blueprint('api', __name__)
 
@@ -36,6 +37,7 @@ api = Blueprint('api', __name__)
 def handle_suspicion_of_ddos_attack():
     logging.info(type(model))
     df = create_dataframe()
+    df.to_csv('nwdaf_collected.csv', index=False)
     global current_time
     if current_time != None:
         df['timestamp'] = pd.to_datetime(df['timestamp'], format='%Y-%m-%dT%H:%M:%S.%fZ')
