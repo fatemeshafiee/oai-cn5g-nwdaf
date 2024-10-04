@@ -48,7 +48,7 @@ def handle_suspicion_of_ddos_attack():
     for index, row in df.iterrows():
         row_data =  row[['ActualUlVolume', 'ActualDlVolume', 'ActualTotalVolume', 'ActualUlPacket', 'ActualDlPacket', 'ActualTotalPacket']].values.reshape(1, -1)
         y = model.predict(row_data)[0]
-        if y == 1:
+        if y == 1: #attack
             ddos_info.add(tuple(row[['seID','SrcIp', 'DstIp', 'SrcPort', 'DstPort']]))
             df_filtered = df[df['SrcIp'] != row['SrcIp']]
             df = df_filtered
