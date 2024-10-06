@@ -49,6 +49,6 @@ upf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_UPF]
 current_time = None
 # Model parameters
 #components/nwdaf-engine-vddos/models/random_forest_model_pickle.pkl
-with open('models/random_forest_model_benign_as_0_f.pkl', 'rb') as file:
+with open('models/random_forest_model_benign_as_0_f_2.pkl', 'rb') as file:
     model = pickle.load(file)
 # model = joblib.load('models/knn_model_kdtree.pkl')

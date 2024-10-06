@@ -58,7 +58,7 @@ spec:
             - name: ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE
               value: /abnormal_behaviour/unexpected_large_rate_flow
             - name: ENGINE_DDOS_DETECTION
-              value: /abnormal_behaviour/ddos
+              value: //abnormal_behaviour/suspicion_of_ddos_attack
             - name: ENGINE_URI
               value: http://oai-nwdaf-engine:8080
             - name: ENGINE_ADS_URI

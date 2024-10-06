@@ -98,7 +98,7 @@ type AbnorBehavrsResp struct {
 type DDoSEntry struct {
 	UeIp      string  `json:"ue_ip,omitempty"`
 	TargetIp  string  `json:"target_ip,omitempty"`
-	PduSessId uint64  `json:"pdu_sess_id"`
+	PduSessId uint64  `json:"pdu_sess_id,omitempty"`
 	SeId      uint64  `json:"seid"`
 	Ratio     float64 `json:"ratio,omitempty"`
 }
@@ -352,7 +352,7 @@ func getAbnormalBehaviourNotifData(
 			AbnorBehavrsInfo, err = requestAbnorBehavrsEngine(
 				eventSub,
 				excepReq,
-				config.Engine.DDoSUri+config.Routes.DDoSDetection,
+				config.Engine.VDDoSUri+config.Routes.VDDoSDetection,
 			)
 
 			if err != nil {

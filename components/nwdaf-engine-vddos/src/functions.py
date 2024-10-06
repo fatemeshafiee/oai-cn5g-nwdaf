@@ -29,6 +29,7 @@ import logging
 from src.config import *
 import json
 import ipaddress
+import numpy as np
 
 def add_time_columns(df, timestamp_col):
     df['timestamp'] = pd.to_datetime(df[timestamp_col], unit='s')
@@ -108,17 +109,17 @@ def create_dataframe():
 
     df = df.drop(columns=['ulVolume', 'dlVolume', 'totalVolume', 'ulPacket', 'dlPacket', 'totalPacket'])
 #     df["flowDuration"] = grouped_df['timestamp'].transform(lambda x: x.max() - x.min())
-    df['timestamp'] = pd.to_datetime(df['timestamp'])
-    df['UlRate'] = df['ActualUlVolume'] / df['timestamp'].diff().dt.total_seconds()
-    df['DlRate'] = df['ActualDlVolume'] / df['timestamp'].diff().dt.total_seconds()
-    df['UlPacketRate'] = df['ActualUlPacket'] / df['timestamp'].diff().dt.total_seconds()
-    df['DlPacketRate'] = df['ActualDlPacket'] / df['timestamp'].diff().dt.total_seconds()
-    df['PacketRatio'] = df['ActualUlPacket'] / (df['ActualDlPacket'] + 1)
-    df['VolumeRatio'] = df['ActualUlVolume'] / (df['ActualDlVolume'] + 1)
-    df['VolumeDifference'] = df['ActualUlVolume'] - df['ActualDlVolume']
+#     df['timestamp'] = pd.to_datetime(df['timestamp'])
+#     df['UlRate'] = df['ActualUlVolume'] / df['timestamp'].diff().dt.total_seconds()
+#     df['DlRate'] = df['ActualDlVolume'] / df['timestamp'].diff().dt.total_seconds()
+#     df['UlPacketRate'] = df['ActualUlPacket'] / df['timestamp'].diff().dt.total_seconds()
+#     df['DlPacketRate'] = df['ActualDlPacket'] / df['timestamp'].diff().dt.total_seconds()
+#     df['PacketRatio'] = df['ActualUlPacket'] / (df['ActualDlPacket'] + 1)
+#     df['VolumeRatio'] = df['ActualUlVolume'] / (df['ActualDlVolume'] + 1)
+#     df['VolumeDifference'] = df['ActualUlVolume'] - df['ActualDlVolume']
     df.set_index('timestamp', inplace=True)
     grouped_df = df.groupby(['seID', 'SrcIp', 'DstIp', 'SrcPort', 'DstPort'])
-    result = grouped_df.resample('75S').agg({
+    result = grouped_df.resample('60S').agg({
         'ActualUlVolume': 'sum',
         'ActualDlVolume': 'sum',
         'ActualTotalVolume' : 'sum',
@@ -127,12 +128,17 @@ def create_dataframe():
         'ActualTotalPacket': 'sum'
 
     })
-    result['UlRate'] = result['ActualUlVolume'] / 75  # Assuming 75 seconds between resamples
-    result['DlRate'] = result['ActualDlVolume'] / 75
-    result['UlPacketRate'] = result['ActualUlPacket'] / 75
-    result['DlPacketRate'] = result['ActualDlPacket'] / 75
+    result['UlRate'] = result['ActualUlVolume'] / 60 # Assuming 60 seconds between resamples
+    result['DlRate'] = result['ActualDlVolume'] / 60
+    result['UlPacketRate'] = result['ActualUlPacket'] / 60
+    result['DlPacketRate'] = result['ActualDlPacket'] / 60
     result['PacketRatio'] = result['ActualUlPacket'] / (result['ActualDlPacket'] + 1)
     result['VolumeRatio'] = result['ActualUlVolume'] / (result['ActualDlVolume'] + 1)
     result['VolumeDifference'] = result['ActualUlVolume'] - result['ActualDlVolume']
+    result = result.reset_index()
+    result.replace([np.inf, -np.inf], np.nan, inplace=True)
+    result.fillna(0, inplace=True)
 
-    return df
+
+
+    return result
