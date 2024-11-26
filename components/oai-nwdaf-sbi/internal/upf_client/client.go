@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 // Upf struct {
@@ -38,8 +40,9 @@ func (cli *UpfClient) CreateSubscription(sr *SubscriptionRequest) (*Subscription
 		fmt.Println("Error marshalling JSON:", err)
 		return nil, err
 	}
+	fmt.Println(string(jsonData))
 	subscription_request := []byte(jsonData)
-	fmt.Println(jsonData)
+
 	posturl := cli.Ip + ":" + cli.Port + cli.Route
 	r, err := http.NewRequest("POST", posturl, bytes.NewBuffer(subscription_request))
 	if err != nil {
@@ -52,6 +55,8 @@ func (cli *UpfClient) CreateSubscription(sr *SubscriptionRequest) (*Subscription
 	res, err := client.Do(r)
 	if err != nil {
 		fmt.Println("Error sending http request:", err)
+		return nil, err
+
 	}
 
 	defer res.Body.Close()
@@ -60,12 +65,15 @@ func (cli *UpfClient) CreateSubscription(sr *SubscriptionRequest) (*Subscription
 	derr := json.NewDecoder(res.Body).Decode(post)
 	if derr != nil {
 		fmt.Println("Error getting response:", err)
-		return post, err
+		return post, derr
 	}
 	if res.StatusCode != http.StatusCreated {
 		fmt.Println("the status is not 201:", err, res.StatusCode)
-		return post, err
-	}
+		return nil, fmt.Errorf("unexpected response status: %d", res.StatusCode)
 
+	}
+	currentTime := time.Now()
+	formattedTime := currentTime.Format("1979-03-10 15:04:05.000")
+	log.Printf("[DSN_Latency] sending request for data collection %s", formattedTime)
 	return post, nil
 }

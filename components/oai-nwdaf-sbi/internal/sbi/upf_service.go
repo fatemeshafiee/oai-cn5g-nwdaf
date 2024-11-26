@@ -15,11 +15,15 @@ import (
 func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
-		log.Printf("[UPF_Notification] Storing UPF notification in Database")
+		customHeader := r.Header.Get("Report_number")
+		currentTime := time.Now()
+		// Format as "YYYY-MM-DD HH:MM:SS"
+		formattedTime := currentTime.Format("1979-03-10 15:04:05.000")
+		log.Printf("[DSN_Latency] Storing UPF notification in Database, the report number and time %s, %s", customHeader, formattedTime)
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			log.Println(err)
-			http.Error(w, "[UPF_Notification] Error reading request body from UPF", http.StatusInternalServerError)
+			http.Error(w, "[DSN_Latency] Error reading request body from UPF", http.StatusInternalServerError)
 			return
 		}
 		log.Println(string(body[:]))

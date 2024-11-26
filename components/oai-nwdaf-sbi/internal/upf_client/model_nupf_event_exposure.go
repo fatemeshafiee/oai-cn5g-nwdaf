@@ -181,16 +181,19 @@ type SubscriptionRequest struct {
 	SupportedFeatures string               `json:"supportedFeatures"`
 }
 
-func NewNupfEventExposure(NfId string, EventNotifyUri string, Triger UpfEventTrigger, NotifyCorrelationId string, RequestedEventTypes []EventType) *SubscriptionRequest {
+func NewNupfEventExposure(NfId string, EventNotifyUri string, Triger UpfEventTrigger, NotifyCorrelationId string, RequestedEventTypes []EventType, RepPeriod int, measurementType [][]MeasurementType, measurement []GranularityOfMeasurement, anyUE bool) *SubscriptionRequest {
 	this := SubscriptionRequest{}
 	this.Subscription.EventNotifyUri = EventNotifyUri
 	this.Subscription.NfId = NfId
 	this.Subscription.NotifyCorrelationId = NotifyCorrelationId
 	this.Subscription.EventReportingMode.Trigger = Triger
-	//this.Subscription.EventReportingMode.RepPeriod = 3
+	this.Subscription.EventReportingMode.RepPeriod = RepPeriod
+	this.Subscription.AnyUe = anyUE
 
 	for i := 0; i < len(RequestedEventTypes); i++ {
 		Upfevent := UpfEvent{Type: RequestedEventTypes[i], ImmediateFlag: false}
+		Upfevent.MeasurementTypes = measurementType[i]
+		Upfevent.GranularityOfMeasurement = measurement[i]
 		this.Subscription.EventList = append(this.Subscription.EventList, Upfevent)
 	}
 	return &this

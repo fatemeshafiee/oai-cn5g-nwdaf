@@ -63,7 +63,7 @@ def create_dataframe():
     data = []
 
     for doc in upf_collection.find():
-        for rep_per_ue in doc['upfeventexposure']:
+        for rep_per_ue in doc['upf_volume']:
             timestamp = rep_per_ue['timestamp']
             for user_usage in rep_per_ue['userdatausagemeasurements']:
                 volume = user_usage['volumemeasurement']

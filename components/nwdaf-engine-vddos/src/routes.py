@@ -30,6 +30,7 @@ from flask import Blueprint, jsonify
 import logging
 from datetime import datetime
 import pandas as pd
+from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 api = Blueprint('api', __name__)
 
@@ -68,12 +69,14 @@ def handle_suspicion_of_ddos_attack():
                 "target_ip":".".join(str(ipaddress.ip_address(ue_info[2])).split(".")),
 #                 "pdu_sess_id":pdu_seid,
                 "seid":ue_info[0]
-#                 "prob": ue_info[5]
+#                  "prob": 1
             }
             )
     response_data = {'ddos_entries': ddos_report}
     return_data = jsonify(response_data)
     logging.info(return_data)
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+    logging.info(f"the report for this event created: {current_time}")
 
 
     return jsonify(response_data)
