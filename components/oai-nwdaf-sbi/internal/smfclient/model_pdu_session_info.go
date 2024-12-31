@@ -15,6 +15,7 @@ import (
 )
 
 // PduSessionInfo Represents session information.
+// FATEMEH
 type PduSessionInfo struct {
 	N4SessId *string `json:"n4SessId,omitempty"`
 	// indicating a time in seconds.

@@ -41,6 +41,7 @@ import (
 )
 
 // ------------------------------------------------------------------------------
+// FATEMEH, change here in order to change the UE communication report
 // ueComm - get ue communications statistics.
 func ueComm(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {

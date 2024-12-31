@@ -64,7 +64,7 @@ type SbiConfig struct {
 		NotifCorrId       string `envconfig:"UPF_NOTIFY_CORRELATION_ID"`
 		NotifId           string `envconfig:"UPFF_NOTIFICATION_ID"`
 		NorifForwardRoute string `envconfig:"UPF_NOTIFICATION_FORWARD_ROUTE"`
-		//Port              string `envconfig:"UPF_PORT"`
+		Port              string `envconfig:"UPF_PORT"`
 	}
 	Database struct {
 		Uri               string `envconfig:"MONGODB_URI"`
