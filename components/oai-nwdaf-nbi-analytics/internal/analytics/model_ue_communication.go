@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// FATEMEH
 // UeCommunication - Represents UE communication information.
 type UeCommunication struct {
 

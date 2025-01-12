@@ -83,7 +83,7 @@ docker build --network=host --no-cache  \
 ```bash
 docker build --network=host --no-cache  \
             --target oai-nwdaf-engine-ads  --tag oai-nwdaf-engine-ads:latest \
-            --file components/oai-nwdaf-engine-ads/docker/Dockerfile.engine-vddos \
+            --file components/oai-nwdaf-engine-ads/docker/Dockerfile.engine-bot \
             components/oai-nwdaf-engine-ads
 ```
 

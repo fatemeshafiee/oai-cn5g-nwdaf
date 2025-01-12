@@ -85,6 +85,7 @@ services:
             - ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
             - ENGINE_DDOS_DETECTION=/abnormal_behaviour/ddos
             - ENGINE_VDDOS_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
+            - ENGINE_BOT_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
             - SERVER_ADDR=0.0.0.0:8080
         ports: 
             - "6060:8080"
@@ -137,56 +138,77 @@ services:
         networks:
             nwdaf_net:
                 ipv4_address: 192.168.74.155
-    oai-nwdaf-engine-ads:
-        container_name: oai-nwdaf-engine-ads
-        image: oai-nwdaf-engine-ads:latest
-        environment:
-            - MONGODB_URI=mongodb://192.168.74.156:27017
-            - MONGODB_DATABASE_NAME=testing
-            - MONGODB_COLLECTION_NAME_AMF=amf
-            - MONGODB_COLLECTION_NAME_SMF=smf
-            - ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
-            - SERVER_PORT=8080
-        depends_on:
-            - oai-nwdaf-database
-        healthcheck:
-            test: netstat -ltn | grep -c 8080
-            interval: 5s
-            timeout: 2s
-            retries: 15
-        networks:
-            nwdaf_net:
-                ipv4_address: 192.168.74.157
-    nwdaf-engine-ddos:
-        container_name: nwdaf-engine-ddos
-        image: nwdaf-engine-ddos:latest
-        environment:
-            - MONGODB_URI=mongodb://192.168.74.156:27017
-            - MONGODB_DATABASE_NAME=testing
-            - MONGODB_COLLECTION_NAME_AMF=amf
-            - MONGODB_COLLECTION_NAME_SMF=smf
-            - ENGINE_DDOS_DETECTION=/abnormal_behaviour/ddos
-            - SERVER_PORT=8080
-        depends_on:
-            - oai-nwdaf-database
-        healthcheck:
-            test: netstat -ltn | grep -c 8080
-            interval: 5s
-            timeout: 2s
-            retries: 15
-        networks:
-            nwdaf_net:
-                ipv4_address: 192.168.74.159
-    nwdaf-engine-vddos:
-        container_name: nwdaf-engine-vddos
-        image: nwdaf-engine-vddos:latest
+#    oai-nwdaf-engine-ads:
+#        container_name: oai-nwdaf-engine-ads
+#        image: oai-nwdaf-engine-ads:latest
+#        environment:
+#            - MONGODB_URI=mongodb://192.168.74.156:27017
+#            - MONGODB_DATABASE_NAME=testing
+#            - MONGODB_COLLECTION_NAME_AMF=amf
+#            - MONGODB_COLLECTION_NAME_SMF=smf
+#            - ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
+#            - SERVER_PORT=8080
+#        depends_on:
+#            - oai-nwdaf-database
+#        healthcheck:
+#            test: netstat -ltn | grep -c 8080
+#            interval: 5s
+#            timeout: 2s
+#            retries: 15
+#        networks:
+#            nwdaf_net:
+#                ipv4_address: 192.168.74.157
+#    nwdaf-engine-ddos:
+#        container_name: nwdaf-engine-ddos
+#        image: nwdaf-engine-ddos:latest
+#        environment:
+#            - MONGODB_URI=mongodb://192.168.74.156:27017
+#            - MONGODB_DATABASE_NAME=testing
+#            - MONGODB_COLLECTION_NAME_AMF=amf
+#            - MONGODB_COLLECTION_NAME_SMF=smf
+#            - ENGINE_DDOS_DETECTION=/abnormal_behaviour/ddos
+#            - SERVER_PORT=8080
+#        depends_on:
+#            - oai-nwdaf-database
+#        healthcheck:
+#            test: netstat -ltn | grep -c 8080
+#            interval: 5s
+#            timeout: 2s
+#            retries: 15
+#        networks:
+#            nwdaf_net:
+#                ipv4_address: 192.168.74.159
+#    nwdaf-engine-vddos:
+#        container_name: nwdaf-engine-vddos
+#        image: nwdaf-engine-vddos:latest
+#        environment:
+#            - MONGODB_URI=mongodb://192.168.74.156:27017
+#            - MONGODB_DATABASE_NAME=testing
+#            - MONGODB_COLLECTION_NAME_AMF=amf
+#            - MONGODB_COLLECTION_NAME_SMF=smf
+#            - MONGODB_COLLECTION_NAME_UPF=upf
+#            - ENGINE_VDDOS_DETECTION=/abnormal_behaviour/vddos
+#            - SERVER_PORT=8080
+#        depends_on:
+#            - oai-nwdaf-database
+#        healthcheck:
+#            test: netstat -ltn | grep -c 8080
+#            interval: 5s
+#            timeout: 2s
+#            retries: 15
+#        networks:
+#            nwdaf_net:
+#                ipv4_address: 192.168.74.161
+    nwdaf-engine-bot:
+        container_name: nwdaf-engine-bot-detection
+        image: nwdaf-engine-bot-detection:latest
         environment:
             - MONGODB_URI=mongodb://192.168.74.156:27017
             - MONGODB_DATABASE_NAME=testing
             - MONGODB_COLLECTION_NAME_AMF=amf
             - MONGODB_COLLECTION_NAME_SMF=smf
             - MONGODB_COLLECTION_NAME_UPF=upf
-            - ENGINE_VDDOS_DETECTION=/abnormal_behaviour/vddos
+            - ENGINE_BOT_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
             - SERVER_PORT=8080
         depends_on:
             - oai-nwdaf-database
@@ -197,7 +219,7 @@ services:
             retries: 15
         networks:
             nwdaf_net:
-                ipv4_address: 192.168.74.161
+                ipv4_address: 192.168.74.163
 # ------------------------ DATABASE ------------------------
     oai-nwdaf-database:
         container_name: oai-nwdaf-database

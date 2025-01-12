@@ -52,6 +52,7 @@ type EngineConfig struct {
 		DbName            string `envconfig:"MONGODB_DATABASE_NAME"`
 		CollectionAmfName string `envconfig:"MONGODB_COLLECTION_NAME_AMF"`
 		CollectionSmfName string `envconfig:"MONGODB_COLLECTION_NAME_SMF"`
+		CollectionUpfName string `envconfig:"MONGODB_COLLECTION_NAME_UPF"`
 	}
 }
 

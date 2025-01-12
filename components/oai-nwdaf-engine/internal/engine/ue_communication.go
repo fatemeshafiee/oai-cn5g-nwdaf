@@ -63,13 +63,14 @@ func ueComm(w http.ResponseWriter, r *http.Request) {
 		filter := GetFilterUeComm(engineReqData)
 		// get collection from database
 		db := mongoClient.Database(config.Database.DbName)
-		collection := db.Collection(config.Database.CollectionSmfName)
+		collection := db.Collection(config.Database.CollectionUpfName)
 		// Retrieve Documents from DB
 		cursor, err := collection.Find(context.Background(), filter)
 		if err != nil {
 			http.Error(w, "Error finding documents", http.StatusInternalServerError)
 			return
 		}
+
 		commDur := int32(0)
 		ulVolSlice, dlVolSlice := make([]int64, 0), make([]int64, 0)
 		startTs, endTs := getExtraReportReq(engineReqData)
@@ -136,7 +137,7 @@ func GetFilterUeComm(engineReqData EngineReqData) bson.D {
 	startTs, endTs := getExtraReportReq(engineReqData)
 	// get timeStamp condition to inject in mongo filter
 	timeStampCondition := getTimeStampCondition(startTs, endTs)
-	return bson.D{{"qosmonlist",
+	return bson.D{{"upf_volume",
 		bson.M{"$elemMatch": bson.M{
 			"timestamp": timeStampCondition,
 		}},

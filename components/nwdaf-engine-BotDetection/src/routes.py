@@ -33,45 +33,21 @@ import pandas as pd
 from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 api = Blueprint('api', __name__)
-
-@api.route('/abnormal_behaviour/ue_profile', methods=['GET'])
+#TODO
+@api.route('/abnormal_behaviour/suspicion_of_ddos_attack', methods=['GET'])
 def handle_ue_profile():
-    df = create_dataframe()
-#     df.to_csv('nwdaf_collected.csv', index=False)
+    df  = create_dataframe()
+    src_df = src_based_df(df)
+    summary_per_ip = create_ue_profile(df)
+    src_df.to_csv('src_df.csv', index=False)
+    summary_per_ip.to_csv('summary_per_ip.csv', index=False)
+
     global current_time
-#     if current_time != None:
-#
-#         df = df[df['timestamp'] > current_time]
-#         current_time = datetime.now()
     logging.info(f"the df is: {df}")
-    ddos_report = []
-    ddos_info = set()
-
-    for index, row in df.iterrows():
-        row_data =  row[['ActualUlVolume','ActualDlVolume','ActualTotalVolume','ActualUlPacket','ActualDlPacket','ActualTotalPacket','UlRate','DlRate','UlPacketRate','DlPacketRate', 'PacketRatio', 'VolumeRatio','VolumeDifference']].values.reshape(1, -1)
-        y = model.predict_proba(row_data)[:, 1]
-        if y == 1: #attack
-            ddos_info.add(tuple(row[['seID','SrcIp', 'DstIp', 'SrcPort', 'DstPort']]))
-            logging.info(f"the detected is: {tuple(row[['seID','SrcIp', 'DstIp', 'SrcPort', 'DstPort']])}")
-            logging.info(f"the prob is: {y}")
-
-#             ddos_info.add(tuple(row[['seID', 'SrcIp', 'DstIp', 'SrcPort', 'DstPort']].tolist() + [y]))
-
-            df_filtered = df[df['SrcIp'] != row['SrcIp']]
-            df = df_filtered
-
-
-    if len(ddos_info) != 0:
-        for ue_info in ddos_info:
-            ddos_report.append({
-                "ue_ip":".".join(str(ipaddress.ip_address(ue_info[1])).split(".")),
-                "target_ip":".".join(str(ipaddress.ip_address(ue_info[2])).split(".")),
-#                 "pdu_sess_id":pdu_seid,
-                "seid":ue_info[0]
-#                  "prob": 1
-            }
-            )
-    response_data = {'ddos_entries': ddos_report}
+    bot_report = []
+    bot_info = set()
+    #TODO: inference the model
+    response_data = {'ddos_entries': bot_report}
     return_data = jsonify(response_data)
     logging.info(return_data)
     current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]

@@ -352,8 +352,15 @@ func getAbnormalBehaviourNotifData(
 			AbnorBehavrsInfo, err = requestAbnorBehavrsEngine(
 				eventSub,
 				excepReq,
-				config.Engine.VDDoSUri+config.Routes.VDDoSDetection,
+				config.Engine.BotUri+config.Routes.BotDetection,
 			)
+
+			//case EXCEPTIONID_UE_PROFILE:
+			//	AbnorBehavrsInfo, err = requestAbnorBehavrsEngine(
+			//		eventSub,
+			//		excepReq,
+			//		config.Engine.UEProfileUri+config.Routes.UEProfile,
+			//	)
 
 			if err != nil {
 				return AbnorBehavrsList, err

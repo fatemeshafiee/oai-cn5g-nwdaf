@@ -48,12 +48,14 @@ type EventsConfig struct {
 		UnexpectedLargeRate string `envconfig:"ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE"`
 		DDoSDetection       string `envconfig:"ENGINE_DDOS_DETECTION"`
 		VDDoSDetection      string `envconfig:"ENGINE_VDDOS_DETECTION"`
+		BotDetection        string `envconfig:"ENGINE_BOT_DETECTION"`
 	}
 	Engine struct {
 		Uri      string `envconfig:"ENGINE_URI"`
 		AdsUri   string `envconfig:"ENGINE_ADS_URI"`
 		DDoSUri  string `envconfig:"ENGINE_DDOS_URI"`
 		VDDoSUri string `envconfig:"ENGINE_VDDOS_URI"`
+		BotUri   string `envconfig:"ENGINE_BOT_DETECTION_URI"`
 	}
 	Events struct {
 		Uri string `envconfig:"EVENTS_URI"`
