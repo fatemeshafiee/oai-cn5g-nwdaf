@@ -171,7 +171,9 @@ loop:
 					break loop
 				}
 				// send notification to client
+				log.Print(eventNotif)
 				err = sendNotification(ctx, eventNotif, notificationURI)
+
 				if err != nil {
 					log.Print(err)
 					break loop
@@ -355,13 +357,6 @@ func getAbnormalBehaviourNotifData(
 				config.Engine.BotUri+config.Routes.BotDetection,
 			)
 
-			//case EXCEPTIONID_UE_PROFILE:
-			//	AbnorBehavrsInfo, err = requestAbnorBehavrsEngine(
-			//		eventSub,
-			//		excepReq,
-			//		config.Engine.UEProfileUri+config.Routes.UEProfile,
-			//	)
-
 			if err != nil {
 				return AbnorBehavrsList, err
 			}
@@ -370,6 +365,8 @@ func getAbnormalBehaviourNotifData(
 			return nil, errors.New("invalid Abnormal Behaviour Exception ID")
 		}
 		AbnorBehavrsInfo.Excep = excepReq
+		log_data, err := json.MarshalIndent(AbnorBehavrsInfo, "", "  ")
+		log.Println(string(log_data))
 		AbnorBehavrsList = append(AbnorBehavrsList, AbnorBehavrsInfo)
 	}
 	return AbnorBehavrsList, nil
@@ -578,6 +575,8 @@ func requestAbnorBehavrsEngine(
 		log.Printf("Error marshaling JSON: %v", err)
 		return AbnormalBehaviour{}, err
 	}
+	// Log the enginePath before making the request
+	log.Printf("Engine path: %s", enginePath)
 	// Create a POST request with the JSON data in the body
 	req, err := http.NewRequest(
 		http.MethodGet, enginePath, bytes.NewBuffer(engineReqJsonData))

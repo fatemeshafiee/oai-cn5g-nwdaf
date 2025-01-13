@@ -21,42 +21,16 @@
 
 #/*
 # * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Description: This file contains oai-nwdaf-engine-ads server routes.
+# * Description: Docker file of the oai-nwdaf-engine-ads.
 # */
 
-from src.config import *
-from src.functions import *
-from flask import Blueprint, jsonify
-import logging
-from datetime import datetime
-import pandas as pd
-from datetime import datetime
-logging.basicConfig(level=logging.INFO)
-api = Blueprint('api', __name__)
-#TODO
-@api.route('/abnormal_behaviour/suspicion_of_ddos_attack', methods=['GET'])
-def handle_ue_profile():
-    df  = create_dataframe()
-    src_df = src_based_df(df)
-    summary_per_ip = create_ue_profile(df)
-    src_df.to_csv('src_df.csv', index=False)
-    summary_per_ip.to_csv('summary_per_ip.csv', index=False)
-
-    global current_time
-    logging.info(f"the df is: {df}")
-    bot_report = []
-    bot_info = set()
-    #TODO: inference the model
-    response_data = {'ddos_entries': bot_report}
-    return_data = jsonify(response_data)
-    logging.info(return_data)
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-    logging.info(f"the report for this event created: {current_time}")
-
-
-    return jsonify(response_data)
-
-
-
-
-
+FROM python:3.9-slim AS nwdaf-engine-bot-detection
+WORKDIR /app
+RUN apt-get update && apt-cache search net-tools &&  apt-get install --yes net-tools 
+COPY requirements.txt .
+RUN pip install --no-color --upgrade pip wheel && \
+    pip install --no-cache-dir -r requirements.txt --no-color && \
+    pip cache purge
+COPY . .
+EXPOSE 8080/tcp
+CMD [ "python3", "run.py" ]

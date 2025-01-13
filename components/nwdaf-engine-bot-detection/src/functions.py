@@ -67,8 +67,8 @@ def create_dataframe():
             timestamp = rep_per_ue['timestamp']
             for user_usage in rep_per_ue['userdatausagemeasurements']:
                 volume = user_usage['volumemeasurement']
-                flowDescription = user_usage['flowinfo']['flowdescription']
-                seID, SrcIp, DstIp, SrcPort, DstPort = extract_flow_info(flowDescription)
+                packfiltid = user_usage['flowinfo']['packfiltid']
+                seID, SrcIp, DstIp, SrcPort, DstPort = extract_flow_info(packfiltid)
                 src_ip_int, v = ip_to_int(SrcIp)
                 dst_ip_int, v = ip_to_int(DstIp)
                 if v == "IP6":

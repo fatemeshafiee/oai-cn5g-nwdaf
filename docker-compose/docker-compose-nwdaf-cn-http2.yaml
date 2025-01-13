@@ -199,7 +199,7 @@ services:
 #        networks:
 #            nwdaf_net:
 #                ipv4_address: 192.168.74.161
-    nwdaf-engine-bot:
+    nwdaf-engine-bot-detection:
         container_name: nwdaf-engine-bot-detection
         image: nwdaf-engine-bot-detection:latest
         environment:
