@@ -47,3 +47,4 @@ client = MongoClient(MONGODB_URI)
 nwdaf_db = client[NWDAF_DATABASE_NAME]
 upf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_UPF]
 current_time = None
+rf_model = joblib.load('rf_model.pkl')

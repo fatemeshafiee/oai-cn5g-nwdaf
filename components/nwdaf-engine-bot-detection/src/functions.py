@@ -62,6 +62,8 @@ def ip_to_int(ip_str):
 
 def create_dataframe():
     data = []
+    unique_pairs = set()
+
 
     for doc in upf_collection.find():
         for rep_per_ue in doc['upf_volume']:
@@ -83,6 +85,9 @@ def create_dataframe():
                 ulPacket = int(volume['ulnbofpackets'])
                 dlPacket = int(volume['dlnbofpackets'])
                 totalPacket = int(volume['totalnbofpackets'])
+                pair = (src_ip_int, seID)
+                if pair not in unique_pairs:
+                    unique_pairs.add(pair)
                 data.append({
                     "seID":int(seID),
                     "SrcIp":src_ip_int,
@@ -98,7 +103,7 @@ def create_dataframe():
                      'timestamp':timestamp #- lastTotalPacket
                 })
     df = pd.DataFrame(data)
-    return df
+    return df, unique_pairs
 def src_dst_based_df(df):
         grouped_df = df.groupby(['SrcIp', 'DstIp', 'timestamp']).agg({
                                                            'ulVolume' : 'sum',
