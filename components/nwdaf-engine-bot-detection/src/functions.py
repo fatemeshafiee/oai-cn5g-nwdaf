@@ -195,8 +195,6 @@ def create_ue_profile(df):
          peak_total_packet_rate=('total_packet_rate', 'max')
     ).reset_index()
 
-
-
     return summary_per_ip
 
 def build_graph_per_batch(df_flow):
