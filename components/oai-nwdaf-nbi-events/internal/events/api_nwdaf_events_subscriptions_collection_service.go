@@ -29,17 +29,14 @@ package events
 import (
 	"bytes"
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"log"
-	"net"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
-	"golang.org/x/net/http2"
 )
 
 /*
@@ -381,15 +378,15 @@ func sendNotification(
 	log.Print("Sending notification to client")
 	jsonStr, _ := json.Marshal(eventNotif)
 	client := http.Client{
-		Transport: &http2.Transport{
-			// So http2.Transport doesn't complain the URL scheme isn't 'https'
-			AllowHTTP: true,
-			// Pretend we are dialing a TLS endpoint. (Note, we ignore the passed tls.Config)
-			DialTLSContext: func(ctx context.Context, network, addr string, cfg *tls.Config) (net.Conn, error) {
-				var d net.Dialer
-				return d.DialContext(ctx, network, addr)
-			},
-		},
+		//Transport: &http2.Transport{
+		//	// So http2.Transport doesn't complain the URL scheme isn't 'https'
+		//	AllowHTTP: true,
+		//	// Pretend we are dialing a TLS endpoint. (Note, we ignore the passed tls.Config)
+		//	DialTLSContext: func(ctx context.Context, network, addr string, cfg *tls.Config) (net.Conn, error) {
+		//		var d net.Dialer
+		//		return d.DialContext(ctx, network, addr)
+		//	},
+		//},
 	}
 	r, err := http.NewRequest("POST", notificationURI, bytes.NewBuffer(jsonStr))
 	if err != nil {
@@ -600,8 +597,8 @@ func requestAbnorBehavrsEngine(
 	if err != nil {
 		return AbnormalBehaviour{}, err
 	}
-	log.Println("unexpected_large_rate_flow probability is: ",
-		float64(abnorBehavrsResp.Ratio)/float64(100))
+	//log.Println("unexpected_large_rate_flow probability is: ",
+	//	float64(abnorBehavrsResp.Ratio)/float64(100))
 
 	ddEntries := make([]interface{}, 0)
 

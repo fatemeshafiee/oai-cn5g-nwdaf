@@ -37,10 +37,10 @@ api = Blueprint('api', __name__)
 @api.route('/abnormal_behaviour/suspicion_of_ddos_attack', methods=['GET'])
 def handle_ue_profile():
     df  = create_dataframe()
-    src_df = src_based_df(df)
     summary_per_ip = create_ue_profile(df)
-    src_df.to_csv('src_df.csv', index=False)
-    summary_per_ip.to_csv('summary_per_ip.csv', index=False)
+    g_feature = create_graph_feature(df)
+#     df.to_csv('df.csv', index=False)
+#     summary_per_ip.to_csv('summary_per_ip.csv', index=False)
 
     global current_time
     logging.info(f"the df is: {df}")

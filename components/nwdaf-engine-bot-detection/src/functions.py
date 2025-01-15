@@ -30,6 +30,7 @@ from src.config import *
 import json
 import ipaddress
 import numpy as np
+import networkx as nx
 
 def add_time_columns(df, timestamp_col):
     df['timestamp'] = pd.to_datetime(df[timestamp_col], unit='s')
@@ -98,8 +99,8 @@ def create_dataframe():
                 })
     df = pd.DataFrame(data)
     return df
-def src_based_df(df):
-        grouped_df = df.groupby(['SrcIp', 'timestamp']).agg({
+def src_dst_based_df(df):
+        grouped_df = df.groupby(['SrcIp', 'DstIp', 'timestamp']).agg({
                                                            'ulVolume' : 'sum',
                                                            'dlVolume' : 'sum',
                                                            'totalVolume' : 'sum',
@@ -107,14 +108,14 @@ def src_based_df(df):
                                                            'dlPacket': 'sum',
                                                            'totalPacket': 'sum'
                                                        }).reset_index()
-        grouped_df = grouped_df.sort_values(by=['SrcIp', 'timestamp'])
-        grouped_df['ulVolume'] = grouped_df.groupby('SrcIp')['ulVolume'].diff().fillna(grouped_df['ulVolume'])
-        grouped_df['dlVolume'] = grouped_df.groupby('SrcIp')['dlVolume'].diff().fillna(grouped_df['dlVolume'])
-        grouped_df['totalVolume'] = grouped_df.groupby('SrcIp')['totalVolume'].diff().fillna(grouped_df['totalVolume'])
+        grouped_df = grouped_df.sort_values(by=['SrcIp','DstIp','timestamp'])
+        grouped_df['ulVolume'] = grouped_df.groupby(['SrcIp','DstIp'])['ulVolume'].diff().fillna(grouped_df['ulVolume'])
+        grouped_df['dlVolume'] = grouped_df.groupby(['SrcIp','DstIp'])['dlVolume'].diff().fillna(grouped_df['dlVolume'])
+        grouped_df['totalVolume'] = grouped_df.groupby(['SrcIp','DstIp'])['totalVolume'].diff().fillna(grouped_df['totalVolume'])
 
-        grouped_df['ulPacket'] = grouped_df.groupby('SrcIp')['ulPacket'].diff().fillna(grouped_df['ulPacket'])
-        grouped_df['dlPacket'] = grouped_df.groupby('SrcIp')['dlPacket'].diff().fillna(grouped_df['dlPacket'])
-        grouped_df['totalPacket'] = grouped_df.groupby('SrcIp')['totalPacket'].diff().fillna(grouped_df['totalPacket'])
+        grouped_df['ulPacket'] = grouped_df.groupby(['SrcIp','DstIp'])['ulPacket'].diff().fillna(grouped_df['ulPacket'])
+        grouped_df['dlPacket'] = grouped_df.groupby(['SrcIp','DstIp'])['dlPacket'].diff().fillna(grouped_df['dlPacket'])
+        grouped_df['totalPacket'] = grouped_df.groupby(['SrcIp','DstIp'])['totalPacket'].diff().fillna(grouped_df['totalPacket'])
         return grouped_df
 
 def create_ue_profile(df):
@@ -192,3 +193,65 @@ def create_ue_profile(df):
 
 
     return summary_per_ip
+
+def build_graph_per_batch(df_flow):
+  G = nx.DiGraph()
+  for _, row in df_flow.iterrows():
+    G.add_edge(row['src_ip'], row['dst_ip'], weight=row['src_pkts'])
+    G.add_edge(row['dst_ip'], row['src_ip'], weight=row['dst_pkts'])
+  return G
+def extract_grapgh_features(G, bot_ips):
+   features = []
+   # print(G.in_degree())
+   in_degree = dict(G.in_degree())
+   out_degree = dict(G.out_degree())
+   w_in_degree = dict(G.in_degree(weight='weight'))
+   w_out_degree = dict(G.out_degree(weight='weight'))
+   betweenness = nx.betweenness_centrality(G, weight='weight')
+   lcc = compute_lcc(G)
+
+   for node in G.nodes():
+       features.append([
+         node,
+         in_degree.get(node, 0),
+         out_degree.get(node, 0),
+         w_in_degree.get(node, 0),
+         w_out_degree.get(node, 0),
+         betweenness.get(node, 0),
+         lcc.get(node, 0.0)
+     ])
+
+   features_df = pd.DataFrame(features, columns=['host_ip',
+         'in_degree', 'out_degree', 'w_in_degree', 'w_out_degree',
+         'betweenness', 'LCC'
+     ])
+   return features_df
+def create_graph_feature(benign_df):
+    benign_df['timestamp'] = pd.to_datetime(benign_df['timestamp'])
+    df_grouped = benign_df.groupby(['SrcIp', 'DstIp', 'timestamp']).agg({
+                                                               'ulVolume' : 'sum',
+                                                               'dlVolume' : 'sum',
+                                                               'totalVolume' : 'sum',
+                                                               'ulPacket': 'sum',
+                                                               'dlPacket': 'sum',
+                                                               'totalPacket': 'sum'
+                                                           }).reset_index()
+    df_grouped = df_grouped.sort_values(by=['SrcIp', 'DstIp', 'timestamp'])
+
+    df_grouped['ulVolume_diff'] = df_grouped.groupby(['SrcIp', 'DstIp'])['ulVolume'].diff().fillna(df_grouped['ulVolume'])
+    df_grouped['dlVolume_diff'] = df_grouped.groupby(['SrcIp', 'DstIp'])['dlVolume'].diff().fillna(df_grouped['dlVolume'])
+    df_grouped['totalVolume_diff'] = df_grouped['ulVolume_diff'] + df_grouped['dlVolume_diff']
+
+
+    df_grouped['ulPacket_diff'] = df_grouped.groupby(['SrcIp', 'DstIp'])['ulPacket'].diff().fillna(df_grouped['ulPacket'])
+    df_grouped['dlPacket_diff'] = df_grouped.groupby(['SrcIp', 'DstIp'])['dlPacket'].diff().fillna(df_grouped['dlPacket'])
+    df_grouped['totalPacket_diff'] = df_grouped['ulPacket_diff'] + df_grouped['dlPacket_diff']
+    columns_to_drop = ['timestamp', 'ulVolume', 'dlVolume', 'totalVolume', 'ulPacket', 'dlPacket', 'totalPacket', 'totalVolume_diff','totalPacket_diff']
+    df_grouped = df_grouped.drop(columns=columns_to_drop)
+    df_grouped = df_grouped.groupby(['SrcIp', 'DstIp']).sum().reset_index()
+    df_grouped = df_grouped.rename(columns={'SrcIp': 'src_ip', 'DstIp': 'dst_ip', 'ulVolume_diff':'src_size','dlVolume_diff':'dst_size', 'ulPacket_diff':'src_pkts', 'dlPacket_diff':'dst_pkts' })
+    G = build_graph_per_batch(df_grouped)
+    G_features = extract_grapgh_features(G, ['10.42.0.2', '10.42.0.3', '10.42.0.4', '10.42.0.5', '10.42.0.6', '10.42.0.7'])
+    return G_features
+
+
