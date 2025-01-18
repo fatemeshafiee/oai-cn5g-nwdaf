@@ -41,3 +41,4 @@ wrapt==1.12.1
 zipp==3.6.0
 scikit-learn==1.5.2
 joblib==1.2.0
+networkx

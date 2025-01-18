@@ -77,8 +77,8 @@ def create_dataframe():
                 if v == "IP6":
                     continue
 
-                logging.info(f"the volume is: {volume['ulvolume']}")
-                logging.info(f"the volume is: {volume['ulvolume'][:-1]}")
+#                 logging.info(f"the volume is: {volume['ulvolume']}")
+#                 logging.info(f"the volume is: {volume['ulvolume'][:-1]}")
                 ulVolume = int(volume['ulvolume'][:-1])
                 dlVolume = int(volume['dlvolume'][:-1])
                 totalVolume = int(volume['totalvolume'][:-1])
@@ -124,6 +124,7 @@ def src_dst_based_df(df):
         return grouped_df
 
 def create_ue_profile(df):
+    logging.info(f"the columns is: {df.columns}")
     grouped_df = df.groupby(['SrcIp', 'timestamp']).agg({
                                                        'ulVolume' : 'sum',
                                                        'dlVolume' : 'sum',
@@ -194,9 +195,29 @@ def create_ue_profile(df):
          avg_total_packet_rate=('total_packet_rate', 'mean'),
          peak_total_packet_rate=('total_packet_rate', 'max')
     ).reset_index()
+    summary_per_ip['SrcIp'] = summary_per_ip['SrcIp'].apply(
+            lambda x: str(ipaddress.IPv4Address(x))
+        )
 
     return summary_per_ip
+def compute_lcc(G):
+    lcc = {}
+    for node in G.nodes():
+        neighbors = set(G.successors(node)) | set(G.predecessors(node))
+        if len(neighbors) < 2:
+            lcc[node] = 0.0
+            continue
 
+        actual_edges = 0
+        for vj in neighbors:
+            for vk in neighbors:
+                if vj != vk and G.has_edge(vj, vk):
+                    actual_edges += 1
+
+        total_possible_edges = len(neighbors) * (len(neighbors) - 1)
+        lcc[node] = actual_edges / total_possible_edges  # Formula
+
+    return lcc
 def build_graph_per_batch(df_flow):
   G = nx.DiGraph()
   for _, row in df_flow.iterrows():
@@ -253,8 +274,6 @@ def create_graph_feature(benign_df):
     df_grouped = df_grouped.drop(columns=columns_to_drop)
     df_grouped = df_grouped.groupby(['SrcIp', 'DstIp']).sum().reset_index()
     df_grouped = df_grouped.rename(columns={'SrcIp': 'src_ip', 'DstIp': 'dst_ip', 'ulVolume_diff':'src_size','dlVolume_diff':'dst_size', 'ulPacket_diff':'src_pkts', 'dlPacket_diff':'dst_pkts' })
-    G = build_graph_per_batch(df_grouped)
-    G_features = extract_grapgh_features(G, ['10.42.0.2', '10.42.0.3', '10.42.0.4', '10.42.0.5', '10.42.0.6', '10.42.0.7'])
-    return G_features
+    return df_grouped
 
 

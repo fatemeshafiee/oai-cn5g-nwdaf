@@ -33,37 +33,36 @@ import pandas as pd
 from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 api = Blueprint('api', __name__)
-#TODO
+counter = 0
 @api.route('/abnormal_behaviour/suspicion_of_ddos_attack', methods=['GET'])
 def handle_ue_profile():
+    counter += 1
     df, unique_pairs = create_dataframe()
-    summary_per_ip = create_ue_profile(df)
+    if counter == update_time:
+        summary_per_ip = create_ue_profile(df)
+        dict_data = summary_per_ip.to_dict(orient='records')
+        for rec in dict_data:
+            ip = rec['SrcIp']
+            key = 'SrcIp'
+            query = {key : ip}
+            update = {"$set": rec}
+            ue_profile_collection.update_one(query, update, upsert=True)
     g_feature = create_graph_feature(df)
-#     df.to_csv('df.csv', index=False)
-#     summary_per_ip.to_csv('summary_per_ip.csv', index=False)
-#     if len(ddos_info) != 0:
-#         for ue_info in ddos_info:
-#             ddos_report.append({
-#                 "ue_ip":".".join(str(ipaddress.ip_address(ue_info[1])).split(".")),
-#                 "target_ip":".".join(str(ipaddress.ip_address(ue_info[2])).split(".")),
-# #                 "pdu_sess_id":pdu_seid,
-#                 "seid":ue_info[0]
-# #                  "prob": 1
-#             }
-#             )
-#     response_data = {'ddos_entries': ddos_report}
+    G = build_graph_per_batch(g_feature)
+    G_features = extract_grapgh_features(G, ['10.42.0.2', '10.42.0.3', '10.42.0.4', '10.42.0.5', '10.42.0.6', '10.42.0.7'])
+
     global current_time
-    logging.info(f"the df is: {df}")
+#     logging.info(f"the df is: {df}")
     bot_report = []
     bot_info = set()
-    predictions = rf_model.predict(g_feature)
+    predictions = rf_model.predict(G_features[['in_degree', 'out_degree', 'w_in_degree', 'w_out_degree', 'betweenness', 'LCC']])
     indices = [i for i, pred in enumerate(predictions) if pred == 1]
     for index in indices:
-        bot_ip =  g_features.iloc[index]['src_ip']
+        bot_ip =  G_features.iloc[index]['host_ip']
         for pair in unique_pairs:
             if pair[0] == bot_ip:
                 bot_report.append({
-                "ue_ip":".".join(str(ipaddress.ip_address(ip)).split(".")),
+                "ue_ip":".".join(str(ipaddress.ip_address(int(bot_ip))).split(".")),
                 "target_ip": "*.*.*.*",
                 "seid":pair[1]
                 })
