@@ -33,11 +33,14 @@ import pandas as pd
 from datetime import datetime
 logging.basicConfig(level=logging.INFO)
 api = Blueprint('api', __name__)
-counter = 0
+
 @api.route('/abnormal_behaviour/suspicion_of_ddos_attack', methods=['GET'])
 def handle_ue_profile():
+    global counter
+    global update_time
     counter += 1
     df, unique_pairs = create_dataframe()
+    df.to_csv('df.csv', index=False)
     if counter == update_time:
         summary_per_ip = create_ue_profile(df)
         dict_data = summary_per_ip.to_dict(orient='records')
