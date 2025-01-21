@@ -49,6 +49,6 @@ upf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_UPF]
 ue_profile_collection = nwdaf_db["ue_profile"]
 current_time = None
 # components/nwdaf-engine-bot-detection/models
-rf_model = joblib.load('models/rf_model.pkl')
+rf_model = joblib.load('models/rf_model_400.pkl')
 counter = 0
 update_time = 18
