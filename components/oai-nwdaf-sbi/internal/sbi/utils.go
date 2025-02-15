@@ -199,8 +199,8 @@ func upfEventEventSubscription(upfEventNotifyUri string,
 	upfNfId string) {
 	cli := upf_client.NewClient()
 	// ????
-	req_type := []upf_client.EventType{upf_client.USER_DATA_USAGE_MEASURES}
-	measurementType := [][]upf_client.MeasurementType{{upf_client.VOLUME_MEASUREMENT}}
+	req_type := []upf_client.EventType{upf_client.USER_DATA_USAGE_MEASURES, upf_client.USER_DATA_USAGE_TRENDS}
+	measurementType := [][]upf_client.MeasurementType{{upf_client.THROUGHPUT_MEASUREMENT, upf_client.VOLUME_MEASUREMENT}}
 	granType := []upf_client.GranularityOfMeasurement{upf_client.PER_FLOW}
 	// change the  time of UPF event exposure subscription here.
 	subs := upf_client.NewNupfEventExposure(upfNfId, upfEventNotifyUri, upf_client.PERIODIC, upfNotifyCorrelationId, req_type, 3, measurementType, granType, true)

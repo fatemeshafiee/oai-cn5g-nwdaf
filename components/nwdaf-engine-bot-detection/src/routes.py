@@ -31,6 +31,8 @@ import logging
 from datetime import datetime
 import pandas as pd
 from datetime import datetime
+import requests
+
 logging.basicConfig(level=logging.INFO)
 api = Blueprint('api', __name__)
 
@@ -50,6 +52,7 @@ def handle_ue_profile():
             query = {key : ip}
             update = {"$set": rec}
             ue_profile_collection.update_one(query, update, upsert=True)
+        counter = 0
     g_feature = create_graph_feature(df)
     G = build_graph_per_batch(g_feature)
     G_features = extract_grapgh_features(G, ['10.42.0.2', '10.42.0.3', '10.42.0.4', '10.42.0.5', '10.42.0.6', '10.42.0.7'])
@@ -58,7 +61,8 @@ def handle_ue_profile():
 #     logging.info(f"the df is: {df}")
     bot_report = []
     bot_info = set()
-    predictions = rf_model.predict(G_features[['in_degree', 'out_degree', 'w_in_degree', 'w_out_degree', 'betweenness', 'LCC']])
+    predictions = get_traffic_prediction(G_features[['in_degree', 'out_degree', 'w_in_degree', 'w_out_degree', 'betweenness', 'LCC']])
+#     rf_model.predict(G_features[['in_degree', 'out_degree', 'w_in_degree', 'w_out_degree', 'betweenness', 'LCC']])
     indices = [i for i, pred in enumerate(predictions) if pred == 1]
     for index in indices:
         bot_ip =  G_features.iloc[index]['host_ip']
@@ -69,6 +73,7 @@ def handle_ue_profile():
                 "target_ip": "*.*.*.*",
                 "seid":pair[1]
                 })
+
     response_data = {'ddos_entries': bot_report}
     return_data = jsonify(response_data)
     logging.info(return_data)

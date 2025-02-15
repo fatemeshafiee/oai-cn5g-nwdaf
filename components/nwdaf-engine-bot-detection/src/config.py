@@ -50,5 +50,7 @@ ue_profile_collection = nwdaf_db["ue_profile"]
 current_time = None
 # components/nwdaf-engine-bot-detection/models
 rf_model = joblib.load('models/rf_model_400.pkl')
+MLFLOW_MODEL_URL = "http://mlflow-model-svc.open5gs:5000/invocations"
+
 counter = 0
-update_time = 18
+update_time = 9

@@ -276,4 +276,19 @@ def create_graph_feature(benign_df):
     df_grouped = df_grouped.rename(columns={'SrcIp': 'src_ip', 'DstIp': 'dst_ip', 'ulVolume_diff':'src_size','dlVolume_diff':'dst_size', 'ulPacket_diff':'src_pkts', 'dlPacket_diff':'dst_pkts' })
     return df_grouped
 
+def get_traffic_prediction(features):
+    """ Send real-time data to MLflow Model Server and get prediction """
+    data = {"instances": [features]}
+
+    try:
+        response = requests.post(MLFLOW_MODEL_URL, json=data)
+        if response.status_code == 200:
+            prediction = response.json()
+            return prediction
+        else:
+            print(f"❌ MLflow request failed: {response.status_code}")
+            return None
+    except Exception as e:
+        print(f"❌ Error calling MLflow Model: {e}")
+        return None
 
