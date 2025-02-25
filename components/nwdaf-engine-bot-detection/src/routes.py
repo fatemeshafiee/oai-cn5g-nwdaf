@@ -47,11 +47,12 @@ def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
                 mLEvent=NwdafEvent(nwdafEvent="ABNORMAL_BEHAVIOUR"),
                 mLEventFilter={}
             )
+
         ],
 
         notifUri=notif_uri,
         notifCorreId=str(uuid4())
-        eventReq=ReportingInformation(immRep=True)
+        eventReq=ReportingInformation(repPeriod=10)
 
     )
 
