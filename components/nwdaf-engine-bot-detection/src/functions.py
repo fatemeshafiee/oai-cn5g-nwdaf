@@ -279,9 +279,10 @@ def create_graph_feature(benign_df):
 def get_traffic_prediction(features):
     """ Send real-time data to MLflow Model Server and get prediction """
     data = {"instances": [features]}
+    global current_inference_link
 
     try:
-        response = requests.post(MLFLOW_MODEL_URL, json=data)
+        response = requests.post(current_inference_link, json=data)
         if response.status_code == 200:
             prediction = response.json()
             return prediction

@@ -38,7 +38,6 @@ import threading
 logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 api = Blueprint('api', __name__)
-current_inference_link = None
 
 def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
 
@@ -46,11 +45,7 @@ def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
         mLEventSubscs=[
             MLEventSubscription(
                 mLEvent=NwdafEvent(nwdafEvent="ABNORMAL_BEHAVIOUR"),
-                mLEventFilter={},
-                mLTargetPeriod=TimeWindow(
-                    startTime=datetime.utcnow(),
-                    stopTime=datetime.utcnow() + timedelta(days=1)
-                )
+                mLEventFilter={}
             )
         ],
 

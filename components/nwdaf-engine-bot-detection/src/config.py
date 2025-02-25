@@ -51,6 +51,8 @@ current_time = None
 # components/nwdaf-engine-bot-detection/models
 rf_model = joblib.load('models/rf_model_400.pkl')
 MLFLOW_MODEL_URL = "http://mlflow-model-svc.open5gs:5000/invocations"
+current_inference_link = None
+
 
 counter = 0
 update_time = 9
