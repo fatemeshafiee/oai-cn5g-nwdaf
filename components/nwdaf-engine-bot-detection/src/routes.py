@@ -28,13 +28,71 @@ from src.config import *
 from src.functions import *
 from flask import Blueprint, jsonify
 import logging
-from datetime import datetime
 import pandas as pd
-from datetime import datetime
 import requests
+from datetime import datetime, timedelta
+from uuid import uuid4
+import logging
+import threading
 
 logging.basicConfig(level=logging.INFO)
+app = Flask(__name__)
 api = Blueprint('api', __name__)
+current_inference_link = None
+
+def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
+
+    subscription = NwdafMLModelProvSubsc(
+        mLEventSubscs=[
+            MLEventSubscription(
+                mLEvent=NwdafEvent(nwdafEvent="ABNORMAL_BEHAVIOUR"),
+                mLEventFilter={},
+                mLTargetPeriod=TimeWindow(
+                    startTime=datetime.utcnow(),
+                    stopTime=datetime.utcnow() + timedelta(days=1)
+                )
+            )
+        ],
+
+        notifUri=notif_uri,
+        notifCorreId=str(uuid4())
+        eventReq=ReportingInformation(immRep=True)
+
+    )
+
+    headers = {"Content-Type": "application/json"}
+
+    try:
+        response = requests.post(
+            f"{ml_model_prov_url}/subscribe",
+            json=subscription.model_dump(),  # Convert to dictionary
+            headers=headers
+        )
+        response.raise_for_status()
+        logging.info(f"Subscription Successful: {response.json()}")
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error in Subscription: {e}")
+        return None
+@app.route("/notifications", methods=["POST"])
+def receive_notification():
+
+    global current_inference_link
+
+    try:
+        data = request.json
+        notification = NwdafMLModelProvNotif(**data)  # Added: Validate incoming request using Pydantic schema
+
+        for event in notification.eventNotifs:
+            if event.mLFileAddr and event.mLFileAddr.mLModelUrl:
+                current_inference_link = event.mLFileAddr.mLModelUrl  # Added: Update the inference link
+                logging.info(f"Updated ML Inference Link: {current_inference_link}")
+
+        return jsonify({"status": "Updated inference link"}), 200
+
+    except Exception as e:
+        logging.error(f"Invalid notification received: {e}")
+        return jsonify({"error": "Invalid notification"}), 400
 
 @api.route('/abnormal_behaviour/suspicion_of_ddos_attack', methods=['GET'])
 def handle_ue_profile():
@@ -83,6 +141,20 @@ def handle_ue_profile():
     return jsonify(response_data)
 
 
+def start_flask():
+    app.run(host="0.0.0.0", port=5000)
+
+def start_subscription():
+    ml_model_prov_url = "http://modelprov-svc:8000"  # Added: ML Model Provider URL
+    notif_uri = "http://nwdaf-engine-bot-detection:5000/notifications"  # Added: NWDAF's callback URL for updates
+    subscribe_to_ml_model_prov(ml_model_prov_url, notif_uri)
+if __name__ == "__main__":
+    flask_thread = threading.Thread(target=start_flask)
+    flask_thread.start()
+
+    subscription_thread = threading.Thread(target=start_subscription)
+    subscription_thread.start()
 
 
-
+    flask_thread.join()
+    subscription_thread.join()
