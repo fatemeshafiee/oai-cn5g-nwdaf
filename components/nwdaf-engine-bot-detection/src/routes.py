@@ -20,13 +20,12 @@
 # */
 
 #/*
-# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Description: This file contains oai-nwdaf-engine-ads server routes.
 # */
 
 from src.config import *
+import src.config as config
 from src.functions import *
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, Flask, request
 import logging
 import pandas as pd
 import requests
@@ -34,12 +33,24 @@ from datetime import datetime, timedelta
 from uuid import uuid4
 import logging
 import threading
+from src.schemes import *
 
 logging.basicConfig(level=logging.INFO)
-app = Flask(__name__)
 api = Blueprint('api', __name__)
+def extract_ml_model_url(notification: dict) -> Optional[str]:
+    event_notifs = notification.get("mLEventNotifs")
+    if not event_notifs:
+        return None
 
-def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
+    for notif in event_notifs:
+        ml_addr = notif.get("mLFileAddr") or notif.get("mLModelAdrf")
+        if ml_addr and isinstance(ml_addr, dict):
+            ml_url = ml_addr.get("mLModelUrl") or ml_addr.get("mlFileFqdn")
+            if ml_url:
+                return ml_url
+    return None
+
+def     subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
 
     subscription = NwdafMLModelProvSubsc(
         mLEventSubscs=[
@@ -47,37 +58,54 @@ def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
                 mLEvent=NwdafEvent(nwdafEvent="ABNORMAL_BEHAVIOUR"),
                 mLEventFilter={}
             )
-
         ],
-
         notifUri=notif_uri,
-        notifCorreId=str(uuid4())
-        eventReq=ReportingInformation(repPeriod=10)
-
+        notifCorreId=str(uuid4()),
+        eventReq=ReportingInformation(
+            immRep=True,
+            repPeriod=10
+        )
     )
 
     headers = {"Content-Type": "application/json"}
-
+    logging.info(f"Sending Subscription Request to {ml_model_prov_url}/subscribe")
+    logging.info(f"Request Payload: {subscription.model_dump()}")
     try:
         response = requests.post(
             f"{ml_model_prov_url}/subscribe",
-            json=subscription.model_dump(),  # Convert to dictionary
+            json=subscription.model_dump(mode="json"),
             headers=headers
         )
         response.raise_for_status()
         logging.info(f"Subscription Successful: {response.json()}")
-        return response.json()
+        resp_json = response.json()
+        logging.info(f"Subscription Successful: {resp_json}")
+        ml_url = extract_ml_model_url(resp_json)
+        if ml_url:
+
+            config.current_inference_link = ml_url
+            logging.info(f"Updated current_inference_link: {config.current_inference_link}")
+        else:
+            logging.info("No ML model URL found in the notification response.")
+        return resp_json
     except requests.exceptions.RequestException as e:
         logging.error(f"Error in Subscription: {e}")
         return None
-@app.route("/notifications", methods=["POST"])
+@api.route("/notifications", methods=["POST"])
 def receive_notification():
 
     global current_inference_link
 
     try:
         data = request.json
-        notification = NwdafMLModelProvNotif(**data)  # Added: Validate incoming request using Pydantic schema
+        if not data:
+            logging.error("Received empty notification")
+            return jsonify({"error": "Empty request"}), 400
+        if isinstance(data, str):  # ADDED: Check if data is a string
+            data = json.loads(data)  # ADDED: Convert it to a dict
+
+        logging.info(f"Received Notification: {data}")
+        notification = NwdafMLModelProvNotif(**data)
 
         for event in notification.eventNotifs:
             if event.mLFileAddr and event.mLFileAddr.mLModelUrl:
@@ -137,20 +165,4 @@ def handle_ue_profile():
     return jsonify(response_data)
 
 
-def start_flask():
-    app.run(host="0.0.0.0", port=5000)
 
-def start_subscription():
-    ml_model_prov_url = "http://modelprov-svc:8000"  # Added: ML Model Provider URL
-    notif_uri = "http://nwdaf-engine-bot-detection:5000/notifications"  # Added: NWDAF's callback URL for updates
-    subscribe_to_ml_model_prov(ml_model_prov_url, notif_uri)
-if __name__ == "__main__":
-    flask_thread = threading.Thread(target=start_flask)
-    flask_thread.start()
-
-    subscription_thread = threading.Thread(target=start_subscription)
-    subscription_thread.start()
-
-
-    flask_thread.join()
-    subscription_thread.join()

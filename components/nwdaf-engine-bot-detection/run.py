@@ -26,10 +26,20 @@
 
 from flask import Flask
 from src.config import SERVER_PORT
-from src.routes import api
+from src.routes import api, subscribe_to_ml_model_prov
+import threading
 
 app = Flask(__name__)
 app.register_blueprint(api, url_prefix='/')
 
+def start_subscription():
+
+    ml_model_prov_url = "http://modelprov-svc.open5gs.svc.cluster.local:8000"
+
+    notif_uri = "http://nwdaf-engine-bot-detection.open5gs.svc.cluster.local:8080/notifications"
+    subscribe_to_ml_model_prov(ml_model_prov_url, notif_uri)
+
 if __name__ == '__main__':
+    subscription_thread = threading.Thread(target=start_subscription)
+    subscription_thread.start()
     app.run(host='0.0.0.0', threaded=True, port=SERVER_PORT,debug=True)

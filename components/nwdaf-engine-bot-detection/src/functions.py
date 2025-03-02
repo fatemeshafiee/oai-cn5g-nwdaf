@@ -27,10 +27,13 @@
 import pandas as pd
 import logging
 from src.config import *
+import src.config as config
 import json
 import ipaddress
 import numpy as np
 import networkx as nx
+import requests
+
 
 def add_time_columns(df, timestamp_col):
     df['timestamp'] = pd.to_datetime(df[timestamp_col], unit='s')
@@ -278,18 +281,24 @@ def create_graph_feature(benign_df):
 
 def get_traffic_prediction(features):
     """ Send real-time data to MLflow Model Server and get prediction """
-    data = {"instances": [features]}
-    global current_inference_link
+    data = {"dataframe_split": features.to_dict(orient="split")}
+    logging.info(f"the data is {data}")
+    logging.info(f"info: the current_inference_link{config.current_inference_link}")
+    if not config.current_inference_link:
+        logging.info("Warning: ML inference link is not set yet. Cannot send data.")
+        return None
+
 
     try:
-        response = requests.post(current_inference_link, json=data)
+        response = requests.post(config.current_inference_link, json=data)
         if response.status_code == 200:
             prediction = response.json()
+            logging.info(f"the response from the mlflow is: {prediction}")
             return prediction
         else:
-            print(f"❌ MLflow request failed: {response.status_code}")
+            logging.info(f"MLflow request failed: {response.status_code}")
             return None
     except Exception as e:
-        print(f"❌ Error calling MLflow Model: {e}")
+        logging.info(f"Error calling MLflow Model: {e}")
         return None
 
