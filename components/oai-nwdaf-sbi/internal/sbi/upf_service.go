@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"gitlab.eurecom.fr/oai/cn5g/oai-cn5g-nwdaf/components/oai-nwdaf-sbi/internal/upf_client"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -17,122 +16,127 @@ func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		customHeader := r.Header.Get("Report_number")
 		currentTime := time.Now()
-		// Format as "YYYY-MM-DD HH:MM:SS"
 		formattedTime := currentTime.Format("1979-03-10 15:04:05.000")
 		log.Printf("[DSN_Latency] Storing UPF notification in Database, the report number and time %s, %s", customHeader, formattedTime)
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			log.Println(err)
-			http.Error(w, "[DSN_Latency] Error reading request body from UPF", http.StatusInternalServerError)
+			http.Error(w, "[UPF_Notification] Error reading request body", http.StatusInternalServerError)
 			return
 		}
 		log.Println(string(body[:]))
+
 		upfNotification := new(upf_client.Notification)
-		//upfNotification := upf_client.Notification{}
 		err = json.Unmarshal(body, upfNotification)
 		if err != nil {
 			log.Println(err)
-			http.Error(w, "[UPF_Notification] Error unmarshaling JSON received a UPF Notification", http.StatusBadRequest)
+			http.Error(w, "[UPF_Notification] Error unmarshaling JSON", http.StatusBadRequest)
 			return
 		}
 		notifList, ok := upfNotification.GetEventNotifsOk()
 		if !ok {
-			http.Error(w, "[UPF_Notification] Error in getting EventNotifs from UPF notification", http.StatusBadRequest)
+			http.Error(w, "[UPF_Notification] Error getting EventNotifs", http.StatusBadRequest)
 			return
 		}
+
 		databaseName := config.Database.DbName
 		collectionName := config.Database.CollectionUpfName
 		upfCollection := mongoClient.Database(databaseName).Collection(collectionName)
-		opts := options.Update().SetUpsert(true)
+
 		for _, notif := range notifList {
-			oid, ok := notif.GetEventNotifKey()
-			if !ok {
-				http.Error(w, oid, http.StatusBadRequest)
-				return
-			}
-			jsonBytes, err := json.Marshal(notif)
-			if err != nil {
-				http.Error(w, "[UPF_Notification] error in marshal json UPF Notification", http.StatusBadRequest)
-				return
-			}
-			jsonString := string(jsonBytes)
-			log.Printf("[UPF_Notification] found a new event: %s\n", jsonString)
+			log.Println("parsing each notif")
+			notifTimestamp := notif.TimeStamp
+			ueIpv4Addr := notif.UeIpv4Addr
+			log.Println("the ue ip is")
+			log.Println(ueIpv4Addr)
+			for _, measurement := range notif.UserDataUsageMeasurements {
 
-			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-			defer cancel()
+				var flowInfo struct {
+					SeId    int    `json:"SeId"`
+					SrcIp   string `json:"SrcIp"`
+					DstIp   string `json:"DstIp"`
+					SrcPort int    `json:"SrcPort"`
+					DstPort int    `json:"DstPort"`
+				}
+				if measurement.FlowInfo != nil && measurement.FlowInfo.PackFiltId != "" {
+					err := json.Unmarshal([]byte(measurement.FlowInfo.PackFiltId), &flowInfo)
+					if err != nil {
+						log.Println("[UPF_Notification] Error parsing FlowInfo PackFiltId:", err)
+					}
+				} else {
+					log.Println("[UPF_Notification] FlowInfo is nil or empty, skipping parsing.")
+				}
+				log.Println("parsing each flow info")
+				volumeMeasurement := bson.M{}
+				if measurement.VolumeMeasurement != nil {
+					volumeMeasurement["totalVolume"] = measurement.VolumeMeasurement.TotalVolume
+					volumeMeasurement["ulVolume"] = measurement.VolumeMeasurement.UlVolume
+					volumeMeasurement["dlVolume"] = measurement.VolumeMeasurement.DlVolume
+					volumeMeasurement["totalPackets"] = measurement.VolumeMeasurement.TotalNbOfPackets
+					volumeMeasurement["ulPackets"] = measurement.VolumeMeasurement.UlNbOfPackets
+					volumeMeasurement["dlPackets"] = measurement.VolumeMeasurement.DlNbOfPackets
+				}
 
-			//r := upfCollection.FindOne(ctx, &bson.M{"_id": oid})
-			//if r.Err() != nil {
+				throughputMeasurement := bson.M{}
+				if measurement.ThroughputMeasurement != nil {
+					throughputMeasurement["ulThroughput"] = measurement.ThroughputMeasurement.UlThroughput
+					throughputMeasurement["dlThroughput"] = measurement.ThroughputMeasurement.DlThroughput
+					throughputMeasurement["ulPacketThroughput"] = measurement.ThroughputMeasurement.UlPacketThroughput
+					throughputMeasurement["dlPacketThroughput"] = measurement.ThroughputMeasurement.DlPacketThroughput
+				}
+				applicationRelatedInformation := bson.M{}
+				if measurement.ApplicationRelatedInformation != nil {
+					applicationRelatedInformation["urls"] = measurement.ApplicationRelatedInformation.Urls
+					applicationRelatedInformation["domainInfoList"] = measurement.ApplicationRelatedInformation.DomainInfoList
+				}
+				throughputStatisticsMeasurement := bson.M{}
+				if measurement.ThroughputStatisticsMeasurement != nil {
+					throughputStatisticsMeasurement["ulAverageThroughput"] = measurement.ThroughputStatisticsMeasurement.UlAverageThroughput
+					throughputStatisticsMeasurement["dlAverageThroughput"] = measurement.ThroughputStatisticsMeasurement.DlAverageThroughput
+					throughputStatisticsMeasurement["ulPeakThroughput"] = measurement.ThroughputStatisticsMeasurement.UlPeakThroughput
+					throughputStatisticsMeasurement["dlPeakThroughput"] = measurement.ThroughputStatisticsMeasurement.DlPeakThroughput
+					throughputStatisticsMeasurement["ulAveragePacketThroughput"] = measurement.ThroughputStatisticsMeasurement.UlAveragePacketThroughput
+					throughputStatisticsMeasurement["dlAveragePacketThroughput"] = measurement.ThroughputStatisticsMeasurement.DlAveragePacketThroughput
+					throughputStatisticsMeasurement["ulPeakPacketThroughput"] = measurement.ThroughputStatisticsMeasurement.UlPeakPacketThroughput
+					throughputStatisticsMeasurement["dlPeakPacketThroughput"] = measurement.ThroughputStatisticsMeasurement.DlPeakPacketThroughput
+				}
+				report := bson.M{
+					"reportType":                      "userdata_usage",
+					"timestamp":                       notifTimestamp,
+					"ueIpv4Addr":                      ueIpv4Addr,
+					"volumeMeasurement":               volumeMeasurement,
+					"throughputMeasurement":           throughputMeasurement,
+					"applicationRelatedInformation":   applicationRelatedInformation,
+					"throughputStatisticsMeasurement": throughputStatisticsMeasurement,
+				}
+				if measurement.FlowInfo != nil {
+					report["seID"] = flowInfo.SeId
+					report["SrcIp"] = flowInfo.SrcIp
+					report["DstIp"] = flowInfo.DstIp
+					report["SrcPort"] = flowInfo.SrcPort
+					report["DstPort"] = flowInfo.DstPort
+				}
+				if measurement.AppID != "" {
+					report["appID"] = measurement.AppID
+				}
 
-			//c, err := getUPFCreateByNotif(notif)
-			//if err != nil {
-			//	http.Error(w, "[UPF_Notification] error in getUPFCreateByNotif", http.StatusBadRequest)
-			//	return
-			//}
-			//
-			//res, err := upfCollection.InsertOne(ctx, c)
-			//if err != nil {
-			//	http.Error(w, "[UPF_Notification] error in updating the SMF collection", http.StatusBadRequest)
-			//	return
-			//}
-			//if res.MatchedCount != 0 {
-			//	log.Printf("[UPF_Notification] matched and updated an existing notification report from UPF")
-			//}
-			//if res.UpsertedCount != 0 {
-			//	log.Printf("[UPF_Notification] inserted a new notification report from UPF with ID %v\n", res.UpsertedID)
-			//}
-			//} else {
-			//
-			update, err := getUPFUpdateByNotif(notif)
-			if err != nil {
-				http.Error(w, "[UPF_Notification] error in getUpdateByNotif", http.StatusBadRequest)
-				return
-			}
+				log.Printf("[UPF_Notification] Report being inserted: %+v\n", report)
 
-			res, err := upfCollection.UpdateByID(ctx, oid, update, opts)
-			if err != nil {
-				http.Error(w, "[UPF_Notification] error in updating the SMF collection", http.StatusBadRequest)
-				return
-			}
-			if res.MatchedCount != 0 {
-				log.Printf("[UPF_Notification] matched and updated an existing notification report from UPF")
-			}
-			if res.UpsertedCount != 0 {
-				log.Printf("[UPF_Notification] inserted a new notification report from UPF with ID %v\n", res.UpsertedID)
-			}
+				res, err := upfCollection.InsertOne(context.Background(), report)
+				if err != nil {
+					log.Println("[UPF_Notification] Error inserting into MongoDB:", err)
+				} else {
+					log.Println("Inserted document ID:", res.InsertedID)
+				}
 
-			//}
+				log.Println("inserted the report")
+			}
 
 		}
+
 		w.WriteHeader(http.StatusOK)
 
 	default:
 		http.Error(w, "[UPF_Notification] Method not allowed", http.StatusMethodNotAllowed)
-
 	}
-
-}
-
-//
-//func getUPFCreateByNotif(notif *upf_client.NotificationItem) (bson.M, error) {
-//	timeStamp := time.Now().Unix()
-//	create := bson.M{
-//		"_id":              notif.GetEventNotifKey(),
-//		"upfeventexposure": bson.A{notif},
-//		"lastmodified":     timeStamp,
-//	}
-//	return create, nil
-//}
-
-func getUPFUpdateByNotif(notif *upf_client.NotificationItem) (bson.D, error) {
-	timeStamp := time.Now().Unix()
-	update := bson.D{
-		{"$set", bson.D{
-			{"lastmodified", timeStamp},
-		}},
-		{"$push", bson.M{
-			"upf_volume": notif,
-		}},
-	}
-	return update, nil
 }

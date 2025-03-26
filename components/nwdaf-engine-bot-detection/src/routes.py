@@ -50,7 +50,7 @@ def extract_ml_model_url(notification: dict) -> Optional[str]:
                 return ml_url
     return None
 
-def     subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
+def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
 
     subscription = NwdafMLModelProvSubsc(
         mLEventSubscs=[

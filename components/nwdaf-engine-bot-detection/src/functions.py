@@ -66,45 +66,41 @@ def ip_to_int(ip_str):
 def create_dataframe():
     data = []
     unique_pairs = set()
-
-
     for doc in upf_collection.find():
-        for rep_per_ue in doc['upf_volume']:
-            timestamp = rep_per_ue['timestamp']
-            for user_usage in rep_per_ue['userdatausagemeasurements']:
-                volume = user_usage['volumemeasurement']
-                packfiltid = user_usage['flowinfo']['packfiltid']
-                seID, SrcIp, DstIp, SrcPort, DstPort = extract_flow_info(packfiltid)
-                src_ip_int, v = ip_to_int(SrcIp)
-                dst_ip_int, v = ip_to_int(DstIp)
-                if v == "IP6":
-                    continue
-
-#                 logging.info(f"the volume is: {volume['ulvolume']}")
-#                 logging.info(f"the volume is: {volume['ulvolume'][:-1]}")
-                ulVolume = int(volume['ulvolume'][:-1])
-                dlVolume = int(volume['dlvolume'][:-1])
-                totalVolume = int(volume['totalvolume'][:-1])
-                ulPacket = int(volume['ulnbofpackets'])
-                dlPacket = int(volume['dlnbofpackets'])
-                totalPacket = int(volume['totalnbofpackets'])
-                pair = (src_ip_int, seID)
-                if pair not in unique_pairs:
-                    unique_pairs.add(pair)
-                data.append({
-                    "seID":int(seID),
-                    "SrcIp":src_ip_int,
-                    "DstIp":dst_ip_int,
-                    "SrcPort":int(SrcPort),
-                    "DstPort":int(DstPort),
-                    "ulVolume": ulVolume, #-  lastUlVolume,
-                    "dlVolume": dlVolume, #- lastDlVolume,
-                    "totalVolume": totalVolume, #- lastTotalVolume,
-                    "ulPacket": ulPacket, #- lastUlPacket,
-                    "dlPacket": dlPacket, #- lastDlPacket,
-                    "totalPacket": totalPacket,
-                     'timestamp':timestamp #- lastTotalPacket
-                })
+        timestamp = doc['timestamp']
+        volume = doc['volumeMeasurement']
+        seID = doc['seID']
+        SrcIp = doc['SrcIp']
+        DstIp = doc['DstIp']
+        SrcPort = doc['SrcPort']
+        DstPort = doc['DstPort']
+        src_ip_int, v = ip_to_int(SrcIp)
+        dst_ip_int, v = ip_to_int(DstIp)
+        if v == "IP6":
+            continue
+        ulVolume = int(volume['ulVolume'][:-1])
+        dlVolume = int(volume['dlVolume'][:-1])
+        totalVolume = int(volume['totalVolume'][:-1])
+        ulPacket = int(volume['ulPackets'])
+        dlPacket = int(volume['dlPackets'])
+        totalPacket = int(volume['totalPackets'])
+        pair = (src_ip_int, seID)
+        if pair not in unique_pairs:
+            unique_pairs.add(pair)
+        data.append({
+            "seID":int(seID),
+            "SrcIp":src_ip_int,
+            "DstIp":dst_ip_int,
+            "SrcPort":int(SrcPort),
+            "DstPort":int(DstPort),
+            "ulVolume": ulVolume, #-  lastUlVolume,
+            "dlVolume": dlVolume, #- lastDlVolume,
+            "totalVolume": totalVolume, #- lastTotalVolume,
+            "ulPacket": ulPacket, #- lastUlPacket,
+            "dlPacket": dlPacket, #- lastDlPacket,
+            "totalPacket": totalPacket,
+             'timestamp':timestamp #- lastTotalPacket
+        })
     df = pd.DataFrame(data)
     return df, unique_pairs
 def src_dst_based_df(df):
