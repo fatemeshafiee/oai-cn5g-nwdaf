@@ -13,7 +13,7 @@ package events
 type AbnormalBehaviour struct {
 	Supis []string `json:"supis,omitempty"`
 
-	DDoSEntries []interface{} `json:"ddos_entries,omitempty"`
+	//DDoSEntries []interface{} `json:"ddos_entries,omitempty"`
 
 	Excep Exception `json:"excep"`
 

@@ -31,6 +31,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -600,15 +601,20 @@ func requestAbnorBehavrsEngine(
 	//log.Println("unexpected_large_rate_flow probability is: ",
 	//	float64(abnorBehavrsResp.Ratio)/float64(100))
 
-	ddEntries := make([]interface{}, 0)
+	supis := make([]string, 0)
 
 	for _, obj := range abnorBehavrsResp.DDoSEntries {
-		ddEntries = append(ddEntries, obj)
+		entry := fmt.Sprintf("%s-%s", obj.UeIp, obj.SeId)
+		supis = append(supis, entry)
 	}
 
+	//abnormalBehaviour := AbnormalBehaviour{
+	//	Ratio:       abnorBehavrsResp.Ratio,
+	//	DDoSEntries: ddEntries,
+	//}
 	abnormalBehaviour := AbnormalBehaviour{
-		Ratio:       abnorBehavrsResp.Ratio,
-		DDoSEntries: ddEntries,
+		Supis: supis,
+		Ratio: abnorBehavrsResp.Ratio
 	}
 	return abnormalBehaviour, nil
 }
