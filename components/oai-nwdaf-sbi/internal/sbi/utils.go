@@ -25,6 +25,11 @@
  * Author: Arina Prostakova    <prostako@eurecom.fr>
  * Description: This file contains utils functions.
  */
+/*
+ * Modified by Fatemeh Shafiei Ardestani on 2025-04-06
+ * Based on OpenAirInterface (OAI) 5G software
+ * Changes: See GitHub repository for full diff
+ */
 
 package sbi
 
@@ -206,7 +211,7 @@ func upfEventEventSubscription(upfEventNotifyUri string,
 	measurementType := [][]upf_client.MeasurementType{{upf_client.VOLUME_MEASUREMENT}}
 	granType := []upf_client.GranularityOfMeasurement{upf_client.PER_FLOW}
 	// change the  time of UPF event exposure subscription here.
-	subs := upf_client.NewNupfEventExposure(upfNfId, upfEventNotifyUri, upf_client.PERIODIC, upfNotifyCorrelationId, req_type, 6, measurementType, granType, true)
+	subs := upf_client.NewNupfEventExposure(upfNfId, upfEventNotifyUri, upf_client.PERIODIC, upfNotifyCorrelationId, req_type, 2, measurementType, granType, true)
 	res, err := cli.CreateSubscription(subs)
 	if err != nil {
 		log.Printf(

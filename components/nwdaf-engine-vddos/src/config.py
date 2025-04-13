@@ -18,24 +18,15 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-#/*
-# * Author: Fatemeh Shafiei Ardestani
-# * Description: nwdaf-engine-vddos configuration parameters.
-# */
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 
 import os
 from pymongo import MongoClient
 import pickle
 import joblib
 import pickle
-
-# Load the model from the file
-
-
-
-
-
 # Env Variables
 SERVER_PORT = os.environ.get('SERVER_PORT','8989')
 MONGODB_URI = os.environ.get('MONGODB_URI','mongodb://localhost:27017')

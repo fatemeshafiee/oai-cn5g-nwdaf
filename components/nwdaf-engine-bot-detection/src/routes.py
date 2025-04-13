@@ -18,10 +18,9 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-#/*
-# */
-
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 from src.config import *
 import src.config as config
 from src.functions import *
@@ -68,8 +67,8 @@ def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
     )
 
     headers = {"Content-Type": "application/json"}
-    logging.info(f"Sending Subscription Request to {ml_model_prov_url}/subscribe")
-    logging.info(f"Request Payload: {subscription.model_dump()}")
+#     logging.info(f"Sending Subscription Request to {ml_model_prov_url}/subscribe")
+#     logging.info(f"Request Payload: {subscription.model_dump()}")
     try:
         response = requests.post(
             f"{ml_model_prov_url}/subscribe",
@@ -77,16 +76,13 @@ def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
             headers=headers
         )
         response.raise_for_status()
-        logging.info(f"Subscription Successful: {response.json()}")
+#         logging.info(f"Subscription Successful: {response.json()}")
         resp_json = response.json()
-        logging.info(f"Subscription Successful: {resp_json}")
+#         logging.info(f"Subscription Successful: {resp_json}")
         ml_url = extract_ml_model_url(resp_json)
         if ml_url:
-
             config.current_inference_link = ml_url
-            logging.info(f"Updated current_inference_link: {config.current_inference_link}")
-        else:
-            logging.info("No ML model URL found in the notification response.")
+#             logging.info(f"Updated current_inference_link: {config.current_inference_link}")
         return resp_json
     except requests.exceptions.RequestException as e:
         logging.error(f"Error in Subscription: {e}")
@@ -104,13 +100,13 @@ def receive_notification():
         if isinstance(data, str):  # ADDED: Check if data is a string
             data = json.loads(data)  # ADDED: Convert it to a dict
 
-        logging.info(f"Received Notification: {data}")
+#         logging.info(f"Received Notification: {data}")
         notification = NwdafMLModelProvNotif(**data)
 
         for event in notification.eventNotifs:
             if event.mLFileAddr and event.mLFileAddr.mLModelUrl:
                 current_inference_link = event.mLFileAddr.mLModelUrl  # Added: Update the inference link
-                logging.info(f"Updated ML Inference Link: {current_inference_link}")
+#                 logging.info(f"Updated ML Inference Link: {current_inference_link}")
 
         return jsonify({"status": "Updated inference link"}), 200
 
@@ -124,25 +120,31 @@ def handle_ue_profile():
     global update_time
     counter += 1
     df, unique_pairs = create_dataframe()
-    df.to_csv('df.csv', index=False)
-    if counter == update_time:
-        summary_per_ip = create_ue_profile(df)
-        dict_data = summary_per_ip.to_dict(orient='records')
-        for rec in dict_data:
-            ip = rec['SrcIp']
-            key = 'SrcIp'
-            query = {key : ip}
-            update = {"$set": rec}
-            ue_profile_collection.update_one(query, update, upsert=True)
-        counter = 0
+#     df.to_csv('df.csv', index=False)
+#     if counter == update_time:
+#         summary_per_ip = create_ue_profile(df)
+#         dict_data = summary_per_ip.to_dict(orient='records')
+#         for rec in dict_data:
+#             ip = rec['SrcIp']
+#             key = 'SrcIp'
+#             query = {key : ip}
+#             update = {"$set": rec}
+#             ue_profile_collection.update_one(query, update, upsert=True)
+#         counter = 0
+    bot_report = []
+    bot_info = set()
+    if df.empty:
+        response_data = {'ddos_entries': bot_report}
+        return_data = jsonify(response_data)
+        return jsonify(response_data)
+
     g_feature = create_graph_feature(df)
     G = build_graph_per_batch(g_feature)
-    G_features = extract_grapgh_features(G, ['10.42.0.2', '10.42.0.3', '10.42.0.4', '10.42.0.5', '10.42.0.6', '10.42.0.7'])
+    G_features = extract_grapgh_features(G, unique_pairs)
 
     global current_time
 #     logging.info(f"the df is: {df}")
-    bot_report = []
-    bot_info = set()
+
     predictions = get_traffic_prediction(G_features[['in_degree', 'out_degree', 'w_in_degree', 'w_out_degree', 'betweenness', 'LCC']])
 #     rf_model.predict(G_features[['in_degree', 'out_degree', 'w_in_degree', 'w_out_degree', 'betweenness', 'LCC']])
     indices = [i for i, pred in enumerate(predictions) if pred == 1]
@@ -158,9 +160,10 @@ def handle_ue_profile():
 
     response_data = {'ddos_entries': bot_report}
     return_data = jsonify(response_data)
-    logging.info(return_data)
-    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-    logging.info(f"the report for this event created: {current_time}")
+#     logging.info(return_data)
+    if len(bot_report) > 0:
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        logging.info(f"[Report_Latency]the bot detected, the report for this event created: {current_time}")
 
     return jsonify(response_data)
 

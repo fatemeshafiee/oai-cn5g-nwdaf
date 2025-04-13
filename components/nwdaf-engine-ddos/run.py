@@ -18,11 +18,9 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-#/*
-# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Description: This is the main file of oai-nwdaf-engine-ads.
-# */
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 
 from flask import Flask
 from src.config import SERVER_PORT

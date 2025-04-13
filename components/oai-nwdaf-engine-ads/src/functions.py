@@ -18,11 +18,10 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-#/*
-# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Description: This file contains utils functions.
 # */
+#  Modified by: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 
 import pandas as pd
 from src.config import *

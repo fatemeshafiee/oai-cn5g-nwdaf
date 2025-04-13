@@ -18,11 +18,9 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-#/*
-# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Description: Docker file of the oai-nwdaf-engine-ads.
-# */
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 
 FROM python:3.6.9-slim AS nwdaf-engine-ddos
 WORKDIR /app

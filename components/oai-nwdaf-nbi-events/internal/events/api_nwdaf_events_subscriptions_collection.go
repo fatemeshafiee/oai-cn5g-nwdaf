@@ -23,7 +23,11 @@
  * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
  * Description: Routes and config of the events nbi service (create subscription).
  */
-
+/*
+ * Modified by Fatemeh Shafiei Ardestani on 2025-04-06
+ * Based on OpenAirInterface (OAI) 5G software
+ * Changes: See GitHub repository for full diff
+ */
 package events
 
 import (

@@ -25,6 +25,11 @@
  * Author: Arina Prostakova    <prostako@eurecom.fr>
  * Description: This file contains data structures and global variables.
  */
+/*
+ * Modified by Fatemeh Shafiei Ardestani on 2025-04-06
+ * Based on OpenAirInterface (OAI) 5G software
+ * Changes: See GitHub repository for full diff
+ */
 
 package sbi
 

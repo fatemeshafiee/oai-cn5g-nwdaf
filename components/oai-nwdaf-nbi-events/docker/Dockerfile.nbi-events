@@ -25,7 +25,9 @@
 # * Author: Arina Prostakova    <prostako@eurecom.fr>
 # * Description: Docker file of the oai-nwdaf-nbi-events.
 # */
-
+/* Modified by: Fatemeh Shafiei Ardestani
+ *Created on: 2025-04-06
+ */
 ARG BUILD_IMAGE=golang:1.20-alpine
 ARG TARGET_IMAGE=alpine:3.18
 

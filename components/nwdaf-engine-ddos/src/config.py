@@ -18,11 +18,9 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-#/*
-# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Description: oai-nwdaf-engine-ads configuration parameters.
-# */
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 
 import os
 from pymongo import MongoClient

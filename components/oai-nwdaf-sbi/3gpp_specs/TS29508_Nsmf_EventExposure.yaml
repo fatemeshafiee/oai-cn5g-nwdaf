@@ -1,3 +1,6 @@
+#  /*
+#    * Modified by Fatemeh Shafiei Ardestani on 2025-04-06
+#    */
 openapi: 3.0.0
 
 info:
@@ -748,7 +751,6 @@ components:
           - WLAN_INFO
           - UPF_INFO
           - UP_STATUS_INFO
-          - PACKET_MON
       - type: string
         description: >
           This string provides forward-compatibility with future

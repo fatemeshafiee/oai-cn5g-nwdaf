@@ -18,12 +18,9 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-#/*
-# * Author: Fatemeh Shafiei Ardestani
-# * Description: This file contains utils functions.
-# */
-
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 import pandas as pd
 import logging
 from src.config import *
@@ -33,6 +30,8 @@ import ipaddress
 import numpy as np
 import networkx as nx
 import requests
+from datetime import datetime, timedelta
+
 
 
 def add_time_columns(df, timestamp_col):
@@ -64,44 +63,49 @@ def ip_to_int(ip_str):
         return int(ipaddress.IPv6Address(ip_str)),"IP6"
 
 def create_dataframe():
+    df = pd.DataFrame()
     data = []
     unique_pairs = set()
-    for doc in upf_collection.find():
-        timestamp = doc['timestamp']
-        volume = doc['volumeMeasurement']
-        seID = doc['seID']
-        SrcIp = doc['SrcIp']
-        DstIp = doc['DstIp']
-        SrcPort = doc['SrcPort']
-        DstPort = doc['DstPort']
-        src_ip_int, v = ip_to_int(SrcIp)
-        dst_ip_int, v = ip_to_int(DstIp)
-        if v == "IP6":
-            continue
-        ulVolume = int(volume['ulVolume'][:-1])
-        dlVolume = int(volume['dlVolume'][:-1])
-        totalVolume = int(volume['totalVolume'][:-1])
-        ulPacket = int(volume['ulPackets'])
-        dlPacket = int(volume['dlPackets'])
-        totalPacket = int(volume['totalPackets'])
-        pair = (src_ip_int, seID)
-        if pair not in unique_pairs:
-            unique_pairs.add(pair)
-        data.append({
-            "seID":int(seID),
-            "SrcIp":src_ip_int,
-            "DstIp":dst_ip_int,
-            "SrcPort":int(SrcPort),
-            "DstPort":int(DstPort),
-            "ulVolume": ulVolume, #-  lastUlVolume,
-            "dlVolume": dlVolume, #- lastDlVolume,
-            "totalVolume": totalVolume, #- lastTotalVolume,
-            "ulPacket": ulPacket, #- lastUlPacket,
-            "dlPacket": dlPacket, #- lastDlPacket,
-            "totalPacket": totalPacket,
-             'timestamp':timestamp #- lastTotalPacket
-        })
-    df = pd.DataFrame(data)
+    t = 30  # number of seconds to look back
+    cutoff_time = datetime.utcnow() - timedelta(seconds=t)
+    if MONGODB_COLLECTION_NAME_UPF in nwdaf_db.list_collection_names():
+        for doc in upf_collection.find({"timestamp": {"$gte": cutoff_time}}):
+            timestamp = doc['timestamp']
+            volume = doc['volumeMeasurement']
+            seID = doc['seID']
+            SrcIp = doc['SrcIp']
+            DstIp = doc['DstIp']
+            SrcPort = doc['SrcPort']
+            DstPort = doc['DstPort']
+            src_ip_int, v = ip_to_int(SrcIp)
+            dst_ip_int, v = ip_to_int(DstIp)
+            if v == "IP6":
+                continue
+            ulVolume = int(volume['ulVolume'][:-1])
+            dlVolume = int(volume['dlVolume'][:-1])
+            totalVolume = int(volume['totalVolume'][:-1])
+            ulPacket = int(volume['ulPackets'])
+            dlPacket = int(volume['dlPackets'])
+            totalPacket = int(volume['totalPackets'])
+            pair = (src_ip_int, seID)
+            if pair not in unique_pairs:
+                unique_pairs.add(pair)
+            data.append({
+                "seID":int(seID),
+                "SrcIp":src_ip_int,
+                "DstIp":dst_ip_int,
+                "SrcPort":int(SrcPort),
+                "DstPort":int(DstPort),
+                "ulVolume": ulVolume, #-  lastUlVolume,
+                "dlVolume": dlVolume, #- lastDlVolume,
+                "totalVolume": totalVolume, #- lastTotalVolume,
+                "ulPacket": ulPacket, #- lastUlPacket,
+                "dlPacket": dlPacket, #- lastDlPacket,
+                "totalPacket": totalPacket,
+                 'timestamp':timestamp #- lastTotalPacket
+            })
+        df = pd.DataFrame(data)
+    #     logging.info(f"[DEBUG] the created data frame is {df}")
     return df, unique_pairs
 def src_dst_based_df(df):
         grouped_df = df.groupby(['SrcIp', 'DstIp', 'timestamp']).agg({
@@ -123,7 +127,7 @@ def src_dst_based_df(df):
         return grouped_df
 
 def create_ue_profile(df):
-    logging.info(f"the columns is: {df.columns}")
+#     logging.info(f"the columns is: {df.columns}")
     grouped_df = df.groupby(['SrcIp', 'timestamp']).agg({
                                                        'ulVolume' : 'sum',
                                                        'dlVolume' : 'sum',
@@ -223,7 +227,7 @@ def build_graph_per_batch(df_flow):
     G.add_edge(row['src_ip'], row['dst_ip'], weight=row['src_pkts'])
     G.add_edge(row['dst_ip'], row['src_ip'], weight=row['dst_pkts'])
   return G
-def extract_grapgh_features(G, bot_ips):
+def extract_grapgh_features(G, unique_pairs):
    features = []
    # print(G.in_degree())
    in_degree = dict(G.in_degree())
@@ -234,20 +238,23 @@ def extract_grapgh_features(G, bot_ips):
    lcc = compute_lcc(G)
 
    for node in G.nodes():
-       features.append([
-         node,
-         in_degree.get(node, 0),
-         out_degree.get(node, 0),
-         w_in_degree.get(node, 0),
-         w_out_degree.get(node, 0),
-         betweenness.get(node, 0),
-         lcc.get(node, 0.0)
-     ])
+       if any(ip == node for ip, _ in unique_pairs):
+           features.append([
+             node,
+             in_degree.get(node, 0),
+             out_degree.get(node, 0),
+             w_in_degree.get(node, 0),
+             w_out_degree.get(node, 0),
+             betweenness.get(node, 0),
+             lcc.get(node, 0.0)
+         ])
 
    features_df = pd.DataFrame(features, columns=['host_ip',
          'in_degree', 'out_degree', 'w_in_degree', 'w_out_degree',
          'betweenness', 'LCC'
      ])
+#    logging.info(f"[DEBUG] the feature df is {features_df}")
+
    return features_df
 def create_graph_feature(benign_df):
     benign_df['timestamp'] = pd.to_datetime(benign_df['timestamp'])
@@ -273,13 +280,14 @@ def create_graph_feature(benign_df):
     df_grouped = df_grouped.drop(columns=columns_to_drop)
     df_grouped = df_grouped.groupby(['SrcIp', 'DstIp']).sum().reset_index()
     df_grouped = df_grouped.rename(columns={'SrcIp': 'src_ip', 'DstIp': 'dst_ip', 'ulVolume_diff':'src_size','dlVolume_diff':'dst_size', 'ulPacket_diff':'src_pkts', 'dlPacket_diff':'dst_pkts' })
+#     logging.info(f"[DEBUG] create_graph_feature {df_grouped}")
     return df_grouped
 
 def get_traffic_prediction(features):
     """ Send real-time data to MLflow Model Server and get prediction """
     data = {"dataframe_split": features.to_dict(orient="split")}
-    logging.info(f"the data is {data}")
-    logging.info(f"info: the current_inference_link{config.current_inference_link}")
+#     logging.info(f"the data is {data}")
+#     logging.info(f"info: the current_inference_link{config.current_inference_link}")
     if not config.current_inference_link:
         logging.info("Warning: ML inference link is not set yet. Cannot send data.")
         return None
@@ -288,9 +296,10 @@ def get_traffic_prediction(features):
     try:
         response = requests.post(config.current_inference_link, json=data)
         if response.status_code == 200:
-            prediction = response.json()
-            logging.info(f"the response from the mlflow is: {prediction}")
-            return prediction
+            response_dict = response.json()
+            predictions = response_dict['predictions']
+            logging.info(f"the response from the mlflow is: {predictions}")
+            return predictions
         else:
             logging.info(f"MLflow request failed: {response.status_code}")
             return None

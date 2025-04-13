@@ -18,12 +18,9 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-#/*
-# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Description: This file contains oai-nwdaf-engine-ads server routes.
-# */
-
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 from src.config import *
 from src.functions import *
 from flask import Blueprint, jsonify

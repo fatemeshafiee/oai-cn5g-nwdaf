@@ -18,11 +18,9 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
-
-#/*
-# * Author: Fatemeh Shafiei Ardestani
-# * Description: nwdaf-engine-profile configuration parameters.
-# */
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 
 import os
 from pymongo import MongoClient

@@ -23,6 +23,11 @@
  * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
  * Description: Functions of the events nbi service (create subscription).
  */
+/*
+ * Modified by Fatemeh Shafiei Ardestani on 2025-04-06
+ * Based on OpenAirInterface (OAI) 5G software
+ * Changes: See GitHub repository for full diff
+ */
 
 package events
 
@@ -363,8 +368,8 @@ func getAbnormalBehaviourNotifData(
 			return nil, errors.New("invalid Abnormal Behaviour Exception ID")
 		}
 		AbnorBehavrsInfo.Excep = excepReq
-		log_data, err := json.MarshalIndent(AbnorBehavrsInfo, "", "  ")
-		log.Println(string(log_data))
+		//log_data, err := json.MarshalIndent(AbnorBehavrsInfo, "", "  ")
+		//log.Println(string(log_data))
 		AbnorBehavrsList = append(AbnorBehavrsList, AbnorBehavrsInfo)
 	}
 	return AbnorBehavrsList, nil
@@ -372,11 +377,12 @@ func getAbnormalBehaviourNotifData(
 
 // ------------------------------------------------------------------------------
 func sendNotification(
-	ctx context.Context,
 	eventNotif EventNotification,
 	notificationURI string,
 ) error {
-	log.Print("Sending notification to client")
+	currentTime := time.Now()
+	formattedTime := currentTime.Format("2006-01-02 15:04:05.000")
+	log.Printf("[DSN_Latency] Sending Notification to Client %s", formattedTime)
 	jsonStr, _ := json.Marshal(eventNotif)
 	client := http.Client{
 		//Transport: &http2.Transport{
@@ -565,7 +571,7 @@ func requestAbnorBehavrsEngine(
 	excepReq Exception,
 	enginePath string,
 ) (AbnormalBehaviour, error) {
-	log.Printf("Reaching engine to get abnormal behaviour")
+	//log.Printf("Reaching engine to get abnormal behaviour")
 	var engineReqData EngineReqData
 	// Convert the data to a JSON byte array
 	engineReqJsonData, err := json.Marshal(engineReqData)
@@ -574,7 +580,7 @@ func requestAbnorBehavrsEngine(
 		return AbnormalBehaviour{}, err
 	}
 	// Log the enginePath before making the request
-	log.Printf("Engine path: %s", enginePath)
+	//log.Printf("Engine path: %s", enginePath)
 	// Create a POST request with the JSON data in the body
 	req, err := http.NewRequest(
 		http.MethodGet, enginePath, bytes.NewBuffer(engineReqJsonData))
@@ -589,11 +595,10 @@ func requestAbnorBehavrsEngine(
 		log.Printf("Error in the default client http: %v", err)
 		return AbnormalBehaviour{}, err
 	}
-	log.Printf("This is line 558")
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	var abnorBehavrsResp AbnorBehavrsResp
-	log.Println(string(body))
+	//log.Println(string(body))
 	err = json.Unmarshal(body, &abnorBehavrsResp)
 	if err != nil {
 		return AbnormalBehaviour{}, err
@@ -604,7 +609,8 @@ func requestAbnorBehavrsEngine(
 	supis := make([]string, 0)
 
 	for _, obj := range abnorBehavrsResp.DDoSEntries {
-		entry := fmt.Sprintf("%s-%s", obj.UeIp, obj.SeId)
+		entry := fmt.Sprintf("%s-%d", obj.UeIp, obj.SeId)
+		//fmt.Println("Generated SUPI:", entry)
 		supis = append(supis, entry)
 	}
 
@@ -614,7 +620,7 @@ func requestAbnorBehavrsEngine(
 	//}
 	abnormalBehaviour := AbnormalBehaviour{
 		Supis: supis,
-		Ratio: abnorBehavrsResp.Ratio
+		Ratio: abnorBehavrsResp.Ratio,
 	}
 	return abnormalBehaviour, nil
 }

@@ -1,3 +1,30 @@
+/*
+ * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The OpenAirInterface Software Alliance licenses this file to You under
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
+ *
+ *      http://www.openairinterface.org/?page_id=698
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *-------------------------------------------------------------------------------
+ * For more information about the OpenAirInterface (OAI) Software Alliance:
+ *      contact@openairinterface.org
+ */
+
+/*
+/*
+  - Author Fatemeh Shafiei Ardestani on 2025-04-06
+  - Based on OpenAirInterface (OAI) 5G software
+  - Changes: See GitHub repository for full diff
+*/
 package sbi
 
 import (
@@ -16,7 +43,7 @@ func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		customHeader := r.Header.Get("Report_number")
 		currentTime := time.Now()
-		formattedTime := currentTime.Format("1979-03-10 15:04:05.000")
+		formattedTime := currentTime.Format("2006-01-02 15:04:05.000")
 		log.Printf("[DSN_Latency] Storing UPF notification in Database, the report number and time %s, %s", customHeader, formattedTime)
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -24,7 +51,7 @@ func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "[UPF_Notification] Error reading request body", http.StatusInternalServerError)
 			return
 		}
-		log.Println(string(body[:]))
+		//log.Println(string(body[:]))
 
 		upfNotification := new(upf_client.Notification)
 		err = json.Unmarshal(body, upfNotification)
@@ -44,11 +71,11 @@ func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 		upfCollection := mongoClient.Database(databaseName).Collection(collectionName)
 
 		for _, notif := range notifList {
-			log.Println("parsing each notif")
+			//log.Println("parsing each notif")
 			notifTimestamp := notif.TimeStamp
 			ueIpv4Addr := notif.UeIpv4Addr
-			log.Println("the ue ip is")
-			log.Println(ueIpv4Addr)
+			//log.Println("the ue ip is")
+			//log.Println(ueIpv4Addr)
 			for _, measurement := range notif.UserDataUsageMeasurements {
 
 				var flowInfo struct {
@@ -66,7 +93,7 @@ func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 				} else {
 					log.Println("[UPF_Notification] FlowInfo is nil or empty, skipping parsing.")
 				}
-				log.Println("parsing each flow info")
+				//log.Println("parsing each flow info")
 				volumeMeasurement := bson.M{}
 				if measurement.VolumeMeasurement != nil {
 					volumeMeasurement["totalVolume"] = measurement.VolumeMeasurement.TotalVolume
@@ -120,7 +147,7 @@ func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 					report["appID"] = measurement.AppID
 				}
 
-				log.Printf("[UPF_Notification] Report being inserted: %+v\n", report)
+				//log.Printf("[UPF_Notification] Report being inserted: %+v\n", report)
 
 				res, err := upfCollection.InsertOne(context.Background(), report)
 				if err != nil {
@@ -129,7 +156,7 @@ func storeUpfotificationOnDB(w http.ResponseWriter, r *http.Request) {
 					log.Println("Inserted document ID:", res.InsertedID)
 				}
 
-				log.Println("inserted the report")
+				//log.Println("inserted the report")
 			}
 
 		}
