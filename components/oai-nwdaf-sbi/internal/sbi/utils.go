@@ -212,7 +212,7 @@ func upfEventEventSubscription(upfEventNotifyUri string,
 	granType := []upf_client.GranularityOfMeasurement{upf_client.PER_FLOW}
 	// change the  time of UPF event exposure subscription here.
 	//func NewNupfEventExposure(NfId string, EventNotifyUri string, Triger UpfEventTrigger, NotifyCorrelationId string, RequestedEventTypes []EventType, RepPeriod int, measurementType [][]MeasurementType, measurement []GranularityOfMeasurement, anyUE bool)
-	var RepPeriod = 1
+	var RepPeriod = 3
 	subs := upf_client.NewNupfEventExposure(upfNfId, upfEventNotifyUri, upf_client.PERIODIC, upfNotifyCorrelationId, req_type, RepPeriod, measurementType, granType, true)
 	res, err := cli.CreateSubscription(subs)
 	if err != nil {
