@@ -1,3 +1,17 @@
+This repository includes modifications to the OpenAirInterface NWDAF (OAI-NWDAF) system.  
+The following features have been added as part of this work:
+
+- Introduced `upf_client` to enable data collection from the UPF Event Exposure Service
+- Implemented a real-time Bot Detection Engine for anomaly monitoring
+- Added a Machine Learning (ML) Model Provisioning Service integrated with MLflow
+- Modified the Northbound Interface (NBI) modules to expose the new detection engine to external consumers
+
+These changes were developed for research and experimental purposes.
+
+------------------------------------------------------------------------------
+This repository is **not an official part of the OpenAirInterface (OAI) project**. It is an independent research fork that builds upon the OAI-NWDAF system.
+We have made substantial modifications and additions to the original codebase. 
+We highly encourage you to review the Git commit history and diffs to better understand the scope and nature of the changes introduced. 
 ------------------------------------------------------------------------------
 
                              OPENAIR-CN-5G
