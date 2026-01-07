@@ -18,31 +18,17 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 
-#/*
-# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Author: Karim Boutiba 	    <boutiba@eurecom.fr>
-# * Author: Arina Prostakova    <prostako@eurecom.fr>
-# * Description: Environment variables of oai-nwdaf-nbi-events.
-# */
-; /* Modified by: Fatemeh Shafiei Ardestani
-;  *Created on: 2025-04-06
-;  */
-# URIs
-EVENTS_URI=http://localhost:8882
-ENGINE_URI=http://localhost:8888
-ENGINE_ADS_URI=http://localhost:8989
-ENGINE_BOT_DETECTION_URI=http://localhost:8989
-# Routes
-
-# Todo add the congestion info here
-# ENGINE_NUM_OF_UE_ROUTE=/network_performance/num_of_ue
-ENGINE_SESS_SUCC_RATIO_ROUTE=/network_performance/sess_succ_ratio
-ENGINE_UE_COMMUNICATION_ROUTE=/ue_communication
-ENGINE_UE_MOBILITY_ROUTE=/ue_mobility
-ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
-ENGINE_DDOS_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
-ENGINE_VDDOS_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
-ENGINE_BOT_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
-# Server
-SERVER_ADDR=0.0.0.0:8882
+FROM python:3.9-slim AS nwdaf-engine-congestion
+WORKDIR /app
+RUN apt-get update && apt-cache search net-tools &&  apt-get install --yes net-tools 
+COPY requirements.txt .
+RUN pip install --no-color --upgrade pip wheel && \
+    pip install --no-cache-dir -r requirements.txt --no-color && \
+    pip cache purge
+COPY . .
+EXPOSE 8080/tcp
+CMD [ "python3", "run.py" ]

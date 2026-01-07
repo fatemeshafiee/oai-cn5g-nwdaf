@@ -92,6 +92,7 @@ services:
             - ENGINE_DDOS_DETECTION=/abnormal_behaviour/ddos
             - ENGINE_VDDOS_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
             - ENGINE_BOT_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
+#            - ENGINE_CONGESTION= TODO
             - SERVER_ADDR=0.0.0.0:8080
         ports: 
             - "6060:8080"

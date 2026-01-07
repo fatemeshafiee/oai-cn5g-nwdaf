@@ -49,7 +49,7 @@ func main() {
 	// load the environment variables from the file .env
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		log.Fatal("Error loading .env file", err)
 	}
 	var config MainConfig
 	err = envconfig.Process("", &config)

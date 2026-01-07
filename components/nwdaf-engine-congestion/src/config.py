@@ -18,31 +18,33 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
 
-#/*
-# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Author: Karim Boutiba 	    <boutiba@eurecom.fr>
-# * Author: Arina Prostakova    <prostako@eurecom.fr>
-# * Description: Environment variables of oai-nwdaf-nbi-events.
-# */
-; /* Modified by: Fatemeh Shafiei Ardestani
-;  *Created on: 2025-04-06
-;  */
-# URIs
-EVENTS_URI=http://localhost:8882
-ENGINE_URI=http://localhost:8888
-ENGINE_ADS_URI=http://localhost:8989
-ENGINE_BOT_DETECTION_URI=http://localhost:8989
-# Routes
+import os
+from pymongo import MongoClient
+import pickle
+import joblib
+import pickle
 
-# Todo add the congestion info here
-# ENGINE_NUM_OF_UE_ROUTE=/network_performance/num_of_ue
-ENGINE_SESS_SUCC_RATIO_ROUTE=/network_performance/sess_succ_ratio
-ENGINE_UE_COMMUNICATION_ROUTE=/ue_communication
-ENGINE_UE_MOBILITY_ROUTE=/ue_mobility
-ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
-ENGINE_DDOS_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
-ENGINE_VDDOS_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
-ENGINE_BOT_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
-# Server
-SERVER_ADDR=0.0.0.0:8882
+# Env Variables
+SERVER_PORT = os.environ.get('SERVER_PORT','8989')
+MONGODB_URI = os.environ.get('MONGODB_URI','mongodb://localhost:27017')
+NWDAF_DATABASE_NAME = os.environ.get('MONGODB_DATABASE_NAME', 'testing')
+MONGODB_COLLECTION_NAME_UPF = os.environ.get('MONGODB_COLLECTION_NAME_UPF', 'upf')
+
+# Global variables
+client = MongoClient(MONGODB_URI)
+nwdaf_db = client[NWDAF_DATABASE_NAME]
+upf_collection = nwdaf_db[MONGODB_COLLECTION_NAME_UPF]
+ue_profile_collection = nwdaf_db["ue_profile"]
+current_time = None
+# components/nwdaf-engine-bot-detection/models
+# rf_model = joblib.load('models/rf_model_400.pkl')
+MLFLOW_MODEL_URL = "http://mlflow-model-svc.open5gs:5000/invocations"
+current_inference_link = None
+
+
+counter = 0
+update_time = 9

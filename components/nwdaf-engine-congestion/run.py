@@ -18,31 +18,25 @@
 # * For more information about the OpenAirInterface (OAI) Software Alliance:
 # *      contact@openairinterface.org
 # */
+#  Author: Fatemeh Shafiei Ardestani
+#  Created on: 2025-04-06
+#*/
+from flask import Flask
+from src.config import SERVER_PORT
+from src.routes import api, subscribe_to_ml_model_prov
+import threading
 
-#/*
-# * Author: Abdelkader Mekrache <mekrache@eurecom.fr>
-# * Author: Karim Boutiba 	    <boutiba@eurecom.fr>
-# * Author: Arina Prostakova    <prostako@eurecom.fr>
-# * Description: Environment variables of oai-nwdaf-nbi-events.
-# */
-; /* Modified by: Fatemeh Shafiei Ardestani
-;  *Created on: 2025-04-06
-;  */
-# URIs
-EVENTS_URI=http://localhost:8882
-ENGINE_URI=http://localhost:8888
-ENGINE_ADS_URI=http://localhost:8989
-ENGINE_BOT_DETECTION_URI=http://localhost:8989
-# Routes
+app = Flask(__name__)
+app.register_blueprint(api, url_prefix='/')
 
-# Todo add the congestion info here
-# ENGINE_NUM_OF_UE_ROUTE=/network_performance/num_of_ue
-ENGINE_SESS_SUCC_RATIO_ROUTE=/network_performance/sess_succ_ratio
-ENGINE_UE_COMMUNICATION_ROUTE=/ue_communication
-ENGINE_UE_MOBILITY_ROUTE=/ue_mobility
-ENGINE_UNEXPECTED_LARGE_RATE_FLOW_ROUTE=/abnormal_behaviour/unexpected_large_rate_flow
-ENGINE_DDOS_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
-ENGINE_VDDOS_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
-ENGINE_BOT_DETECTION=/abnormal_behaviour/suspicion_of_ddos_attack
-# Server
-SERVER_ADDR=0.0.0.0:8882
+def start_subscription():
+
+    ml_model_prov_url = "http://modelprov-svc.open5gs.svc.cluster.local:8000"
+
+    notif_uri = "http://nwdaf-engine-congestion.open5gs.svc.cluster.local:8080/notifications"
+    subscribe_to_ml_model_prov(ml_model_prov_url, notif_uri)
+
+if __name__ == '__main__':
+    subscription_thread = threading.Thread(target=start_subscription)
+    subscription_thread.start()
+    app.run(host='0.0.0.0', threaded=True, port=SERVER_PORT,debug=True)

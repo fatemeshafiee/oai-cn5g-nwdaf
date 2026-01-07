@@ -43,6 +43,7 @@ var config EventsConfig
 
 // ------------------------------------------------------------------------------
 // Type of EngineConfig structure
+// Todo add the congestion engine info here
 type EventsConfig struct {
 	Routes struct {
 		NumOfUe             string `envconfig:"ENGINE_NUM_OF_UE_ROUTE"`
@@ -54,6 +55,7 @@ type EventsConfig struct {
 		VDDoSDetection      string `envconfig:"ENGINE_VDDOS_DETECTION"`
 		BotDetection        string `envconfig:"ENGINE_BOT_DETECTION"`
 	}
+	//Todo add the congestion engine uri here
 	Engine struct {
 		Uri      string `envconfig:"ENGINE_URI"`
 		AdsUri   string `envconfig:"ENGINE_ADS_URI"`
