@@ -91,7 +91,7 @@ type UeMobResp struct {
 }
 
 // ------------------------------------------------------------------------------
-// Type of Ue_communication response from engine.
+// Type of Abnoraml behaviour response from engine.
 // [FATEMEH] Add my own responses
 type AbnorBehavrsResp struct {
 	Ratio       int32       `json:"ratio,omitempty"`
@@ -105,6 +105,8 @@ type DDoSEntry struct {
 	SeId      uint64  `json:"seid"`
 	Ratio     float64 `json:"ratio,omitempty"`
 }
+
+// response of User Congestion
 
 // NewNWDAFEventsSubscriptionsCollectionApiService creates a default api service
 func NewNWDAFEventsSubscriptionsCollectionApiService() NWDAFEventsSubscriptionsCollectionApiServicer {
@@ -236,6 +238,13 @@ func fillEventNotification(ctx context.Context,
 		}
 		eventNotif.AbnorBehavrs = AbnorBehavrsData
 
+	case NWDAFEVENT_USER_DATA_CONGESTION:
+		UserCongData, err = getUserCongestionNotifData(eventSub)
+		if err != nil {
+			return eventNotif, err
+		}
+		eventNotif.UserDataCongInfos = UserCongData
+
 	default:
 		// Implement others
 		log.Print("Not implemented yet")
@@ -331,7 +340,26 @@ func getUeMobNotifData(eventSub EventSubscription) ([]UeMobility, error) {
 }
 
 // ------------------------------------------------------------------------------
+// getUserCongestionNotifData - Get list of User Congestion
+func getUserCongestionNotifData(eventSub EventSubscription) ([]UserDataCongestionInfo, error) {
+	log.Printf("Getting User Congestion Notification Data")
+	var userCongList []UserDataCongestionInfo
+	var userCong UserDataCongestionInfo
+	var err error
+	userCong, err = requestUserCongEngine(
+		eventSub,
+		config.Engine.Uri+config.Routes.UserCongestion,
+	)
+	if err != nil {
+		return userCongList, err
+	}
+	userCongList = append(userCongList, userCong)
+	return userCongList, nil
+}
+
+// ------------------------------------------------------------------------------
 // getAbnorBehavrsData - Get list Ue Communication
+// Todo: should do the same for congestion
 func getAbnormalBehaviourNotifData(
 	eventSub EventSubscription,
 ) ([]AbnormalBehaviour, error) {
@@ -563,6 +591,45 @@ func requestUeMobEngine(
 		ueMobility.LocInfos = append(ueMobility.LocInfos, locationInfo)
 	}
 	return ueMobility, nil
+}
+
+//requestUserCongEngine
+// ------------------------------------------------------------------------------
+
+func requestUserCongEngine(
+	eventSub EventSubscription,
+	enginePath string,
+) (UserDataCongestionInfo, error) {
+	log.Printf("Reaching engine to get User Congestion Info from DB")
+	var engineReqData EngineReqData
+	engineReqJsonData, err := json.Marshal(engineReqData)
+	if err != nil {
+		return UserDataCongestionInfo{}, err
+	}
+	// Create a POST request with the JSON data in the body
+	req, err := http.NewRequest(
+		http.MethodGet,
+		enginePath,
+		bytes.NewBuffer(engineReqJsonData),
+	)
+	if err != nil {
+		return UserDataCongestionInfo{}, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	// Send the request and print the response body
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return UserDataCongestionInfo{}, err
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	var uesrCongResp UserDataCongestionInfo
+	err = json.Unmarshal(body, &uesrCongResp)
+	if err != nil {
+		return UserDataCongestionInfo{}, err
+	}
+	// Create a variable of type UeMobility
+	return uesrCongResp, nil
 }
 
 // ------------------------------------------------------------------------------

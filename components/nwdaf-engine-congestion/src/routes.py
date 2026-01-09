@@ -54,7 +54,7 @@ def subscribe_to_ml_model_prov(ml_model_prov_url: str, notif_uri: str):
     subscription = NwdafMLModelProvSubsc(
         mLEventSubscs=[
             MLEventSubscription(
-                mLEvent=NwdafEvent(nwdafEvent="ABNORMAL_BEHAVIOUR"),
+                mLEvent=NwdafEvent(nwdafEvent="USER_DATA_CONGESTION"),
                 mLEventFilter={}
             )
         ],
@@ -97,8 +97,8 @@ def receive_notification():
         if not data:
             logging.error("Received empty notification")
             return jsonify({"error": "Empty request"}), 400
-        if isinstance(data, str):  # ADDED: Check if data is a string
-            data = json.loads(data)  # ADDED: Convert it to a dict
+        if isinstance(data, str):
+            data = json.loads(data)
 
         logging.info(f"Received Notification: {data}")
         notification = NwdafMLModelProvNotif(**data)
@@ -106,7 +106,6 @@ def receive_notification():
         for event in notification.eventNotifs:
             if event.mLFileAddr and event.mLFileAddr.mLModelUrl:
                 current_inference_link = event.mLFileAddr.mLModelUrl  # Added: Update the inference link
-#                 logging.info(f"Updated ML Inference Link: {current_inference_link}")
 
         return jsonify({"status": "Updated inference link"}), 200
 
@@ -114,56 +113,16 @@ def receive_notification():
         logging.error(f"Invalid notification received: {e}")
         return jsonify({"error": "Invalid notification"}), 400
 
-@api.route('/abnormal_behaviour/suspicion_of_ddos_attack', methods=['GET'])
+@api.route('/user_congestion', methods=['GET'])
 def handle_ue_profile():
     global counter
     global update_time
     counter += 1
     df, unique_pairs = create_dataframe()
-#     df.to_csv('df.csv', index=False)
-#     if counter == update_time:
-#         summary_per_ip = create_ue_profile(df)
-#         dict_data = summary_per_ip.to_dict(orient='records')
-#         for rec in dict_data:
-#             ip = rec['SrcIp']
-#             key = 'SrcIp'
-#             query = {key : ip}
-#             update = {"$set": rec}
-#             ue_profile_collection.update_one(query, update, upsert=True)
-#         counter = 0
-    bot_report = []
-    bot_info = set()
-    if df.empty:
-        response_data = {'ddos_entries': bot_report}
-        return_data = jsonify(response_data)
-        return jsonify(response_data)
-
-    g_feature = create_graph_feature(df)
-    G = build_graph_per_batch(g_feature)
-    G_features = extract_grapgh_features(G, unique_pairs)
-
-    global current_time
-#     logging.info(f"the df is: {df}")
-
-    predictions = get_traffic_prediction(G_features[['in_degree', 'out_degree', 'w_in_degree', 'w_out_degree', 'betweenness', 'LCC']])
-#     rf_model.predict(G_features[['in_degree', 'out_degree', 'w_in_degree', 'w_out_degree', 'betweenness', 'LCC']])
-    indices = [i for i, pred in enumerate(predictions) if pred == 1]
-    for index in indices:
-        bot_ip =  G_features.iloc[index]['host_ip']
-        for pair in unique_pairs:
-            if pair[0] == bot_ip:
-                bot_report.append({
-                "ue_ip":".".join(str(ipaddress.ip_address(int(bot_ip))).split(".")),
-                "target_ip": "*.*.*.*",
-                "seid":pair[1]
-                })
-
-    response_data = {'ddos_entries': bot_report}
+    df.to_csv('df.csv', index=False)
+    response_data = {}
     return_data = jsonify(response_data)
-#     logging.info(return_data)
-    if len(bot_report) > 0:
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
-        logging.info(f"[Report_Latency]the bot detected, the report for this event created: {current_time}")
+
 
     return jsonify(response_data)
 

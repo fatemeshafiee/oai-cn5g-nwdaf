@@ -54,14 +54,16 @@ type EventsConfig struct {
 		DDoSDetection       string `envconfig:"ENGINE_DDOS_DETECTION"`
 		VDDoSDetection      string `envconfig:"ENGINE_VDDOS_DETECTION"`
 		BotDetection        string `envconfig:"ENGINE_BOT_DETECTION"`
+		UserCongestion      string `envconfig:"ENGINE_CONGESTION"`
 	}
 	//Todo add the congestion engine uri here
 	Engine struct {
-		Uri      string `envconfig:"ENGINE_URI"`
-		AdsUri   string `envconfig:"ENGINE_ADS_URI"`
-		DDoSUri  string `envconfig:"ENGINE_DDOS_URI"`
-		VDDoSUri string `envconfig:"ENGINE_VDDOS_URI"`
-		BotUri   string `envconfig:"ENGINE_BOT_DETECTION_URI"`
+		Uri         string `envconfig:"ENGINE_URI"`
+		AdsUri      string `envconfig:"ENGINE_ADS_URI"`
+		DDoSUri     string `envconfig:"ENGINE_DDOS_URI"`
+		VDDoSUri    string `envconfig:"ENGINE_VDDOS_URI"`
+		BotUri      string `envconfig:"ENGINE_BOT_DETECTION_URI"`
+		UserCongUri string `envconfig:"ENGINE_CONGESTION_URI"`
 	}
 	Events struct {
 		Uri string `envconfig:"EVENTS_URI"`
