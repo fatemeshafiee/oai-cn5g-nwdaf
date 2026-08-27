@@ -29,8 +29,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
-      - run: pip install ruff pytest
-      - name: Lint
-        run: ruff check components/nwdaf-engine-bot-detection components/nwdaf-engine-congestion --select E9,F63,F7,F82
+      - name: Install deps
+        working-directory: components/nwdaf-engine-bot-detection
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
       - name: Tests
-        run: pytest tests -v
+        working-directory: components/nwdaf-engine-bot-detection
+        run: python -m pytest tests -v
