@@ -23,6 +23,9 @@ jobs:
       - name: Vet
         working-directory: components/${{ matrix.component }}
         run: go vet -composites=false ./...
+      - name: Test
+        working-directory: components/${{ matrix.component }}
+        run: go test ./...
 
   python:
     runs-on: ubuntu-latest
