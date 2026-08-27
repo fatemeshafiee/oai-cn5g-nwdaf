@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  go:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component: [oai-nwdaf-sbi, oai-nwdaf-nbi-events, oai-nwdaf-engine]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+          cache-dependency-path: components/${{ matrix.component }}/go.sum
+      - name: Build
+        working-directory: components/${{ matrix.component }}
+        run: go build ./...
+      - name: Vet
+        working-directory: components/${{ matrix.component }}
+        run: go vet ./...
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install ruff pytest
+      - name: Lint
+        run: ruff check components/nwdaf-engine-bot-detection components/nwdaf-engine-congestion --select E9,F63,F7,F82
+      - name: Tests
+        run: pytest tests -v
