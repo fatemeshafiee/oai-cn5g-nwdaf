@@ -177,7 +177,7 @@ loop:
 				}
 				// send notification to client
 				log.Print(eventNotif)
-				err = sendNotification(ctx, eventNotif, notificationURI)
+				err = sendNotification(eventNotif, notificationURI)
 
 				if err != nil {
 					log.Print(err)
@@ -239,7 +239,7 @@ func fillEventNotification(ctx context.Context,
 		eventNotif.AbnorBehavrs = AbnorBehavrsData
 
 	case NWDAFEVENT_USER_DATA_CONGESTION:
-		UserCongData, err = getUserCongestionNotifData(eventSub)
+		UserCongData, err := getUserCongestionNotifData(eventSub)
 		if err != nil {
 			return eventNotif, err
 		}
