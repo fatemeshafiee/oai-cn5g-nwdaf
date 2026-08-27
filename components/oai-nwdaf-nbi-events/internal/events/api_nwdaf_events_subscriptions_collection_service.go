@@ -622,10 +622,15 @@ func requestUserCongEngine(
 		return UserDataCongestionInfo{}, err
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return UserDataCongestionInfo{}, fmt.Errorf("engine returned status %d", resp.StatusCode)
+	}
 	body, err := ioutil.ReadAll(resp.Body)
-	var uesrCongResp UserDataCongestionInfo
-	err = json.Unmarshal(body, &uesrCongResp)
 	if err != nil {
+		return UserDataCongestionInfo{}, err
+	}
+	var uesrCongResp UserDataCongestionInfo
+	if err := json.Unmarshal(body, &uesrCongResp); err != nil {
 		return UserDataCongestionInfo{}, err
 	}
 	// Create a variable of type UeMobility
